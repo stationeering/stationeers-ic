@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/melair/stationeers-ic.git"
+    "url": "git+https://github.com/stationeering/stationeers-ic.git"
   },
   "author": "Melair",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/melair/stationeers-ic/issues"
+    "url": "https://github.com/stationeering/stationeers-ic/issues"
   },
-  "homepage": "https://github.com/melair/stationeers-ic#readme",
+  "homepage": "https://github.com/stationeering/stationeers-ic#readme",
   "dependencies": {
     "chai": "^4.1.2",
     "eslint": "^5.0.1",
