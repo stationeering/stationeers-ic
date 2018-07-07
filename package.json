@@ -1,7 +1,7 @@
 {
-  "name": "stationeers-logic",
+  "name": "stationeers-ic",
   "version": "1.0.0",
-  "description": "Simulation of Stationeers logic.",
+  "description": "Simulation of Stationeers IC.",
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/melair/stationeers-logic.git"
+    "url": "git+https://github.com/melair/stationeers-ic.git"
   },
   "author": "Melair",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/melair/stationeers-logic/issues"
+    "url": "https://github.com/melair/stationeers-ic/issues"
   },
-  "homepage": "https://github.com/melair/stationeers-logic#readme",
+  "homepage": "https://github.com/melair/stationeers-ic#readme",
   "dependencies": {
     "chai": "^4.1.2",
     "eslint": "^5.0.1",
