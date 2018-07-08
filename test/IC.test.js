@@ -2,7 +2,7 @@
 
 const expect = require("chai").expect;
 
-const IC = require("../lib/IC");
+const IC = require("../src/IC");
 
 describe("IC Tests", function () {
   const VALID_SINGLE_INSTRUCTION = "SEL i0 i1 i2 r0";
@@ -165,6 +165,23 @@ describe("IC Tests", function () {
       expect(result[0]["line"]).to.equal(1);
       expect(result[0]["error"]).to.equal("READ_ONLY_REGISTER");
       expect(result[0]["field"]).to.equal(2);
+    });
+  });
+
+  describe("Returns instructions", function () {
+    it("including those with literals correctly", function () {
+      let ic = new IC();
+
+      let result = ic.load("ADD 1.2 1.5 r0\nSUB i0 1.5 r0");
+
+      expect(result.length).to.equal(0);
+
+      let instructions = ic.getInstructions();
+
+      expect(instructions.length).to.equal(2);
+
+      expect(instructions[0]).to.eql(["ADD", "1.2", "1.5", "r0"]);
+      expect(instructions[1]).to.eql(["SUB", "i0", "1.5", "r0"]);
     });
   });
 

@@ -143,6 +143,24 @@ module.exports = class IC {
     return this._instructions.length;
   }
 
+  getInstructions() {
+    return this._instructions.map((instruction) => {
+      let result = [];
+      result[0] = instruction.opCode.toUpperCase();
+      
+      let demapped = instruction.fields.map((field) => {
+        if (field.charAt(0) === "l") {
+          return this._getRegister(field).toString();
+        }
+        return field;
+      });
+
+      result = result.concat(demapped);
+      
+      return result;
+    });
+  }
+
   getInputRegisters() {
     return this._inputRegister;
   }
