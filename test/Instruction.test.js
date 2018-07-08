@@ -5,10 +5,10 @@ const expect = require("chai").expect;
 const IC = require("../lib/IC");
 
 describe("Instruction Tests", function () {  
-  describe("SELECT", function () {
+  describe("SEL", function () {
     it("should choose B if A is < 1 and place in out", function () {
       let ic = new IC();
-      ic.load("SELECT i0 i1 i2 o0");
+      ic.load("SEL i0 i1 i2 o0");
       
       ic.setInputRegister(0, 0.5);
       ic.setInputRegister(1, 1);
@@ -21,7 +21,7 @@ describe("Instruction Tests", function () {
 
     it("should choose C if A is >= 1 and place in out", function () {
       let ic = new IC();
-      ic.load("SELECT i0 i1 i2 o0");
+      ic.load("SEL i0 i1 i2 o0");
       
       ic.setInputRegister(0, 1);
       ic.setInputRegister(1, 1);

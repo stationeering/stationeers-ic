@@ -4,16 +4,17 @@ const expect = require("chai").expect;
 
 const IC = require("../lib/IC");
 
-describe("IC Tests", function() {  
-  const VALID_SINGLE_INSTRUCTION = "SELECT i0 i1 i2 r0";
-  const VALID_MULTIPLE_INSTRUCTION = "SELECT i0 i1 i2 r0\nMAX i0 i1 r2";
-  const VALID_MULTIPLE_INSTRUCTION_WITH_COMMENT = "SELECT i0 i1 i2 r0 // Comment\nMAX i0 i1 r2";
-  const VALID_MULTIPLE_INSTRUCTION_WITH_COMMENT_ON_OWN_LINE = "SELECT i0 i1 i2 r0\n // Comment\nMAX i0 i1 r2";
+describe("IC Tests", function () {
+  const VALID_SINGLE_INSTRUCTION = "SEL i0 i1 i2 r0";
+  const VALID_MULTIPLE_INSTRUCTION = "SEL i0 i1 i2 r0\nMAX i0 i1 r2";
+  const VALID_MULTIPLE_INSTRUCTION_WITH_COMMENT = "SEL i0 i1 i2 r0 // Comment\nMAX i0 i1 r2";
+  const VALID_MULTIPLE_INSTRUCTION_WITH_COMMENT_ON_OWN_LINE = "SEL i0 i1 i2 r0\n // Comment\nMAX i0 i1 r2";
   const INVALID_SINGLE_INSTRUCTION = "INVALID i0 i1 r2";
-  const INVALID_SINGLE_INSTRUCTION_MISS_FIELD = "SELECT i0 i1 i2";
-  const INVALID_SINGLE_INSTRUCTION_INVALID_FIELD_NO_SUCH_INPUT = "SELECT i5 i1 i2 o1";
-  const INVALID_SINGLE_INSTRUCTION_INVALID_FIELD_UNKNOWN_REGISTER = "SELECT u0 i1 i2 o1";
-  const INVALID_SINGLE_INSTRUCTION_INVALID_FIELD_WRITING_TO_INPUT = "SELECT i0 i1 i2 i1";
+  const INVALID_SINGLE_INSTRUCTION_MISS_FIELD = "SEL i0 i1 i2";
+  const INVALID_SINGLE_INSTRUCTION_INVALID_FIELD_NO_SUCH_INPUT = "SEL i5 i1 i2 o1";
+  const INVALID_SINGLE_INSTRUCTION_INVALID_FIELD_UNKNOWN_REGISTER = "SEL u0 i1 i2 o1";
+  const INVALID_SINGLE_INSTRUCTION_INVALID_FIELD_WRITING_TO_INPUT = "SEL i0 i1 i2 i1";
+  const INVALID_SINGLE_INSTRUCTION_SHORT_REGISTER = "SEL i0 i1 i2 o";
 
   describe("Loading instructions", function () {
     it("loads a valid instruction and returns an empty error array", function () {
@@ -78,7 +79,7 @@ describe("IC Tests", function() {
       expect(result[0]["error"]).to.equal("FIELD_COUNT_MISMATCH");
     });
 
-    it ("only load the first 10 instructions", function () {
+    it("only load the first 10 instructions", function () {
       let ic = new IC();
 
       let elevenInstructions = Array(11).fill(VALID_SINGLE_INSTRUCTION).join("\n");
@@ -91,7 +92,7 @@ describe("IC Tests", function() {
     });
 
 
-    it ("verifies that reads can't reference register out side of range", function () {
+    it("verifies that reads can't reference register out side of range", function () {
       let ic = new IC();
 
       let result = ic.load(INVALID_SINGLE_INSTRUCTION_INVALID_FIELD_NO_SUCH_INPUT);
@@ -100,10 +101,23 @@ describe("IC Tests", function() {
 
       expect(result[0]["line"]).to.equal(1);
       expect(result[0]["error"]).to.equal("OUT_OF_BOUND_REGISTER");
-      expect(result[0]["field"]).to.equal(0);  
+      expect(result[0]["field"]).to.equal(0);
     });
 
-    it ("verifies that reads can't reference unknown register type", function () {
+
+    it("verifies that a register must have a number otherwise it's out of bound", function () {
+      let ic = new IC();
+
+      let result = ic.load(INVALID_SINGLE_INSTRUCTION_SHORT_REGISTER);
+
+      expect(result.length).to.equal(1);
+
+      expect(result[0]["line"]).to.equal(1);
+      expect(result[0]["error"]).to.equal("OUT_OF_BOUND_REGISTER");
+      expect(result[0]["field"]).to.equal(3);
+    });
+
+    it("verifies that reads can't reference unknown register type", function () {
       let ic = new IC();
 
       let result = ic.load(INVALID_SINGLE_INSTRUCTION_INVALID_FIELD_UNKNOWN_REGISTER);
@@ -115,7 +129,7 @@ describe("IC Tests", function() {
       expect(result[0]["field"]).to.equal(0);
     });
 
-    it ("verifies that writes can't go to input registers", function () {
+    it("verifies that writes can't go to input registers", function () {
       let ic = new IC();
 
       let result = ic.load(INVALID_SINGLE_INSTRUCTION_INVALID_FIELD_WRITING_TO_INPUT);
@@ -195,7 +209,7 @@ describe("IC Tests", function() {
       expect(ic.programCounter()).to.equal(2);
     });
 
-    it ("restart sets programme counter to 0", function () {
+    it("restart sets programme counter to 0", function () {
       let ic = new IC();
       ic.load(VALID_MULTIPLE_INSTRUCTION);
       ic.step();
