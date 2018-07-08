@@ -142,6 +142,32 @@ describe("IC Tests", function () {
     });
   });
 
+  describe("Literal registers", function () {
+    it("can handle a literal in place of a register for non output field", function () {
+      let ic = new IC();
+
+      let result = ic.load("ADD 1.2 1.5 r0");
+      
+      expect(result.length).to.equal(0);
+
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(2.7);
+    });
+
+    it("verifies that literal registers can not be used for an output", function () {
+      let ic = new IC();
+
+      let result = ic.load("ADD i0 i1 2.2");
+
+      expect(result.length).to.equal(1);
+
+      expect(result[0]["line"]).to.equal(1);
+      expect(result[0]["error"]).to.equal("READ_ONLY_REGISTER");
+      expect(result[0]["field"]).to.equal(2);
+    });
+  });
+
   describe("Inputs, outputs and registers", function () {
     it("has input registers which can be read", function () {
       let ic = new IC();
