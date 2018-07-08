@@ -1,8 +1,8 @@
 {
   "name": "stationeers-ic",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simulation of Stationeers IC.",
-  "main": "index.js",
+  "main": "lib/IC.js",
   "scripts": {
     "lint": "eslint .",
     "mocha": "mocha --recursive",
