@@ -8,32 +8,59 @@ const INPUT_REGISTER_COUNT = 3;
 const OUTPUT_REGISTER_COUNT = 1;
 const INTERNAL_REGISTER_COUNT = 5;
 
-// - d is a register or output
-// - s and t are registers, inputs, or floats
-// - a is a non-negative integer value
-
-const KNOWN_OPCODES = {
-  move: { fields: ["d", "s"] },
-  add: { fields: ["d", "s", "t"] },
-  j: { fields: ["a"] },
-  yield: { fields: [] }
-};
-
 module.exports = class IC {
   constructor() {
+    this._opcodes = {};
     this._instructions = [];
+    
+    this._validProgram = true;
+    this._programErrors = [];
+
     this._programCounter = 0;
     this._inputRegister = Array(INPUT_REGISTER_COUNT).fill(0);
     this._outputRegister = Array(OUTPUT_REGISTER_COUNT).fill(0);
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
-  }
 
+    this._registerOpcode("move", ["d", "s"], this._instruction_move);
+    this._registerOpcode("add", ["d", "s", "t"], this._instruction_add);
+    this._registerOpcode("sub", ["d", "s", "t"], this._instruction_sub);
+    this._registerOpcode("mul", ["d", "s", "t"], this._instruction_mul);
+    this._registerOpcode("div", ["d", "s", "t"], this._instruction_div);
+    this._registerOpcode("mod", ["d", "s", "t"], this._instruction_mod);
+    this._registerOpcode("slt", ["d", "s", "t"], this._instruction_slt);
+    this._registerOpcode("sqrt", ["d", "s"], this._instruction_sqrt);
+    this._registerOpcode("round", ["d", "s"], this._instruction_round);
+    this._registerOpcode("trunc", ["d", "s"], this._instruction_trunc);
+    this._registerOpcode("ceil", ["d", "s"], this._instruction_ceil);
+    this._registerOpcode("floor", ["d", "s"], this._instruction_floor);
+    this._registerOpcode("max", ["d", "s", "t"], this._instruction_max);
+    this._registerOpcode("min", ["d", "s", "t"], this._instruction_min);
+    this._registerOpcode("abs", ["d", "s"], this._instruction_abs);
+    this._registerOpcode("log", ["d", "s"], this._instruction_log);
+    this._registerOpcode("exp", ["d", "s"], this._instruction_exp);
+    this._registerOpcode("rand", ["d"], this._instruction_rand);
+    this._registerOpcode("and", ["d", "s", "t"], this._instruction_and);
+    this._registerOpcode("or", ["d", "s", "t"], this._instruction_or);
+    this._registerOpcode("xor", ["d", "s", "t"], this._instruction_xor);
+    this._registerOpcode("nor", ["d", "s", "t"], this._instruction_nor);
+    this._registerOpcode("j", ["a"], this._instruction_j);
+    this._registerOpcode("bltz", ["s", "a"], this._instruction_bltz);
+    this._registerOpcode("blez", ["s", "a"], this._instruction_blez);
+    this._registerOpcode("bgez", ["s", "a"], this._instruction_bgez);
+    this._registerOpcode("bgtz", ["s", "a"], this._instruction_bgtz);
+    this._registerOpcode("beq", ["s", "t", "a"], this._instruction_beq);
+    this._registerOpcode("bne", ["s", "t", "a"], this._instruction_bne);
+    this._registerOpcode("yield", [], this._instruction_yield);
+  }
+  
   load(unparsedInstructions) {
     this._instructions = unparsedInstructions.split(NEWLINE);
+    this._validate();
   }
 
-  validate() {
-    return this._instructions.map((content, line) => this._validateLine(content, line)).filter((validatedLine) => validatedLine);
+  _validate() {
+    this._programErrors = [].concat.apply([], (this._instructions.map((content, line) => this._validateLine(content, line)).filter((validatedLine) => validatedLine)));
+    this._validProgram = this._programErrors.length == 0;
   }
 
   _validateLine(content, line) {
@@ -45,11 +72,11 @@ module.exports = class IC {
 
     var opcode = tokens.shift();
 
-    if (!Object.keys(KNOWN_OPCODES).includes(opcode)) {
+    if (!Object.keys(this._opcodes).includes(opcode)) {
       return [{ line: line, error: "UNKNOWN_INSTRUCTION" }];
     }
 
-    var opcodeFields = KNOWN_OPCODES[opcode].fields;
+    var opcodeFields = this._opcodes[opcode].fields;
 
     var fieldErrors = opcodeFields.map((type, i) => {
       if (tokens.length < (i + 1)) {
@@ -169,16 +196,24 @@ module.exports = class IC {
     return this._programCounter;
   }
 
+  isValidProgram() {
+    return this._validProgram;
+  }
+
   _setRegister(field, value) {
     let type = field.charAt(0);
     let number = parseInt(field.slice(1));
 
     switch (type) {
       case "i":
-        return this.setInputRegister(number, value);
+        return;
       case "r":
         return this.setInternalRegister(number, value);
       case "o":
+        if (Number.isNaN(number)) {
+          number = 0;
+        }
+
         return this.setOutputRegister(number, value);
     }
   }
@@ -193,23 +228,207 @@ module.exports = class IC {
       case "r":
         return this.getInternalRegisters()[number];
       case "o":
-        return this.getOutputRegisters()[number];
+        return;
+      default:
+        var value = Number.parseFloat(field);
+
+        if (Number.isNaN(value)) {
+          return;
+        } else {
+          return value;
+        }
     }
   }
 
   step() {
-    var instruction = this._instructions[this._programCounter];
-    this._programCounter++;
+    if (this._validProgram) {
+      var instruction = this._instructions[this._programCounter];
+      this._programCounter++;
 
-    this._execute(instruction);
+      this._executeInstruction(instruction);
 
-    return this._programCounter < this.getInstructionCount();
+      return this._programCounter < this.getInstructionCount();
+    } else {
+      return false;
+    }
   }
 
   restart() {
     this._programCounter = 0;
   }
 
-  _execute(instruction) {
+  _executeInstruction(instruction) {
+    var fields = this._parseLine(instruction);
+    var opcode = fields.shift();
+
+    var opcodeData = this._opcodes[opcode];
+
+    if (opcodeData) {
+      opcodeData.func(fields);
+    }
+  }
+
+  _registerOpcode(name, fields, func) {
+    func = func.bind(this);
+    this._opcodes[name] = { fields, func };
+  }
+
+  _instruction_move(fields) {
+    let outputValue = this._getRegister(fields[1]);
+    this._setRegister(fields[0], outputValue);
+  }
+
+  _instruction_add(fields) {
+    let outputValue = this._getRegister(fields[1]) + this._getRegister(fields[2]);
+    this._setRegister(fields[0], outputValue);
+  }
+
+  _instruction_sub(fields) {
+    let outputValue = this._getRegister(fields[1]) - this._getRegister(fields[2]);
+    this._setRegister(fields[0], outputValue);
+  }
+
+  _instruction_mul(fields) {
+    let outputValue = this._getRegister(fields[1]) * this._getRegister(fields[2]);
+    this._setRegister(fields[0], outputValue);
+  }
+
+  _instruction_div(fields) {
+    let outputValue = this._getRegister(fields[1]) / this._getRegister(fields[2]);
+    this._setRegister(fields[0], outputValue);
+  }
+
+  _instruction_mod(fields) {
+    let outputValue = Math.abs(this._getRegister(fields[1]) % this._getRegister(fields[2]));
+    this._setRegister(fields[0], outputValue);
+  }
+
+  _instruction_slt(fields) {
+    let outputValue = this._getRegister(fields[1]) < this._getRegister(fields[2]) ? 1 : 0;
+    this._setRegister(fields[0], outputValue);
+  }
+
+  _instruction_sqrt(fields) {
+    this._setRegister(fields[0], Math.sqrt(this._getRegister(fields[1])));
+  }
+
+  _instruction_round(fields) {
+    this._setRegister(fields[0], Math.round(this._getRegister(fields[1])));
+  }
+
+  _instruction_trunc(fields) {
+    this._setRegister(fields[0], Math.trunc(this._getRegister(fields[1])));
+  }
+
+  _instruction_ceil(fields) {
+    this._setRegister(fields[0], Math.ceil(this._getRegister(fields[1])));
+  }
+
+  _instruction_floor(fields) {
+    this._setRegister(fields[0], Math.floor(this._getRegister(fields[1])));
+  }
+
+  _instruction_max(fields) {
+    let outputValue = Math.max(this._getRegister(fields[1]), this._getRegister(fields[2]));
+    this._setRegister(fields[0], outputValue);
+  }
+
+  _instruction_min(fields) {
+    let outputValue = Math.min(this._getRegister(fields[1]), this._getRegister(fields[2]));
+    this._setRegister(fields[0], outputValue);
+  }  
+
+  _instruction_abs(fields) {
+    this._setRegister(fields[0], Math.abs(this._getRegister(fields[1])));
+  }
+
+  _instruction_log(fields) {
+    this._setRegister(fields[0], Math.log(this._getRegister(fields[1])));
+  }
+
+  _instruction_exp(fields) {
+    this._setRegister(fields[0], Math.exp(this._getRegister(fields[1])));
+  }
+
+  _instruction_rand(fields) {
+    this._setRegister(fields[0], Math.random());
+  }
+
+  _instruction_and(fields) {
+    var valueOne = this._getRegister(fields[1]) > 0;
+    var valueTwo = this._getRegister(fields[2]) > 0;
+    var result = (valueOne && valueTwo ? 1 : 0);
+    this._setRegister(fields[0], result);
+  }
+
+  _instruction_or(fields) {
+    var valueOne = this._getRegister(fields[1]) > 0;
+    var valueTwo = this._getRegister(fields[2]) > 0;
+    var result = (valueOne || valueTwo ? 1 : 0);
+    this._setRegister(fields[0], result);
+  }
+
+  _instruction_xor(fields) {
+    var valueOne = this._getRegister(fields[1]) > 0;
+    var valueTwo = this._getRegister(fields[2]) > 0;
+    var result = (valueOne ^ valueTwo ? 1 : 0);
+    this._setRegister(fields[0], result);
+  }
+
+  _instruction_nor(fields) {
+    var valueOne = this._getRegister(fields[1]) > 0;
+    var valueTwo = this._getRegister(fields[2]) > 0;
+    var result = (!valueOne && !valueTwo) ? 1 : 0;
+    this._setRegister(fields[0], result);
+  }
+
+  _instruction_j(fields) {
+    var addr = this._getRegister(fields[0]);
+    this._programCounter = Math.ceil(addr);
+  }
+
+  _instruction_bltz(fields) {
+    if (this._getRegister(fields[0]) < 0) {
+      var addr = this._getRegister(fields[1]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_blez(fields) {
+    if (this._getRegister(fields[0]) <= 0) {
+      var addr = this._getRegister(fields[1]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_bgez(fields) {
+    if (this._getRegister(fields[0]) >= 0) {
+      var addr = this._getRegister(fields[1]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_bgtz(fields) {
+    if (this._getRegister(fields[0]) > 0) {
+      var addr = this._getRegister(fields[1]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_beq(fields) {
+    if (this._getRegister(fields[0]) === this._getRegister(fields[1])) {
+      var addr = this._getRegister(fields[2]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_bne(fields) {
+    if (this._getRegister(fields[0]) !== this._getRegister(fields[1])) {
+      var addr = this._getRegister(fields[2]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_yield(fields) {
   }
 };

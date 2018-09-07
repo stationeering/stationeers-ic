@@ -5,7 +5,7 @@ const expect = require("chai").expect;
 const IC = require("../src/IC");
 
 describe("IC Tests", function () {
-  const VALID_MULTIPLE_INSTRUCTION = "YIELD\nYIELD\nYIELD\n";
+  const VALID_MULTIPLE_INSTRUCTION = "yield\nyield\nyield\n";
 
   describe("Loading instructions", function () {
     it ("reads a string with instructions and can return the number of lines/instructions read", function() {
@@ -282,10 +282,20 @@ describe("IC Tests", function () {
     it("restart sets programme counter to 0", function () {
       let ic = new IC();
       ic.load(VALID_MULTIPLE_INSTRUCTION);
-      ic.step();
+      expect(ic.step()).to.equal(true);
 
       expect(ic.programCounter()).to.equal(1);
       ic.restart();
+      expect(ic.programCounter()).to.equal(0);
+    });
+
+    it("does not increase the programme counter if the program is invalid", function () {
+      let ic = new IC();
+      ic.load("invalid");
+      expect(ic.programCounter()).to.equal(0);
+
+      expect(ic.step()).to.equal(false);
+
       expect(ic.programCounter()).to.equal(0);
     });
   });
