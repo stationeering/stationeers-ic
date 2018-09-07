@@ -16,6 +16,70 @@ describe("IC Tests", function () {
     });
   });
 
+  describe("Parsing a line", function () {
+    it ("should handle a command with random spacing", function () {
+      let ic = new IC();
+
+      var input = "TOKEN a0   a1   b0";
+
+      var output = ic._parseLine(input);
+
+      expect(output).to.deep.equal(["TOKEN", "a0", "a1", "b0"]);
+    });
+
+    it ("should handle a command followed by a comment", function () {
+      let ic = new IC();
+
+      var input = "TOKEN a0 // This is a comment";
+
+      var output = ic._parseLine(input);
+
+      expect(output).to.deep.equal(["TOKEN", "a0"]);
+    });
+
+    it ("should handle a command followed by a comment, but with no space", function () {
+      let ic = new IC();
+
+      var input = "TOKEN a0// This is a comment";
+
+      var output = ic._parseLine(input);
+
+      expect(output).to.deep.equal(["TOKEN", "a0"]);
+    });
+
+    it ("should handle a comment on it's own", function () {
+      let ic = new IC();
+
+      var input = " // This is a comment";
+
+      var output = ic._parseLine(input);
+
+      expect(output).to.deep.equal([]);
+    });
+  });
+  
+  describe("Validating program", function () {
+    it("will allow an empty line", function() {
+      let ic = new IC();
+
+      var input = ""
+
+      var output = ic._validateLine(input);
+
+      expect(output).to.equal(undefined);
+    });
+
+    it("will allow a comment line", function() {
+      let ic = new IC();
+
+      var input = "// This is a comment, ignore me."
+
+      var output = ic._validateLine(input);
+
+      expect(output).to.equal(undefined);
+    });
+  });
+
   describe("Inputs, outputs and registers", function () {
     it("has input registers which can be read", function () {
       let ic = new IC();
@@ -29,12 +93,10 @@ describe("IC Tests", function () {
 
     it("has output registers which can be read", function () {
       let ic = new IC();
-      let outputRegisters = ic.getInputRegisters();
+      let outputRegisters = ic.getOutputRegisters();
 
-      expect(outputRegisters.length).to.equal(3);
+      expect(outputRegisters.length).to.equal(1);
       expect(outputRegisters[0]).to.equal(0);
-      expect(outputRegisters[1]).to.equal(0);
-      expect(outputRegisters[2]).to.equal(0);
     });
 
     it("has internal registers which can be read", function () {
@@ -59,8 +121,8 @@ describe("IC Tests", function () {
     it("has output registers which can be written and read", function () {
       let ic = new IC();
 
-      ic.setOutputRegister(2, 100);
-      expect(ic.getOutputRegisters()[2]).to.equal(100);
+      ic.setOutputRegister(0, 100);
+      expect(ic.getOutputRegisters()[0]).to.equal(100);
     });
 
     it("has internal registers which can be written and read", function () {

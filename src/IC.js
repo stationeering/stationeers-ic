@@ -1,11 +1,11 @@
 "use strict";
 
 const NEWLINE = "\n";
-const INSTRUCTION_SEPERATOR = /\w+/;
-const COMMENT_SEPERATOR = "//";
+const INSTRUCTION_SEPERATOR = /\s+/;
+const COMMENT_SEPERATOR = /\s*\/\//;
 
 const INPUT_REGISTER_COUNT = 3;
-const OUTPUT_REGISTER_COUNT = 3;
+const OUTPUT_REGISTER_COUNT = 1;
 const INTERNAL_REGISTER_COUNT = 5;
 
 const KNOWN_OPCODES = { 
@@ -26,7 +26,16 @@ module.exports = class IC {
   }
 
   validate() {
+    return this._instructions.map((line) => this._validateLine(line)).filter((validatedLine) => validatedLine);
+  }
 
+  _validateLine(line) {
+    var tokens = this._parseLine(line);
+  }
+
+  _parseLine(line) {
+    var withoutComment = line.split(COMMENT_SEPERATOR)[0];
+    return withoutComment.split(INSTRUCTION_SEPERATOR).filter((token) => token.trim());
   }
 
   getInstructionCount() {
