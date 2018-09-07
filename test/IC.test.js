@@ -282,7 +282,7 @@ describe("IC Tests", function () {
     it("restart sets programme counter to 0", function () {
       let ic = new IC();
       ic.load(VALID_MULTIPLE_INSTRUCTION);
-      expect(ic.step()).to.equal(true);
+      ic.step();
 
       expect(ic.programCounter()).to.equal(1);
       ic.restart();
@@ -294,9 +294,27 @@ describe("IC Tests", function () {
       ic.load("invalid");
       expect(ic.programCounter()).to.equal(0);
 
-      expect(ic.step()).to.equal(false);
+      expect(ic.step()).to.equal("INVALID_PROGRAM");
 
       expect(ic.programCounter()).to.equal(0);
+    });
+
+    it("returns YIELD if the step executed a yield instruction", function () {
+      let ic = new IC();
+      ic.load("yield");
+      
+      var output = ic.step();
+
+      expect(output).to.equal("YIELD");
+    });
+
+    it("returns END_OF_PROGRAM if the step executed the last line and is not a YIELD", function () {
+      let ic = new IC();
+      ic.load("move r0 20");
+      
+      var output = ic.step();
+
+      expect(output).to.equal("END_OF_PROGRAM");
     });
   });
 });

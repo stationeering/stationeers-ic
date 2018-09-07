@@ -1,10 +1,12 @@
 {
   "name": "stationeers-ic",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Simulation of Stationeers IC.",
   "main": "lib/IC.js",
   "babel": {
-    "presets": ["es2015"]
+    "presets": [
+      "es2015"
+    ]
   },
   "scripts": {
     "lint": "eslint .",
@@ -24,7 +26,7 @@
   "homepage": "https://github.com/stationeering/stationeers-ic#readme",
   "dependencies": {
     "chai": "^4.1.2",
-    "eslint": "^5.0.1",
+    "eslint": "^5.5.0",
     "mocha": "^5.2.0"
   },
   "devDependencies": {

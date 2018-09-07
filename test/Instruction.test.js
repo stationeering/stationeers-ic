@@ -214,7 +214,9 @@ describe("Instruction Tests", function () {
 
       ic.step();
 
-      expect(ic.getInternalRegisters()[0]).to.equal(22026.46579480671);
+      var deviation = Math.abs(ic.getInternalRegisters()[0] - 22026.46579480671);
+
+      expect(deviation).to.be.at.most(0.00001);
     });
   }); 
 

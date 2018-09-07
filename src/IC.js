@@ -249,11 +249,17 @@ module.exports = class IC {
       var instruction = this._instructions[this._programCounter];
       this._programCounter++;
 
-      this._executeInstruction(instruction);
+      var lastOpCode = this._executeInstruction(instruction);
 
-      return this._programCounter < this.getInstructionCount();
+      if (lastOpCode === "yield") {
+        return "YIELD";
+      } else if (this._programCounter >= this.getInstructionCount()) {
+        return "END_OF_PROGRAM";
+      } else {
+        return undefined;
+      }
     } else {
-      return false;
+      return "INVALID_PROGRAM";
     }
   }
 
@@ -270,6 +276,8 @@ module.exports = class IC {
     if (opcodeData) {
       opcodeData.func(fields);
     }
+
+    return opcode;
   }
 
   _registerOpcode(name, fields, func) {
