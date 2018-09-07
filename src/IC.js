@@ -12,7 +12,7 @@ module.exports = class IC {
   constructor() {
     this._opcodes = {};
     this._instructions = [];
-    
+
     this._validProgram = true;
     this._programErrors = [];
 
@@ -52,7 +52,7 @@ module.exports = class IC {
     this._registerOpcode("bne", ["s", "t", "a"], this._instruction_bne);
     this._registerOpcode("yield", [], this._instruction_yield);
   }
-  
+
   load(unparsedInstructions) {
     this._instructions = unparsedInstructions.split(NEWLINE);
     this._validate();
@@ -82,7 +82,7 @@ module.exports = class IC {
       if (tokens.length < (i + 1)) {
         return { line: line, error: "MISSING_FIELD", field: i };
       }
-    
+
       var typeCheck = this._checkFieldTypes(tokens[i], type);
 
       if (typeCheck) {
@@ -96,7 +96,7 @@ module.exports = class IC {
 
     if (tokens.length > opcodeFields.length) {
       for (var i = opcodeFields.length; i < tokens.length; i++) {
-        fieldErrors.push({line: line, error: "EXTRA_FIELD", field: i });
+        fieldErrors.push({ line: line, error: "EXTRA_FIELD", field: i });
       }
     }
 
@@ -118,18 +118,18 @@ module.exports = class IC {
       tokenType = isInteger ? "a" : "f";
     }
 
-    switch(type) {
-      case "d":      
-        return (tokenType === "o" || tokenType === "r") ? undefined : "INVALID_FIELD_READONLY";
+    switch (type) {
+    case "d":
+      return (tokenType === "o" || tokenType === "r") ? undefined : "INVALID_FIELD_READONLY";
 
-      case "s":
-        return (tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
+    case "s":
+      return (tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
 
-      case "t":
-        return (tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
+    case "t":
+      return (tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
 
-      case "a":
-        return (tokenType === "a") ? undefined : "INVALID_FIELD_NOT_ADDRESS";
+    case "a":
+      return (tokenType === "a") ? undefined : "INVALID_FIELD_NOT_ADDRESS";
     }
   }
 
@@ -137,19 +137,19 @@ module.exports = class IC {
     var starting = token.charAt(0);
     let number = Number.parseInt(token.slice(1));
 
-    switch(starting) {
-      case "i":
-        return number < INPUT_REGISTER_COUNT;
-      case "o":
-        if (Number.isNaN(number)) {
-          number = 0;
-        }
+    switch (starting) {
+    case "i":
+      return number < INPUT_REGISTER_COUNT;
+    case "o":
+      if (Number.isNaN(number)) {
+        number = 0;
+      }
 
-        return number < OUTPUT_REGISTER_COUNT;
-      case "r":
-        return number < INTERNAL_REGISTER_COUNT;
-      default:
-        return true;
+      return number < OUTPUT_REGISTER_COUNT;
+    case "r":
+      return number < INTERNAL_REGISTER_COUNT;
+    default:
+      return true;
     }
   }
 
@@ -205,16 +205,16 @@ module.exports = class IC {
     let number = parseInt(field.slice(1));
 
     switch (type) {
-      case "i":
-        return;
-      case "r":
-        return this.setInternalRegister(number, value);
-      case "o":
-        if (Number.isNaN(number)) {
-          number = 0;
-        }
+    case "i":
+      return;
+    case "r":
+      return this.setInternalRegister(number, value);
+    case "o":
+      if (Number.isNaN(number)) {
+        number = 0;
+      }
 
-        return this.setOutputRegister(number, value);
+      return this.setOutputRegister(number, value);
     }
   }
 
@@ -223,20 +223,20 @@ module.exports = class IC {
     let number = parseInt(field.slice(1));
 
     switch (type) {
-      case "i":
-        return this.getInputRegisters()[number];
-      case "r":
-        return this.getInternalRegisters()[number];
-      case "o":
-        return;
-      default:
-        var value = Number.parseFloat(field);
+    case "i":
+      return this.getInputRegisters()[number];
+    case "r":
+      return this.getInternalRegisters()[number];
+    case "o":
+      return;
+    default:
+      var value = Number.parseFloat(field);
 
-        if (Number.isNaN(value)) {
-          return;
-        } else {
-          return value;
-        }
+      if (Number.isNaN(value)) {
+        return;
+      } else {
+        return value;
+      }
     }
   }
 
@@ -336,7 +336,7 @@ module.exports = class IC {
   _instruction_min(fields) {
     let outputValue = Math.min(this._getRegister(fields[1]), this._getRegister(fields[2]));
     this._setRegister(fields[0], outputValue);
-  }  
+  }
 
   _instruction_abs(fields) {
     this._setRegister(fields[0], Math.abs(this._getRegister(fields[1])));
@@ -429,6 +429,6 @@ module.exports = class IC {
     }
   }
 
-  _instruction_yield(fields) {
+  _instruction_yield() {
   }
 };
