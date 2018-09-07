@@ -158,6 +158,10 @@ module.exports = class IC {
     return withoutComment.split(INSTRUCTION_SEPERATOR).filter((token) => token.trim());
   }
 
+  getProgramErrors() {
+    return this._programErrors;
+  }
+
   getInstructionCount() {
     return this._instructions.length;
   }
