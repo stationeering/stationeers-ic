@@ -145,32 +145,6 @@ describe("IC Tests", function () {
       expect(output[0]["field"]).to.equal(0);     
     });
 
-    it ("will return errors if s is not readable", function () {
-      let ic = new IC();
-
-      var input = "move r0 o";
-
-      var output = ic._validateLine(input, 123);
-
-      expect(output.length).to.equal(1);
-      expect(output[0]["line"]).to.equal(123);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_WRITEONLY");
-      expect(output[0]["field"]).to.equal(1);     
-    });
-
-    it ("will return errors if t is not readable", function () {
-      let ic = new IC();
-
-      var input = "add r0 r1 o";
-
-      var output = ic._validateLine(input, 123);
-
-      expect(output.length).to.equal(1);
-      expect(output[0]["line"]).to.equal(123);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_WRITEONLY");
-      expect(output[0]["field"]).to.equal(2);     
-    });
-
     it ("will return errors if j is a float not an address", function () {
       let ic = new IC();
 
