@@ -22,13 +22,14 @@ module.exports = class IC {
   }
 
   load(unparsedInstructions) {
+    this._instructions = unparsedInstructions.split(NEWLINE);
   }
 
   validate() {
 
   }
 
-  instructionCount() {
+  getInstructionCount() {
     return this._instructions.length;
   }
 
@@ -100,7 +101,7 @@ module.exports = class IC {
 
     this._execute(instruction);
     
-    return this._programCounter < this.instructionCount();
+    return this._programCounter < this.getInstructionCount();
   }
 
   restart() {

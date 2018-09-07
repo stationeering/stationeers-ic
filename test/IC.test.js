@@ -8,6 +8,12 @@ describe("IC Tests", function () {
   const VALID_MULTIPLE_INSTRUCTION = "YIELD\nYIELD\nYIELD\n";
 
   describe("Loading instructions", function () {
+    it ("reads a string with instructions and can return the number of lines/instructions read", function() {
+      let ic = new IC();
+      ic.load(VALID_MULTIPLE_INSTRUCTION);
+
+      expect(ic.getInstructionCount()).to.equal(4);
+    });
   });
 
   describe("Inputs, outputs and registers", function () {
