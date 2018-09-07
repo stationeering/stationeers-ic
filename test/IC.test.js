@@ -62,21 +62,155 @@ describe("IC Tests", function () {
     it("will allow an empty line", function() {
       let ic = new IC();
 
-      var input = ""
+      var input = "";
 
-      var output = ic._validateLine(input);
+      var output = ic._validateLine(input, 0);
 
-      expect(output).to.equal(undefined);
+      expect(output.length).to.equal(0);
     });
 
     it("will allow a comment line", function() {
       let ic = new IC();
 
-      var input = "// This is a comment, ignore me."
+      var input = "// This is a comment, ignore me.";
 
-      var output = ic._validateLine(input);
+      var output = ic._validateLine(input, 0);
 
-      expect(output).to.equal(undefined);
+      expect(output.length).to.equal(0);
+    });
+
+    it("will return an error for an unknown instruction", function () {
+      let ic = new IC();
+
+      var input = "unknown";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output[0]["line"]).to.equal(123);
+      expect(output[0]["error"]).to.equal("UNKNOWN_INSTRUCTION");
+    });
+
+    it ("will not return an error if a valid instruction with no arguements is passed", function () {
+      let ic = new IC();
+
+      var input = "yield";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(0);
+    });
+
+    it ("will return a errors if parameters are missing", function () {
+      let ic = new IC();
+
+      var input = "move";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(2);
+      expect(output[0]["line"]).to.equal(123);
+      expect(output[0]["error"]).to.equal("MISSING_FIELD");
+      expect(output[0]["field"]).to.equal(0);
+      expect(output[1]["line"]).to.equal(123);
+      expect(output[1]["error"]).to.equal("MISSING_FIELD");
+      expect(output[1]["field"]).to.equal(1);      
+    });
+
+    it ("will return errors if parameters are provided when not needed", function () {
+      let ic = new IC();
+
+      var input = "yield i0 i2";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(2);
+      expect(output[0]["line"]).to.equal(123);
+      expect(output[0]["error"]).to.equal("EXTRA_FIELD");
+      expect(output[0]["field"]).to.equal(0);
+      expect(output[1]["line"]).to.equal(123);
+      expect(output[1]["error"]).to.equal("EXTRA_FIELD");
+      expect(output[1]["field"]).to.equal(1);      
+    });
+
+    it ("will return errors if d is not writeable", function () {
+      let ic = new IC();
+
+      var input = "move i0 i2";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(1);
+      expect(output[0]["line"]).to.equal(123);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_READONLY");
+      expect(output[0]["field"]).to.equal(0);     
+    });
+
+    it ("will return errors if s is not readable", function () {
+      let ic = new IC();
+
+      var input = "move r0 o";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(1);
+      expect(output[0]["line"]).to.equal(123);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_WRITEONLY");
+      expect(output[0]["field"]).to.equal(1);     
+    });
+
+    it ("will return errors if t is not readable", function () {
+      let ic = new IC();
+
+      var input = "add r0 r1 o";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(1);
+      expect(output[0]["line"]).to.equal(123);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_WRITEONLY");
+      expect(output[0]["field"]).to.equal(2);     
+    });
+
+    it ("will return errors if j is a float not an address", function () {
+      let ic = new IC();
+
+      var input = "j 1.1";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(1);
+      expect(output[0]["line"]).to.equal(123);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_ADDRESS");
+      expect(output[0]["field"]).to.equal(0);     
+    });
+
+    it ("will return errors if j is a register not an address", function () {
+      let ic = new IC();
+
+      var input = "j r0";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(1);
+      expect(output[0]["line"]).to.equal(123);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_ADDRESS");
+      expect(output[0]["field"]).to.equal(0);     
+    });
+
+    it ("will return errors if valid type is beyond the range", function () {
+      let ic = new IC();
+
+      var input = "move r7 i8";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(2);
+      expect(output[0]["line"]).to.equal(123);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_NO_SUCH_REGISTER");
+      expect(output[0]["field"]).to.equal(0);     
+      expect(output[1]["line"]).to.equal(123);
+      expect(output[1]["error"]).to.equal("INVALID_FIELD_NO_SUCH_REGISTER");
+      expect(output[1]["field"]).to.equal(1);         
     });
   });
 
