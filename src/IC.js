@@ -232,6 +232,10 @@ module.exports = class IC {
     case "r":
       return this.getInternalRegisters()[number];
     case "o":
+      if (Number.isNaN(number)) {
+        number = 0;
+      }
+      
       return this.getOutputRegisters()[number];
     default:
       var value = Number.parseFloat(field);
