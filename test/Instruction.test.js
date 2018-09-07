@@ -320,7 +320,7 @@ describe("Instruction Tests", function () {
 
       ic.step();
 
-      expect(ic.getOutputRegisters()[0]).to.equal(7.38905609893065);
+      expect(ic.getOutputRegisters()[0]).to.equal(7.3890560989306495);
     });
   });
 
