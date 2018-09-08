@@ -180,6 +180,7 @@ module.exports = class IC {
 
   setInputRegistersWriteable(writeable) {
     this._inputRegistersWriteable = writeable;
+    this._validate();
   }
 
   getOutputRegisters() {
