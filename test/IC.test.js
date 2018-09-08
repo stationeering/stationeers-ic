@@ -191,11 +191,15 @@ describe("IC Tests", function () {
       let ic = new IC();
       ic.setInputRegistersWriteable(true);
 
-      var input = "move i0 i2";
+      var input = "add i0 i0 1";
 
-      var output = ic._validateLine(input, 123);
+      ic.load(input);
 
-      expect(output.length).to.equal(0);  
+      expect(ic.getProgramErrors().length).to.equal(0);  
+
+      expect(ic.getInputRegisters()[0]).to.equal(0);
+      ic.step();
+      expect(ic.getInputRegisters()[0]).to.equal(1);
     });
 
   });

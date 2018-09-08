@@ -217,7 +217,7 @@ module.exports = class IC {
 
     switch (type) {
     case "i":
-      return;
+      return this.setInputRegister(number, value);
     case "r":
       return this.setInternalRegister(number, value);
     case "o":
