@@ -21,6 +21,8 @@ module.exports = class IC {
     this._outputRegister = Array(OUTPUT_REGISTER_COUNT).fill(0);
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
 
+    this._inputRegistersWriteable = false;
+
     this._registerOpcode("move", ["d", "s"], this._instruction_move);
     this._registerOpcode("add", ["d", "s", "t"], this._instruction_add);
     this._registerOpcode("sub", ["d", "s", "t"], this._instruction_sub);
@@ -120,7 +122,7 @@ module.exports = class IC {
 
     switch (type) {
     case "d":
-      return (tokenType === "o" || tokenType === "r") ? undefined : "INVALID_FIELD_READONLY";
+      return (tokenType === "o" || tokenType === "r" || (this._inputRegistersWriteable && tokenType === "i")) ? undefined : "INVALID_FIELD_READONLY";
 
     case "s":
       return (tokenType === "o" || tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
@@ -174,6 +176,10 @@ module.exports = class IC {
     if (index < INPUT_REGISTER_COUNT) {
       this._inputRegister[index] = value;
     }
+  }
+
+  setInputRegistersWriteable(writeable) {
+    this._inputRegistersWriteable = writeable;
   }
 
   getOutputRegisters() {

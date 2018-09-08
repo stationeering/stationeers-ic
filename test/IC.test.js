@@ -186,6 +186,18 @@ describe("IC Tests", function () {
       expect(output[1]["error"]).to.equal("INVALID_FIELD_NO_SUCH_REGISTER");
       expect(output[1]["field"]).to.equal(1);         
     });
+
+    it ("will return allow writes to i's if compatability flag is set", function () {
+      let ic = new IC();
+      ic.setInputRegistersWriteable(true);
+
+      var input = "move i0 i2";
+
+      var output = ic._validateLine(input, 123);
+
+      expect(output.length).to.equal(0);  
+    });
+
   });
 
   describe("Inputs, outputs and registers", function () {
