@@ -450,7 +450,7 @@ describe("Instruction Tests", function () {
       let ic = new IC();
       ic.setIORegister(0, 1.5);
       
-      var a = ic.load("l r0 i0 Field");
+      ic.load("l r0 i0 Field");
       ic.step();
 
       expect(ic.getInternalRegisters()[0]).to.equal(1.5);
