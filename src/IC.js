@@ -118,13 +118,11 @@ module.exports = class IC {
 
     switch (type) {
     case "d":
-      return (tokenType === "r" || tokenType === "i") ? undefined : "INVALID_FIELD_READONLY";
+      return (tokenType === "r") ? undefined : "INVALID_FIELD_READONLY";
 
     case "s":
-      return (tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
-
     case "t":
-      return (tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
+      return (tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
 
     case "a":
       return (tokenType === "a") ? undefined : "INVALID_FIELD_NOT_ADDRESS";

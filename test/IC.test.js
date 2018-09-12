@@ -171,7 +171,7 @@ describe("IC Tests", function () {
     it ("will return errors if valid type is beyond the range", function () {
       let ic = new IC();
 
-      var input = "move r11 i7";
+      var input = "move r11 r12";
 
       var output = ic._validateLine(input, 123);
 

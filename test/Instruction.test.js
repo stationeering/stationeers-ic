@@ -30,9 +30,9 @@ describe("Instruction Tests", function () {
   describe("add", function () {
     it("should add to two values into a register", function () {
       let ic = new IC();
-      ic.load("add r1 i0 2.5");
+      ic.load("add r1 r0 2.5");
       
-      ic.setIORegister(0, 1.5);
+      ic.setInternalRegister(0, 1.5);
 
       ic.step();
 
@@ -43,9 +43,9 @@ describe("Instruction Tests", function () {
   describe("sub", function () {
     it("should subtract to two values into a register", function () {
       let ic = new IC();
-      ic.load("sub r1 i0 2.5");
+      ic.load("sub r1 r0 2.5");
       
-      ic.setIORegister(0, 1.5);
+      ic.setInternalRegister(0, 1.5);
 
       ic.step();
 
