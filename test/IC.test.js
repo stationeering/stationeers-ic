@@ -142,19 +142,6 @@ describe("IC Tests", function () {
       expect(output[1]["field"]).to.equal(1);      
     });
 
-    it ("will return errors if d is not writeable", function () {
-      let ic = new IC();
-
-      var input = "move i0 i2";
-
-      var output = ic._validateLine(input, 123);
-
-      expect(output.length).to.equal(1);
-      expect(output[0]["line"]).to.equal(123);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_READONLY");
-      expect(output[0]["field"]).to.equal(0);     
-    });
-
     it ("will return errors if j is a float not an address", function () {
       let ic = new IC();
 
@@ -196,22 +183,6 @@ describe("IC Tests", function () {
       expect(output[1]["error"]).to.equal("INVALID_FIELD_NO_SUCH_REGISTER");
       expect(output[1]["field"]).to.equal(1);         
     });
-
-    it ("will return allow writes to i's if compatability flag is set", function () {
-      let ic = new IC();
-      ic.setInputRegistersWriteable(true);
-
-      var input = "add i0 i0 1";
-
-      ic.load(input);
-
-      expect(ic.getProgramErrors().length).to.equal(0);  
-
-      expect(ic.getIORegisters()[0]).to.equal(0);
-      ic.step();
-      expect(ic.getIORegisters()[0]).to.equal(1);
-    });
-
   });
 
   describe("Inputs, outputs and registers", function () {
