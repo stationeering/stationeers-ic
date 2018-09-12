@@ -2,7 +2,7 @@
 
 const NEWLINE = "\n";
 const INSTRUCTION_SEPERATOR = /\s+/;
-const COMMENT_SEPERATOR = /\s*\/\//;
+const COMMENT_SEPERATOR = /\s*(\/\/|#)/;
 
 const INPUT_REGISTER_COUNT = 3;
 const OUTPUT_REGISTER_COUNT = 1;

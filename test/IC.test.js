@@ -37,6 +37,16 @@ describe("IC Tests", function () {
       expect(output).to.deep.equal(["TOKEN", "a0"]);
     });
 
+    it ("should handle a command followed by a alternative comment", function () {
+      let ic = new IC();
+
+      var input = "TOKEN a0 # This is a comment";
+
+      var output = ic._parseLine(input);
+
+      expect(output).to.deep.equal(["TOKEN", "a0"]);
+    });
+
     it ("should handle a command followed by a comment, but with no space", function () {
       let ic = new IC();
 
