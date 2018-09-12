@@ -441,14 +441,14 @@ describe("Instruction Tests", function () {
 
       ic.step();
 
-      expect(ic.getIORegisters()[0]).to.equal(1);
+      expect(ic.getIORegisters()[0]["Field"]).to.equal(1);
     });
   });
 
   describe("l", function () {
     it ("should load the value from the IO register", function () {
       let ic = new IC();
-      ic.setIORegister(0, 1.5);
+      ic.setIORegister(0, "Field", 1.5);
       
       ic.load("l r0 i0 Field");
       ic.step();

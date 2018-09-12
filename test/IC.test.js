@@ -191,8 +191,8 @@ describe("IC Tests", function () {
       let ioRegisters = ic.getIORegisters();
 
       expect(ioRegisters.length).to.equal(6);
-      expect(ioRegisters[0]).to.equal(0);
-      expect(ioRegisters[2]).to.equal(0);
+      expect(ioRegisters[0]).to.deep.equal({});
+      expect(ioRegisters[5]).to.deep.equal({});
     });
 
     it("has internal registers which can be read", function () {
@@ -207,8 +207,8 @@ describe("IC Tests", function () {
     it("has IO registers which can be written and read", function () {
       let ic = new IC();
 
-      ic.setIORegister(1, 100);
-      expect(ic.getIORegisters()[1]).to.equal(100);
+      ic.setIORegister(1, "field", 100);
+      expect(ic.getIORegisters()[1]["field"]).to.equal(100);
     });
 
     it("has internal registers which can be written and read", function () {
@@ -216,6 +216,15 @@ describe("IC Tests", function () {
 
       ic.setInternalRegister(3, 100);
       expect(ic.getInternalRegisters()[3]).to.equal(100);
+    });
+
+    it ("requesting a field on an IO register which doesn't exist will default it to 0", function () {
+      let ic = new IC();
+      ic._getRegister("i0", "Test");
+
+      var keys = Object.keys(ic.getIORegisters()[0]);
+
+      expect(keys).contains("Test");
     });
   });
 

@@ -16,7 +16,7 @@ module.exports = class IC {
     this._programErrors = [];
 
     this._programCounter = 0;
-    this._ioRegister = Array(IO_REGISTER_COUNT).fill(0);
+    this._ioRegister = Array(IO_REGISTER_COUNT).fill({});
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
 
     this._registerOpcode("move", ["d", "s"], this._instruction_move);
@@ -165,9 +165,9 @@ module.exports = class IC {
     return this._ioRegister;
   }
 
-  setIORegister(index, value) {
+  setIORegister(index, field, value) {
     if (index < IO_REGISTER_COUNT) {
-      this._ioRegister[index] = value;
+      this._ioRegister[index][field] = value;
     }
   }
 
@@ -189,29 +189,33 @@ module.exports = class IC {
     return this._validProgram;
   }
 
-  _setRegister(field, value) {
-    let type = field.charAt(0);
-    let number = parseInt(field.slice(1));
+  _setRegister(register, value, field) {
+    let type = register.charAt(0);
+    let number = parseInt(register.slice(1));
 
     switch (type) {
     case "i":
-      return this.setIORegister(number, value);
+      return this.setIORegister(number, field, value);
     case "r":
       return this.setInternalRegister(number, value);
     }
   }
 
-  _getRegister(field) {
-    let type = field.charAt(0);
-    let number = parseInt(field.slice(1));
+  _getRegister(register, field) {
+    let type = register.charAt(0);
+    let number = parseInt(register.slice(1));
 
     switch (type) {
     case "i":
-      return this.getIORegisters()[number];
+      if (!this.getIORegisters()[number][field]) {
+        this.setIORegister(number, field, 0);
+      }
+
+      return this.getIORegisters()[number][field];
     case "r":
       return this.getInternalRegisters()[number];
     default:
-      var value = Number.parseFloat(field);
+      var value = Number.parseFloat(register);
 
       if (Number.isNaN(value)) {
         return;
@@ -422,16 +426,10 @@ module.exports = class IC {
   }
 
   _instruction_l(fields) {
-    this._setRegister(fields[0], this._getRegister(fields[1]));
+    this._setRegister(fields[0], this._getRegister(fields[1], fields[2]));
   }
 
   _instruction_s(fields) {
-    this._setRegister(fields[0], this._getRegister(fields[2]));
+    this._setRegister(fields[0], this._getRegister(fields[2]), fields[1]);
   }
-
-  /*
-
-      this._registerOpcode("l", ["d", "i", "f"], this._instruction_l);
-    this._registerOpcode("s", ["i", "f", "d"], this._instruction_s);
-  */
 };
