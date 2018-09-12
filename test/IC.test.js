@@ -184,7 +184,7 @@ describe("IC Tests", function () {
     it ("will return errors if valid type is beyond the range", function () {
       let ic = new IC();
 
-      var input = "move r7 i8";
+      var input = "move r11 i7";
 
       var output = ic._validateLine(input, 123);
 
@@ -207,37 +207,29 @@ describe("IC Tests", function () {
 
       expect(ic.getProgramErrors().length).to.equal(0);  
 
-      expect(ic.getInputRegisters()[0]).to.equal(0);
+      expect(ic.getIORegisters()[0]).to.equal(0);
       ic.step();
-      expect(ic.getInputRegisters()[0]).to.equal(1);
+      expect(ic.getIORegisters()[0]).to.equal(1);
     });
 
   });
 
   describe("Inputs, outputs and registers", function () {
-    it("has input registers which can be read", function () {
+    it("has IO registers which can be read", function () {
       let ic = new IC();
-      let inputRegisters = ic.getInputRegisters();
+      let ioRegisters = ic.getIORegisters();
 
-      expect(inputRegisters.length).to.equal(3);
-      expect(inputRegisters[0]).to.equal(0);
-      expect(inputRegisters[1]).to.equal(0);
-      expect(inputRegisters[2]).to.equal(0);
-    });
-
-    it("has output registers which can be read", function () {
-      let ic = new IC();
-      let outputRegisters = ic.getOutputRegisters();
-
-      expect(outputRegisters.length).to.equal(1);
-      expect(outputRegisters[0]).to.equal(0);
+      expect(ioRegisters.length).to.equal(6);
+      expect(ioRegisters[0]).to.equal(0);
+      expect(ioRegisters[1]).to.equal(0);
+      expect(ioRegisters[2]).to.equal(0);
     });
 
     it("has internal registers which can be read", function () {
       let ic = new IC();
       let internalRegisters = ic.getInternalRegisters();
 
-      expect(internalRegisters.length).to.equal(5);
+      expect(internalRegisters.length).to.equal(10);
       expect(internalRegisters[0]).to.equal(0);
       expect(internalRegisters[1]).to.equal(0);
       expect(internalRegisters[2]).to.equal(0);
@@ -245,18 +237,11 @@ describe("IC Tests", function () {
       expect(internalRegisters[4]).to.equal(0);
     });
 
-    it("has input registers which can be written and read", function () {
+    it("has IO registers which can be written and read", function () {
       let ic = new IC();
 
-      ic.setInputRegister(1, 100);
-      expect(ic.getInputRegisters()[1]).to.equal(100);
-    });
-
-    it("has output registers which can be written and read", function () {
-      let ic = new IC();
-
-      ic.setOutputRegister(0, 100);
-      expect(ic.getOutputRegisters()[0]).to.equal(100);
+      ic.setIORegister(1, 100);
+      expect(ic.getIORegisters()[1]).to.equal(100);
     });
 
     it("has internal registers which can be written and read", function () {

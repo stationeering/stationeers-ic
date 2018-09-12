@@ -32,7 +32,7 @@ describe("Instruction Tests", function () {
       let ic = new IC();
       ic.load("add r1 i0 2.5");
       
-      ic.setInputRegister(0, 1.5);
+      ic.setIORegister(0, 1.5);
 
       ic.step();
 
@@ -45,7 +45,7 @@ describe("Instruction Tests", function () {
       let ic = new IC();
       ic.load("sub r1 i0 2.5");
       
-      ic.setInputRegister(0, 1.5);
+      ic.setIORegister(0, 1.5);
 
       ic.step();
 

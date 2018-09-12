@@ -4,9 +4,8 @@ const NEWLINE = "\n";
 const INSTRUCTION_SEPERATOR = /\s+/;
 const COMMENT_SEPERATOR = /\s*(\/\/|#)/;
 
-const INPUT_REGISTER_COUNT = 3;
-const OUTPUT_REGISTER_COUNT = 1;
-const INTERNAL_REGISTER_COUNT = 5;
+const IO_REGISTER_COUNT = 6;
+const INTERNAL_REGISTER_COUNT = 10;
 
 module.exports = class IC {
   constructor() {
@@ -17,8 +16,7 @@ module.exports = class IC {
     this._programErrors = [];
 
     this._programCounter = 0;
-    this._inputRegister = Array(INPUT_REGISTER_COUNT).fill(0);
-    this._outputRegister = Array(OUTPUT_REGISTER_COUNT).fill(0);
+    this._ioRegister = Array(IO_REGISTER_COUNT).fill(0);
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
 
     this._inputRegistersWriteable = false;
@@ -108,7 +106,7 @@ module.exports = class IC {
   _checkFieldTypes(token, type) {
     var tokenType = token.charAt(0);
 
-    if (tokenType !== "i" && tokenType !== "o" && tokenType !== "r") {
+    if (tokenType !== "i" && tokenType !== "r") {
       var asFloat = Number.parseFloat(token);
 
       if (isNaN(asFloat)) {
@@ -122,13 +120,13 @@ module.exports = class IC {
 
     switch (type) {
     case "d":
-      return (tokenType === "o" || tokenType === "r" || (this._inputRegistersWriteable && tokenType === "i")) ? undefined : "INVALID_FIELD_READONLY";
+      return (tokenType === "r" || (this._inputRegistersWriteable && tokenType === "i")) ? undefined : "INVALID_FIELD_READONLY";
 
     case "s":
-      return (tokenType === "o" || tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
+      return (tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
 
     case "t":
-      return (tokenType === "o" || tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
+      return (tokenType === "i" || tokenType === "r" || tokenType === "a" || tokenType === "f") ? undefined : "INVALID_FIELD_WRITEONLY";
 
     case "a":
       return (tokenType === "a") ? undefined : "INVALID_FIELD_NOT_ADDRESS";
@@ -141,13 +139,7 @@ module.exports = class IC {
 
     switch (starting) {
     case "i":
-      return number < INPUT_REGISTER_COUNT;
-    case "o":
-      if (Number.isNaN(number)) {
-        number = 0;
-      }
-
-      return number < OUTPUT_REGISTER_COUNT;
+      return number < IO_REGISTER_COUNT;
     case "r":
       return number < INTERNAL_REGISTER_COUNT;
     default:
@@ -168,29 +160,19 @@ module.exports = class IC {
     return this._instructions.length;
   }
 
-  getInputRegisters() {
-    return this._inputRegister;
+  getIORegisters() {
+    return this._ioRegister;
   }
 
-  setInputRegister(index, value) {
-    if (index < INPUT_REGISTER_COUNT) {
-      this._inputRegister[index] = value;
+  setIORegister(index, value) {
+    if (index < IO_REGISTER_COUNT) {
+      this._ioRegister[index] = value;
     }
   }
 
   setInputRegistersWriteable(writeable) {
     this._inputRegistersWriteable = writeable;
     this._validate();
-  }
-
-  getOutputRegisters() {
-    return this._outputRegister;
-  }
-
-  setOutputRegister(index, value) {
-    if (index < OUTPUT_REGISTER_COUNT) {
-      this._outputRegister[index] = value;
-    }
   }
 
   getInternalRegisters() {
@@ -217,15 +199,9 @@ module.exports = class IC {
 
     switch (type) {
     case "i":
-      return this.setInputRegister(number, value);
+      return this.setIORegister(number, value);
     case "r":
       return this.setInternalRegister(number, value);
-    case "o":
-      if (Number.isNaN(number)) {
-        number = 0;
-      }
-
-      return this.setOutputRegister(number, value);
     }
   }
 
@@ -235,15 +211,9 @@ module.exports = class IC {
 
     switch (type) {
     case "i":
-      return this.getInputRegisters()[number];
+      return this.getIORegisters()[number];
     case "r":
       return this.getInternalRegisters()[number];
-    case "o":
-      if (Number.isNaN(number)) {
-        number = 0;
-      }
-      
-      return this.getOutputRegisters()[number];
     default:
       var value = Number.parseFloat(field);
 
