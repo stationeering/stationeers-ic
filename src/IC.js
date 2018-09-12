@@ -49,6 +49,9 @@ module.exports = class IC {
     this._registerOpcode("beq", ["s", "t", "a"], this._instruction_beq);
     this._registerOpcode("bne", ["s", "t", "a"], this._instruction_bne);
     this._registerOpcode("yield", [], this._instruction_yield);
+
+    this._registerOpcode("l", ["d", "i", "f"], this._instruction_l);
+    this._registerOpcode("s", ["i", "f", "s"], this._instruction_s);
   }
 
   load(unparsedInstructions) {
@@ -104,7 +107,7 @@ module.exports = class IC {
   _checkFieldTypes(token, type) {
     var tokenType = token.charAt(0);
 
-    if (tokenType !== "i" && tokenType !== "r") {
+    if (tokenType !== "i" && tokenType !== "r" && type !== "f") {
       var asFloat = Number.parseFloat(token);
 
       if (isNaN(asFloat)) {
@@ -126,6 +129,8 @@ module.exports = class IC {
 
     case "a":
       return (tokenType === "a") ? undefined : "INVALID_FIELD_NOT_ADDRESS";
+    case "f":
+      return undefined;
     }
   }
 
@@ -415,4 +420,18 @@ module.exports = class IC {
 
   _instruction_yield() {
   }
+
+  _instruction_l(fields) {
+    this._setRegister(fields[0], this._getRegister(fields[1]));
+  }
+
+  _instruction_s(fields) {
+    this._setRegister(fields[0], this._getRegister(fields[2]));
+  }
+
+  /*
+
+      this._registerOpcode("l", ["d", "i", "f"], this._instruction_l);
+    this._registerOpcode("s", ["i", "f", "d"], this._instruction_s);
+  */
 };

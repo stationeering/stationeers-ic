@@ -433,4 +433,27 @@ describe("Instruction Tests", function () {
       expect(ic._programCounter).to.equal(9);
     });
   });
+
+  describe("s", function () {
+    it ("should save the value to the IO register", function () {
+      let ic = new IC();
+      ic.load("s i0 Field 1");
+
+      ic.step();
+
+      expect(ic.getIORegisters()[0]).to.equal(1);
+    });
+  });
+
+  describe("l", function () {
+    it ("should load the value from the IO register", function () {
+      let ic = new IC();
+      ic.setIORegister(0, 1.5);
+      
+      var a = ic.load("l r0 i0 Field");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1.5);
+    });
+  });
 });
