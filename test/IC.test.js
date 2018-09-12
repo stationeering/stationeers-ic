@@ -192,7 +192,6 @@ describe("IC Tests", function () {
 
       expect(ioRegisters.length).to.equal(6);
       expect(ioRegisters[0]).to.equal(0);
-      expect(ioRegisters[1]).to.equal(0);
       expect(ioRegisters[2]).to.equal(0);
     });
 
@@ -202,10 +201,7 @@ describe("IC Tests", function () {
 
       expect(internalRegisters.length).to.equal(10);
       expect(internalRegisters[0]).to.equal(0);
-      expect(internalRegisters[1]).to.equal(0);
-      expect(internalRegisters[2]).to.equal(0);
-      expect(internalRegisters[3]).to.equal(0);
-      expect(internalRegisters[4]).to.equal(0);
+      expect(internalRegisters[9]).to.equal(0);
     });
 
     it("has IO registers which can be written and read", function () {
