@@ -437,7 +437,7 @@ describe("Instruction Tests", function () {
   describe("s", function () {
     it ("should save the value to the IO register", function () {
       let ic = new IC();
-      ic.load("s i0 Field 1");
+      ic.load("s d0 Field 1");
 
       ic.step();
 
@@ -450,7 +450,7 @@ describe("Instruction Tests", function () {
       let ic = new IC();
       ic.setIORegister(0, "Field", 1.5);
       
-      ic.load("l r0 i0 Field");
+      ic.load("l r0 d0 Field");
       ic.step();
 
       expect(ic.getInternalRegisters()[0]).to.equal(1.5);

@@ -220,7 +220,7 @@ describe("IC Tests", function () {
 
     it ("requesting a field on an IO register which doesn't exist will default it to 0", function () {
       let ic = new IC();
-      ic._getRegister("i0", "Test");
+      ic._getRegister("d0", "Test");
 
       var keys = Object.keys(ic.getIORegisters()[0]);
 

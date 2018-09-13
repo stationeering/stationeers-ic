@@ -107,7 +107,7 @@ module.exports = class IC {
   _checkFieldTypes(token, type) {
     var tokenType = token.charAt(0);
 
-    if (tokenType !== "i" && tokenType !== "r" && type !== "f") {
+    if (tokenType !== "d" && tokenType !== "r" && type !== "f") {
       var asFloat = Number.parseFloat(token);
 
       if (isNaN(asFloat)) {
@@ -139,7 +139,7 @@ module.exports = class IC {
     let number = Number.parseInt(token.slice(1));
 
     switch (starting) {
-    case "i":
+    case "d":
       return number < IO_REGISTER_COUNT;
     case "r":
       return number < INTERNAL_REGISTER_COUNT;
@@ -194,7 +194,7 @@ module.exports = class IC {
     let number = parseInt(register.slice(1));
 
     switch (type) {
-    case "i":
+    case "d":
       return this.setIORegister(number, field, value);
     case "r":
       return this.setInternalRegister(number, value);
@@ -206,7 +206,7 @@ module.exports = class IC {
     let number = parseInt(register.slice(1));
 
     switch (type) {
-    case "i":
+    case "d":
       if (!this.getIORegisters()[number][field]) {
         this.setIORegister(number, field, 0);
       }
