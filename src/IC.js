@@ -56,6 +56,15 @@ module.exports = class IC {
     this._registerOpcode("bne", ["s", "t", "a"], this._instruction_bne);
     this._registerOpcode("yield", [], this._instruction_yield);
 
+    this._registerOpcode("jr", ["a"], this._instruction_jr);
+    this._registerOpcode("brltz", ["s", "a"], this._instruction_brltz);
+    this._registerOpcode("brlez", ["s", "a"], this._instruction_brlez);
+    this._registerOpcode("brgez", ["s", "a"], this._instruction_brgez);
+    this._registerOpcode("brgtz", ["s", "a"], this._instruction_brgtz);
+    this._registerOpcode("breq", ["s", "t", "a"], this._instruction_breq);
+    this._registerOpcode("brne", ["s", "t", "a"], this._instruction_brne);
+
+
     this._registerOpcode("l", ["d", "i", "f"], this._instruction_l);
     this._registerOpcode("s", ["i", "f", "s"], this._instruction_s);
   }
@@ -441,5 +450,52 @@ module.exports = class IC {
 
   _instruction_s(fields) {
     this._setRegister(fields[0], this._getRegister(fields[2]), fields[1]);
+  }
+
+  _instruction_jr(fields) {
+    var addr = this._programCounter + this._getRegister(fields[0]);
+    this._programCounter = Math.ceil(addr);
+  }
+
+  _instruction_brltz(fields) {
+    if (this._getRegister(fields[0]) < 0) {
+      var addr = this._programCounter + this._getRegister(fields[1]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_brlez(fields) {
+    if (this._getRegister(fields[0]) <= 0) {
+      var addr = this._programCounter + this._getRegister(fields[1]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_brgez(fields) {
+    if (this._getRegister(fields[0]) >= 0) {
+      var addr = this._programCounter + this._getRegister(fields[1]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_brgtz(fields) {
+    if (this._getRegister(fields[0]) > 0) {
+      var addr = this._programCounter + this._getRegister(fields[1]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+
+  _instruction_breq(fields) {
+    if (this._getRegister(fields[0]) === this._getRegister(fields[1])) {
+      var addr = this._programCounter + this._getRegister(fields[2]);
+      this._programCounter = Math.ceil(addr);
+    }
+  }
+  
+  _instruction_brne(fields) {
+    if (this._getRegister(fields[0]) !== this._getRegister(fields[1])) {
+      var addr = this._programCounter + this._getRegister(fields[2]);
+      this._programCounter = Math.ceil(addr);
+    }
   }
 };

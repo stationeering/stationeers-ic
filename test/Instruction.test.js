@@ -433,6 +433,295 @@ describe("Instruction Tests", function () {
       expect(ic._programCounter).to.equal(9);
     });
   });
+  describe("j", function () {
+    it("should change the program counter to the a value provided", function () {
+      let ic = new IC();
+      ic.load("j 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });
+  }); 
+
+  describe("bltz", function () {
+    it("should change the program counter if s < 0", function () {
+      let ic = new IC();
+      ic.load("bltz -1 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });
+
+    it("should not change the program counter if s >= 0", function () {
+      let ic = new IC();
+      ic.load("bltz 0 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+    });
+  });
+
+  
+  describe("blez", function () {
+    it("should change the program counter if s <= 0", function () {
+      let ic = new IC();
+      ic.load("blez 0 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });
+
+    it("should not change the program counter if s > 0", function () {
+      let ic = new IC();
+      ic.load("blez 1 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+    });
+  });
+  
+  describe("bgez", function () {
+    it("should change the program counter if s >= 0", function () {
+      let ic = new IC();
+      ic.load("bgez 0 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });
+
+    it("should not change the program counter if s < 0", function () {
+      let ic = new IC();
+      ic.load("bgez -1 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+    });
+  });
+
+  describe("bgtz", function () {
+    it("should change the program counter if s > 0", function () {
+      let ic = new IC();
+      ic.load("bgtz 1 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });
+
+    it("should not change the program counter if s <= 0", function () {
+      let ic = new IC();
+      ic.load("bgtz 0 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+    });
+  });
+
+  describe("beq", function () {
+    it("should change the program counter if s == t", function () {
+      let ic = new IC();
+      ic.load("beq 1 1 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });
+
+    it("should not change the program counter if s != t", function () {
+      let ic = new IC();
+      ic.load("beq 1 0 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+    });
+  });
+
+  describe("bne", function () {
+    it("should change the program counter if s != t", function () {
+      let ic = new IC();
+      ic.load("bne 1 1 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+    });
+
+    it("should not change the program counter if s == t", function () {
+      let ic = new IC();
+      ic.load("bne 1 0 9");
+      
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });   
+  });
+
+  describe("jr", function () {
+    it("should change the program counter to be relative to the provided value", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\njr -2\nyield\nyield\n");
+  
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(0);
+    });
+  }); 
+
+  describe("brltz", function () {
+    it("should change the program counter if s < 0", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrltz -1 -2\nyield\nyield\n");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(0);
+    });
+  
+    it("should not change the program counter if s >= 0", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrltz 0 9\nyield\nyield\n");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(3);
+    });
+  });
+  
+  describe("brlez", function () {
+    it("should change the program counter if s <= 0", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrlez 0 9\nyield\nyield\n");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+
+      expect(ic._programCounter).to.equal(12);
+    });
+  
+    it("should not change the program counter if s > 0", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrlez 1 9\nyield\nyield\n");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(3);
+    });
+  });
+  
+  describe("rbgez", function () {
+    it("should change the program counter if s >= 0", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrgez 0 9\nyield\nyield\n");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(12);
+    });
+  
+    it("should not change the program counter if s < 0", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrgez -1 9\nyield\nyield\n");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+
+      expect(ic._programCounter).to.equal(3);
+    });
+  });
+
+  describe("brgtz", function () {
+    it("should change the program counter if s > 0", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrgtz 1 9");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(12);
+    });
+  
+    it("should not change the program counter if s <= 0", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrgtz 0 9");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(3);
+    });
+  });
+  
+  describe("breq", function () {
+    it("should change the program counter if s == t", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbreq 1 1 9");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(12);
+    });
+  
+    it("should not change the program counter if s != t", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbreq 1 0 9");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(3);
+    });
+  });
+  
+  describe("brne", function () {
+    it("should change the program counter if s != t", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrne 1 1 9");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(3);
+    });
+  
+    it("should not change the program counter if s == t", function () {
+      let ic = new IC();
+      ic.load("yield\nyield\nbrne 1 0 9");
+      
+      ic.step();
+      ic.step();
+      ic.step();
+  
+      expect(ic._programCounter).to.equal(12);
+    });
+  });
+  
 
   describe("s", function () {
     it ("should save the value to the IO register", function () {
