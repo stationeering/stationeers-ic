@@ -358,5 +358,34 @@ describe("IC Tests", function () {
 
       expect(ic.getInternalRegisters()[1]).to.equal(7);            
     });
+
+    it ("should cause substitutions of aliases with registers when an alias is encountered in a command being writen to", function() {
+      let ic = new IC();
+
+      ic.load([
+        "alias test r5",
+        "move test 7"
+      ].join("\n"));
+
+      ic.step();
+      ic.step();
+
+      expect(ic.getInternalRegisters()[5]).to.equal(7);            
+    });
+
+    it ("should fail to parse the aliases when register field is not a register", function() {
+      let ic = new IC();
+
+      ic.load([
+        "alias test 1",
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+
+      expect(output.length).to.equal(1);
+      expect(output[0]["line"]).to.equal(0);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_REGISTER");
+      expect(output[0]["field"]).to.equal(1);     
+    });
   });
 });

@@ -68,7 +68,7 @@ module.exports = class IC {
     this._registerOpcode("l", ["d", "i", "f"], this._instruction_l);
     this._registerOpcode("s", ["i", "f", "s"], this._instruction_s);
 
-    this._registerOpcode("alias", ["f", "s"], this._instruction_alias);
+    this._registerOpcode("alias", ["f", "r"], this._instruction_alias);
   }
 
   load(unparsedInstructions) {
@@ -151,6 +151,8 @@ module.exports = class IC {
     }
 
     switch (type) {
+    case "r":
+      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";
     case "d":
       return (tokenType === "r") ? undefined : "INVALID_FIELD_READONLY";
 
