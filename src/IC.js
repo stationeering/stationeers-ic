@@ -16,7 +16,13 @@ module.exports = class IC {
     this._programErrors = [];
 
     this._programCounter = 0;
-    this._ioRegister = Array(IO_REGISTER_COUNT).fill({});
+
+    this._ioRegister = [];
+    
+    for (var i = 0; i < IO_REGISTER_COUNT; i++) {
+      this._ioRegister[i] = {};
+    }
+
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
 
     this._registerOpcode("move", ["d", "s"], this._instruction_move);

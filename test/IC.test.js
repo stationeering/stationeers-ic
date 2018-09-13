@@ -171,7 +171,7 @@ describe("IC Tests", function () {
     it ("will return errors if valid type is beyond the range", function () {
       let ic = new IC();
 
-      var input = "move r11 r12";
+      var input = "move r17 r18";
 
       var output = ic._validateLine(input, 123);
 
@@ -199,9 +199,9 @@ describe("IC Tests", function () {
       let ic = new IC();
       let internalRegisters = ic.getInternalRegisters();
 
-      expect(internalRegisters.length).to.equal(10);
+      expect(internalRegisters.length).to.equal(16);
       expect(internalRegisters[0]).to.equal(0);
-      expect(internalRegisters[9]).to.equal(0);
+      expect(internalRegisters[15]).to.equal(0);
     });
 
     it("has IO registers which can be written and read", function () {
@@ -209,6 +209,7 @@ describe("IC Tests", function () {
 
       ic.setIORegister(1, "field", 100);
       expect(ic.getIORegisters()[1]["field"]).to.equal(100);
+      expect(ic.getIORegisters()[2]).to.deep.equal({});
     });
 
     it("has internal registers which can be written and read", function () {
