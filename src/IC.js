@@ -17,8 +17,9 @@ module.exports = class IC {
 
     this._programCounter = 0;
 
+    this._aliases = {};
     this._ioRegister = [];
-    
+
     for (var i = 0; i < IO_REGISTER_COUNT; i++) {
       this._ioRegister[i] = {};
     }
@@ -64,14 +65,25 @@ module.exports = class IC {
     this._registerOpcode("breq", ["s", "t", "a"], this._instruction_breq);
     this._registerOpcode("brne", ["s", "t", "a"], this._instruction_brne);
 
-
     this._registerOpcode("l", ["d", "i", "f"], this._instruction_l);
     this._registerOpcode("s", ["i", "f", "s"], this._instruction_s);
+
+    this._registerOpcode("alias", ["f", "s"], this._instruction_alias);
   }
 
   load(unparsedInstructions) {
     this._instructions = unparsedInstructions.split(NEWLINE);
+
+    this._preProcess();
     this._validate();
+  }
+
+  _preProcess() {
+    var foundAliases = this._instructions.map((content) => this._parseLine(content)).filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]);
+
+    for (var alias of foundAliases) {
+      this._aliases[alias] = 0;
+    }
   }
 
   _validate() {
@@ -126,12 +138,16 @@ module.exports = class IC {
       var asFloat = Number.parseFloat(token);
 
       if (isNaN(asFloat)) {
-        return "INVALID_FIELD_UNKNOWN_TYPE";
+        if (Object.keys(this._aliases).includes(token)) {
+          tokenType = "r";
+        } else {
+          return "INVALID_FIELD_UNKNOWN_TYPE";
+        }
+      } else {
+        var isInteger = (Number.parseInt(token) === asFloat) && asFloat >= 0;
+
+        tokenType = isInteger ? "a" : "f";
       }
-
-      var isInteger = (Number.parseInt(token) === asFloat) && asFloat >= 0;
-
-      tokenType = isInteger ? "a" : "f";
     }
 
     switch (type) {
@@ -212,11 +228,17 @@ module.exports = class IC {
     let type = register.charAt(0);
     let number = parseInt(register.slice(1));
 
-    switch (type) {
-    case "d":
-      return this.setIORegister(number, field, value);
-    case "r":
-      return this.setInternalRegister(number, value);
+    if (!Number.isNaN(number)) {
+      switch (type) {
+      case "d":
+        return this.setIORegister(number, field, value);
+      case "r":
+        return this.setInternalRegister(number, value);
+      }
+    }
+
+    if (Object.keys(this._aliases).includes(register)) {
+      return this._setRegister("r" + this._aliases[register], value, field);
     }
   }
 
@@ -224,23 +246,28 @@ module.exports = class IC {
     let type = register.charAt(0);
     let number = parseInt(register.slice(1));
 
-    switch (type) {
-    case "d":
-      if (!this.getIORegisters()[number][field]) {
-        this.setIORegister(number, field, 0);
-      }
+    if (!Number.isNaN(number)) {
+      switch (type) {
+      case "d":
+        if (!this.getIORegisters()[number][field]) {
+          this.setIORegister(number, field, 0);
+        }
 
-      return this.getIORegisters()[number][field];
-    case "r":
-      return this.getInternalRegisters()[number];
-    default:
-      var value = Number.parseFloat(register);
-
-      if (Number.isNaN(value)) {
-        return;
-      } else {
-        return value;
+        return this.getIORegisters()[number][field];
+      case "r":
+        return this.getInternalRegisters()[number];
       }
+    }
+
+    var value = Number.parseFloat(register);
+
+    if (Number.isNaN(value)) {
+      if (Object.keys(this._aliases).includes(register)) {
+        return this._getRegister("r" + this._aliases[register], field);
+      }
+      return;
+    } else {
+      return value;
     }
   }
 
@@ -491,11 +518,16 @@ module.exports = class IC {
       this._programCounter = Math.ceil(addr);
     }
   }
-  
+
   _instruction_brne(fields) {
     if (this._getRegister(fields[0]) !== this._getRegister(fields[1])) {
       var addr = this._programCounter + this._getRegister(fields[2]);
       this._programCounter = Math.ceil(addr);
     }
+  }
+
+  _instruction_alias(fields) {
+    var number = Number.parseInt(fields[1].split("r")[1]);
+    this._aliases[fields[0]] = number;
   }
 };

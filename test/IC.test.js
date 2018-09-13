@@ -289,4 +289,74 @@ describe("IC Tests", function () {
       expect(output).to.equal("END_OF_PROGRAM");
     });
   });
+  
+  describe("alias", function () {
+    it ("should create an entry in aliases inside the IC and store the register index when run", function () {
+      let ic = new IC();
+
+      ic.load("alias bob r5");
+
+      expect(Object.keys(ic._aliases)).to.contains("bob");
+
+      ic.step();
+
+      expect(ic._aliases["bob"]).to.equal(5);
+    });
+
+    it ("should allow programs to reference an alias rather than a register in code", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias test r5",
+        "move test 7"
+      ].join("\n"));
+
+      expect(ic.getProgramErrors().length).to.equal(0);      
+    });
+
+    it ("should still error if an unused alias is found", function () {
+      let ic = new IC();
+
+      ic.load([
+        "move test 7"
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+
+      expect(output.length).to.equal(1);
+      expect(output[0]["line"]).to.equal(0);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_UNKNOWN_TYPE");
+      expect(output[0]["field"]).to.equal(0);     
+    });
+
+    it ("should cause substitutions of aliases with registers when an alias is encountered in a command being writen to", function() {
+      let ic = new IC();
+
+      ic.load([
+        "alias test r5",
+        "move test 7"
+      ].join("\n"));
+
+      ic.step();
+      ic.step();
+
+      expect(ic.getInternalRegisters()[5]).to.equal(7);            
+    });
+
+    it ("should cause substitutions of aliases with registers when an alias is encountered in a command being read from", function() {
+      let ic = new IC();
+
+      ic.load([
+        "move r0 7",
+        "alias test r0",
+        "move r1 test"
+      ].join("\n"));
+
+      ic.step();
+      ic.step();
+      ic.step();
+
+      expect(ic.getInternalRegisters()[1]).to.equal(7);            
+    });
+  });
 });

@@ -722,7 +722,6 @@ describe("Instruction Tests", function () {
     });
   });
   
-
   describe("s", function () {
     it ("should save the value to the IO register", function () {
       let ic = new IC();
