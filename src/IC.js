@@ -80,10 +80,19 @@ module.exports = class IC {
 
   _preProcess() {
     var foundAliases = this._instructions.map((content) => this._parseLine(content)).filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]);
-
+    var currentAliases = this._aliases;
+    
     for (var alias of foundAliases) {
-      this._aliases[alias] = 0;
+      if (!Object.keys(currentAliases).includes(alias)) {
+        this._aliases[alias] = 0;
+      }
     }
+
+    var removedAliases = Object.keys(currentAliases).filter((currentAlias) => !foundAliases.includes(currentAlias));
+    
+    for (var toBeRemoved of removedAliases) {
+      delete this._aliases[toBeRemoved];
+    }    
   }
 
   _validate() {
