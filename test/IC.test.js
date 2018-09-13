@@ -219,13 +219,23 @@ describe("IC Tests", function () {
       expect(ic.getInternalRegisters()[3]).to.equal(100);
     });
 
-    it ("requesting a field on an IO register which doesn't exist will default it to 0", function () {
+    it("requesting a field on an IO register which doesn't exist will default it to 0", function () {
       let ic = new IC();
       ic._getRegister("d0", "Test");
 
       var keys = Object.keys(ic.getIORegisters()[0]);
 
       expect(keys).contains("Test");
+    });
+
+    it("will remove IO register fields when they are set to undefined", function () {
+      let ic = new IC();
+
+      ic.setIORegister(1, "field", 100);
+      expect(ic.getIORegisters()[1]["field"]).to.equal(100);
+
+      ic.setIORegister(1, "field", undefined);      
+      expect(Object.keys(ic.getIORegisters()[1])).not.to.contains("field");
     });
   });
 

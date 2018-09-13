@@ -173,7 +173,11 @@ module.exports = class IC {
 
   setIORegister(index, field, value) {
     if (index < IO_REGISTER_COUNT) {
-      this._ioRegister[index][field] = value;
+      if (value !== undefined) {
+        this._ioRegister[index][field] = value;
+      } else {
+        delete this._ioRegister[index][field];
+      }
     }
   }
 
