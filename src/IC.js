@@ -5,7 +5,7 @@ const INSTRUCTION_SEPERATOR = /\s+/;
 const COMMENT_SEPERATOR = /\s*(\/\/|#)/;
 
 const IO_REGISTER_COUNT = 6;
-const INTERNAL_REGISTER_COUNT = 10;
+const INTERNAL_REGISTER_COUNT = 16;
 
 module.exports = class IC {
   constructor() {
