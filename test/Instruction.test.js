@@ -433,6 +433,7 @@ describe("Instruction Tests", function () {
       expect(ic._programCounter).to.equal(9);
     });
   });
+
   describe("j", function () {
     it("should change the program counter to the a value provided", function () {
       let ic = new IC();
@@ -566,15 +567,18 @@ describe("Instruction Tests", function () {
   });
 
   describe("jr", function () {
-    it("should change the program counter to be relative to the provided value", function () {
+    it("should change the program counter to be relative to the provided negative value", function () {
       let ic = new IC();
-      ic.load("yield\nyield\njr -2\nyield\nyield\n");
+      ic.load("yield\nyield\nyield\njr -2\nyield\nyield\n");
   
+      expect(ic.getProgramErrors().length).to.equal(0);
+
+      ic.step();
       ic.step();
       ic.step();
       ic.step();
   
-      expect(ic._programCounter).to.equal(0);
+      expect(ic._programCounter).to.equal(1);
     });
   }); 
 
@@ -583,6 +587,8 @@ describe("Instruction Tests", function () {
       let ic = new IC();
       ic.load("yield\nyield\nbrltz -1 -2\nyield\nyield\n");
       
+      expect(ic.getProgramErrors().length).to.equal(0);
+
       ic.step();
       ic.step();
       ic.step();
@@ -611,7 +617,7 @@ describe("Instruction Tests", function () {
       ic.step();
       ic.step();
 
-      expect(ic._programCounter).to.equal(12);
+      expect(ic._programCounter).to.equal(11);
     });
   
     it("should not change the program counter if s > 0", function () {
@@ -635,7 +641,7 @@ describe("Instruction Tests", function () {
       ic.step();
       ic.step();
   
-      expect(ic._programCounter).to.equal(12);
+      expect(ic._programCounter).to.equal(11);
     });
   
     it("should not change the program counter if s < 0", function () {
@@ -659,7 +665,7 @@ describe("Instruction Tests", function () {
       ic.step();
       ic.step();
   
-      expect(ic._programCounter).to.equal(12);
+      expect(ic._programCounter).to.equal(11);
     });
   
     it("should not change the program counter if s <= 0", function () {
@@ -683,7 +689,7 @@ describe("Instruction Tests", function () {
       ic.step();
       ic.step();
   
-      expect(ic._programCounter).to.equal(12);
+      expect(ic._programCounter).to.equal(11);
     });
   
     it("should not change the program counter if s != t", function () {
@@ -718,7 +724,7 @@ describe("Instruction Tests", function () {
       ic.step();
       ic.step();
   
-      expect(ic._programCounter).to.equal(12);
+      expect(ic._programCounter).to.equal(11);
     });
   });
   
