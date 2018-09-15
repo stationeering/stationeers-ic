@@ -788,6 +788,19 @@ describe("Instruction Tests", function () {
 
       expect(ic.getInternalRegisters()[0]).to.equal(1.5);
     });
+
+    it ("should fail parse if the device is not a device", function () {
+      let ic = new IC();
+      
+      ic.load("l r0 r0 Field");
+
+      var output = ic.getProgramErrors();
+
+      expect(output.length).to.equal(1);
+      expect(output[0]["line"]).to.equal(0);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_DEVICE");
+      expect(output[0]["field"]).to.equal(1); 
+    });
   });
 
   describe("label", function () {

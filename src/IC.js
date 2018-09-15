@@ -29,27 +29,27 @@ module.exports = class IC {
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
 
     this._registerOpcode("move", ["d", "s"], this._instruction_move);
-    this._registerOpcode("add", ["d", "s", "t"], this._instruction_add);
-    this._registerOpcode("sub", ["d", "s", "t"], this._instruction_sub);
-    this._registerOpcode("mul", ["d", "s", "t"], this._instruction_mul);
-    this._registerOpcode("div", ["d", "s", "t"], this._instruction_div);
-    this._registerOpcode("mod", ["d", "s", "t"], this._instruction_mod);
-    this._registerOpcode("slt", ["d", "s", "t"], this._instruction_slt);
+    this._registerOpcode("add", ["d", "s", "s"], this._instruction_add);
+    this._registerOpcode("sub", ["d", "s", "s"], this._instruction_sub);
+    this._registerOpcode("mul", ["d", "s", "s"], this._instruction_mul);
+    this._registerOpcode("div", ["d", "s", "s"], this._instruction_div);
+    this._registerOpcode("mod", ["d", "s", "s"], this._instruction_mod);
+    this._registerOpcode("slt", ["d", "s", "s"], this._instruction_slt);
     this._registerOpcode("sqrt", ["d", "s"], this._instruction_sqrt);
     this._registerOpcode("round", ["d", "s"], this._instruction_round);
     this._registerOpcode("trunc", ["d", "s"], this._instruction_trunc);
     this._registerOpcode("ceil", ["d", "s"], this._instruction_ceil);
     this._registerOpcode("floor", ["d", "s"], this._instruction_floor);
-    this._registerOpcode("max", ["d", "s", "t"], this._instruction_max);
-    this._registerOpcode("min", ["d", "s", "t"], this._instruction_min);
+    this._registerOpcode("max", ["d", "s", "s"], this._instruction_max);
+    this._registerOpcode("min", ["d", "s", "s"], this._instruction_min);
     this._registerOpcode("abs", ["d", "s"], this._instruction_abs);
     this._registerOpcode("log", ["d", "s"], this._instruction_log);
     this._registerOpcode("exp", ["d", "s"], this._instruction_exp);
     this._registerOpcode("rand", ["d"], this._instruction_rand);
-    this._registerOpcode("and", ["d", "s", "t"], this._instruction_and);
-    this._registerOpcode("or", ["d", "s", "t"], this._instruction_or);
-    this._registerOpcode("xor", ["d", "s", "t"], this._instruction_xor);
-    this._registerOpcode("nor", ["d", "s", "t"], this._instruction_nor);
+    this._registerOpcode("and", ["d", "s", "s"], this._instruction_and);
+    this._registerOpcode("or", ["d", "s", "s"], this._instruction_or);
+    this._registerOpcode("xor", ["d", "s", "s"], this._instruction_xor);
+    this._registerOpcode("nor", ["d", "s", "s"], this._instruction_nor);
 
     this._registerOpcode("yield", [], this._instruction_yield);
 
@@ -58,16 +58,16 @@ module.exports = class IC {
     this._registerOpcode("blez", ["s", "s"], this._instruction_blez);
     this._registerOpcode("bgez", ["s", "s"], this._instruction_bgez);
     this._registerOpcode("bgtz", ["s", "s"], this._instruction_bgtz);
-    this._registerOpcode("beq", ["s", "t", "s"], this._instruction_beq);
-    this._registerOpcode("bne", ["s", "t", "s"], this._instruction_bne);    
+    this._registerOpcode("beq", ["s", "s", "s"], this._instruction_beq);
+    this._registerOpcode("bne", ["s", "s", "s"], this._instruction_bne);    
 
     this._registerOpcode("jr", ["s"], this._instruction_jr);
     this._registerOpcode("brltz", ["s", "s"], this._instruction_brltz);
     this._registerOpcode("brlez", ["s", "s"], this._instruction_brlez);
     this._registerOpcode("brgez", ["s", "s"], this._instruction_brgez);
     this._registerOpcode("brgtz", ["s", "s"], this._instruction_brgtz);
-    this._registerOpcode("breq", ["s", "t", "s"], this._instruction_breq);
-    this._registerOpcode("brne", ["s", "t", "s"], this._instruction_brne);
+    this._registerOpcode("breq", ["s", "s", "s"], this._instruction_breq);
+    this._registerOpcode("brne", ["s", "s", "s"], this._instruction_brne);
 
     this._registerOpcode("l", ["d", "i", "f"], this._instruction_l);
     this._registerOpcode("s", ["i", "f", "s"], this._instruction_s);
@@ -146,10 +146,10 @@ module.exports = class IC {
     return fieldErrors;
   }
 
-  _checkFieldTypes(token, type) {
+  _checkFieldTypes(token, fieldType) {
     var tokenType = token.charAt(0);
 
-    if (type === "f") {
+    if (fieldType === "f") {
       return undefined;
     }
 
@@ -167,13 +167,13 @@ module.exports = class IC {
       }
     }
 
-    switch (type) {
+    switch (fieldType) {
     case "d":
-      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";
-
+      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";    
     case "s":
-    case "t":
       return (tokenType === "r" || tokenType === "f") ? undefined : "INVALID_FIELD_NOT_READABLE";
+    case "i":
+      return (tokenType === "d") ? undefined : "INVALID_FIELD_NOT_DEVICE";
     }
   }
 
