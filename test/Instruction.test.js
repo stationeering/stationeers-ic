@@ -750,4 +750,15 @@ describe("Instruction Tests", function () {
       expect(ic.getInternalRegisters()[0]).to.equal(1.5);
     });
   });
+
+  describe("label", function () {
+    it ("should label an IO register", function () {
+      let ic = new IC();
+
+      ic.load("label d1 Test");
+      ic.step();
+
+      expect(ic.getIOLabels()[1]).to.equal("Test");
+    });
+  });
 });

@@ -19,6 +19,7 @@ module.exports = class IC {
 
     this._aliases = {};
     this._ioRegister = [];
+    this._ioLabels = Array(IO_REGISTER_COUNT).fill("");
 
     for (var i = 0; i < IO_REGISTER_COUNT; i++) {
       this._ioRegister[i] = {};
@@ -69,6 +70,8 @@ module.exports = class IC {
     this._registerOpcode("s", ["i", "f", "s"], this._instruction_s);
 
     this._registerOpcode("alias", ["f", "r"], this._instruction_alias);
+
+    this._registerOpcode("label", ["i", "f"], this._instruction_label);
   }
 
   load(unparsedInstructions) {
@@ -216,6 +219,10 @@ module.exports = class IC {
 
   getIORegisters() {
     return this._ioRegister;
+  }
+
+  getIOLabels() {
+    return this._ioLabels;
   }
 
   setIORegister(index, field, value) {
@@ -551,5 +558,10 @@ module.exports = class IC {
   _instruction_alias(fields) {
     var number = Number.parseInt(fields[1].split("r")[1]);
     this._aliases[fields[0]] = number;
+  }
+
+  _instruction_label(fields) {
+    var number = Number.parseInt(fields[0].split("d")[1]);
+    this._ioLabels[number] = fields[1];
   }
 };
