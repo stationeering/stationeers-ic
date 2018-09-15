@@ -289,8 +289,16 @@ describe("IC Tests", function () {
       expect(output).to.equal("END_OF_PROGRAM");
     });
   });
+
+  describe("IO port names", function() {
+    it("should return d0 for 0, d1 for 1, etc.", function() {
+      let ic = new IC();
+      expect(ic.getIONames()[0]).to.equal("d0");
+      expect(ic.getIONames()[1]).to.equal("d1");
+    });
+  });
   
-  describe("alias", function () {
+  describe("alias", function() {
     it ("should create an entry in aliases inside the IC and store the register index when run", function () {
       let ic = new IC();
 

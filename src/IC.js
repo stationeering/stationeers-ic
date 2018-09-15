@@ -221,6 +221,16 @@ module.exports = class IC {
     return this._ioRegister;
   }
 
+  getIONames() {
+    var names = [];
+
+    for (var i = 0; i < IO_REGISTER_COUNT; i++) {
+      names.push("d" + i);
+    }
+
+    return names;
+  }
+
   getIOLabels() {
     return this._ioLabels;
   }
