@@ -443,6 +443,45 @@ describe("Instruction Tests", function () {
 
       expect(ic._programCounter).to.equal(9);
     });
+
+    it("should change the program counter to the a value provided, rounding if floating", function () {
+      let ic = new IC();
+      ic.load("j 9.4");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });
+
+    it("should accept a register as the jump address and then change the program counter to that value", function() {
+      let ic = new IC();
+      ic.load("move r0 9\nj r0");
+
+      ic.step();
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });
+
+    it("should accept a register as the jump address and return an error if the jump result is negative", function() {
+      let ic = new IC();
+      ic.load("move r0 -9\nj r0");
+
+      ic.step();
+      var result = ic.step();
+
+      expect(result).to.equal("INVALID_PROGRAM_COUNTER");      
+    });
+
+    it("should accept a register as the jump address and then change the program counter to that value, rounded if floating", function() {
+      let ic = new IC();
+      ic.load("move r0 9.4\nj r0");
+
+      ic.step();
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+    });
   }); 
 
   describe("bltz", function () {

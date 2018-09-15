@@ -50,27 +50,29 @@ module.exports = class IC {
     this._registerOpcode("or", ["d", "s", "t"], this._instruction_or);
     this._registerOpcode("xor", ["d", "s", "t"], this._instruction_xor);
     this._registerOpcode("nor", ["d", "s", "t"], this._instruction_nor);
-    this._registerOpcode("j", ["a"], this._instruction_j);
-    this._registerOpcode("bltz", ["s", "a"], this._instruction_bltz);
-    this._registerOpcode("blez", ["s", "a"], this._instruction_blez);
-    this._registerOpcode("bgez", ["s", "a"], this._instruction_bgez);
-    this._registerOpcode("bgtz", ["s", "a"], this._instruction_bgtz);
-    this._registerOpcode("beq", ["s", "t", "a"], this._instruction_beq);
-    this._registerOpcode("bne", ["s", "t", "a"], this._instruction_bne);
+
     this._registerOpcode("yield", [], this._instruction_yield);
 
-    this._registerOpcode("jr", ["A"], this._instruction_jr);
-    this._registerOpcode("brltz", ["s", "A"], this._instruction_brltz);
-    this._registerOpcode("brlez", ["s", "A"], this._instruction_brlez);
-    this._registerOpcode("brgez", ["s", "A"], this._instruction_brgez);
-    this._registerOpcode("brgtz", ["s", "A"], this._instruction_brgtz);
-    this._registerOpcode("breq", ["s", "t", "A"], this._instruction_breq);
-    this._registerOpcode("brne", ["s", "t", "A"], this._instruction_brne);
+    this._registerOpcode("j", ["s"], this._instruction_j);
+    this._registerOpcode("bltz", ["s", "s"], this._instruction_bltz);
+    this._registerOpcode("blez", ["s", "s"], this._instruction_blez);
+    this._registerOpcode("bgez", ["s", "s"], this._instruction_bgez);
+    this._registerOpcode("bgtz", ["s", "s"], this._instruction_bgtz);
+    this._registerOpcode("beq", ["s", "t", "s"], this._instruction_beq);
+    this._registerOpcode("bne", ["s", "t", "s"], this._instruction_bne);    
+
+    this._registerOpcode("jr", ["s"], this._instruction_jr);
+    this._registerOpcode("brltz", ["s", "s"], this._instruction_brltz);
+    this._registerOpcode("brlez", ["s", "s"], this._instruction_brlez);
+    this._registerOpcode("brgez", ["s", "s"], this._instruction_brgez);
+    this._registerOpcode("brgtz", ["s", "s"], this._instruction_brgtz);
+    this._registerOpcode("breq", ["s", "t", "s"], this._instruction_breq);
+    this._registerOpcode("brne", ["s", "t", "s"], this._instruction_brne);
 
     this._registerOpcode("l", ["d", "i", "f"], this._instruction_l);
     this._registerOpcode("s", ["i", "f", "s"], this._instruction_s);
 
-    this._registerOpcode("alias", ["f", "r"], this._instruction_alias);
+    this._registerOpcode("alias", ["f", "d"], this._instruction_alias);
 
     this._registerOpcode("label", ["i", "f"], this._instruction_label);
   }
@@ -147,7 +149,11 @@ module.exports = class IC {
   _checkFieldTypes(token, type) {
     var tokenType = token.charAt(0);
 
-    if (tokenType !== "d" && tokenType !== "r" && type !== "f") {
+    if (type === "f") {
+      return undefined;
+    }
+
+    if (tokenType !== "d" && tokenType !== "r") {
       var asFloat = Number.parseFloat(token);
 
       if (isNaN(asFloat)) {
@@ -157,37 +163,17 @@ module.exports = class IC {
           return "INVALID_FIELD_UNKNOWN_TYPE";
         }
       } else {
-        var isInteger = (Number.parseInt(token) === asFloat);
-        
-        if (isInteger) {
-          if (asFloat >= 0) {
-            tokenType = "a";
-          } else {
-            tokenType = "A";
-          }
-        } else {
-          tokenType = "f";
-        }
+        tokenType = "f";
       }
     }
 
     switch (type) {
-    case "r":
-      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";
     case "d":
-      return (tokenType === "r") ? undefined : "INVALID_FIELD_READONLY";
+      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";
 
     case "s":
     case "t":
-      return (tokenType === "r" || tokenType === "a" || tokenType === "f" || tokenType === "A") ? undefined : "INVALID_FIELD_WRITEONLY";
-
-    case "a":
-      return (tokenType === "a") ? undefined : "INVALID_FIELD_NOT_ADDRESS";
-    case "A":
-      return (tokenType === "a" || tokenType === "A") ? undefined : "INVALID_FIELD_NOT_ADDRESS";
-
-    case "f":
-      return undefined;
+      return (tokenType === "r" || tokenType === "f") ? undefined : "INVALID_FIELD_NOT_READABLE";
     }
   }
 
@@ -337,6 +323,8 @@ module.exports = class IC {
         return "YIELD";
       } else if (this._programCounter >= this.getInstructionCount()) {
         return "END_OF_PROGRAM";
+      } else if (this._programCounter < 0) {
+        return "INVALID_PROGRAM_COUNTER";
       } else {
         return undefined;
       }
@@ -478,48 +466,48 @@ module.exports = class IC {
 
   _instruction_j(fields) {
     var addr = this._getRegister(fields[0]);
-    this._programCounter = Math.ceil(addr);
+    this._programCounter = Math.round(addr);
   }
 
   _instruction_bltz(fields) {
     if (this._getRegister(fields[0]) < 0) {
       var addr = this._getRegister(fields[1]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_blez(fields) {
     if (this._getRegister(fields[0]) <= 0) {
       var addr = this._getRegister(fields[1]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_bgez(fields) {
     if (this._getRegister(fields[0]) >= 0) {
       var addr = this._getRegister(fields[1]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_bgtz(fields) {
     if (this._getRegister(fields[0]) > 0) {
       var addr = this._getRegister(fields[1]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_beq(fields) {
     if (this._getRegister(fields[0]) === this._getRegister(fields[1])) {
       var addr = this._getRegister(fields[2]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_bne(fields) {
     if (this._getRegister(fields[0]) !== this._getRegister(fields[1])) {
       var addr = this._getRegister(fields[2]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
@@ -536,48 +524,48 @@ module.exports = class IC {
 
   _instruction_jr(fields) {
     var addr = this._programCounter - 1 + this._getRegister(fields[0]);
-    this._programCounter = Math.ceil(addr);
+    this._programCounter = Math.round(addr);
   }
 
   _instruction_brltz(fields) {
     if (this._getRegister(fields[0]) < 0) {
       var addr = this._programCounter - 1 + this._getRegister(fields[1]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_brlez(fields) {
     if (this._getRegister(fields[0]) <= 0) {
       var addr = this._programCounter - 1 + this._getRegister(fields[1]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_brgez(fields) {
     if (this._getRegister(fields[0]) >= 0) {
       var addr = this._programCounter - 1 + this._getRegister(fields[1]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_brgtz(fields) {
     if (this._getRegister(fields[0]) > 0) {
       var addr = this._programCounter - 1 + this._getRegister(fields[1]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_breq(fields) {
     if (this._getRegister(fields[0]) === this._getRegister(fields[1])) {
       var addr = this._programCounter - 1 + this._getRegister(fields[2]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_brne(fields) {
     if (this._getRegister(fields[0]) !== this._getRegister(fields[1])) {
       var addr = this._programCounter - 1 + this._getRegister(fields[2]);
-      this._programCounter = Math.ceil(addr);
+      this._programCounter = Math.round(addr);
     }
   }
 

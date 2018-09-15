@@ -142,32 +142,6 @@ describe("IC Tests", function () {
       expect(output[1]["field"]).to.equal(1);      
     });
 
-    it ("will return errors if j is a float not an address", function () {
-      let ic = new IC();
-
-      var input = "j 1.1";
-
-      var output = ic._validateLine(input, 123);
-
-      expect(output.length).to.equal(1);
-      expect(output[0]["line"]).to.equal(123);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_ADDRESS");
-      expect(output[0]["field"]).to.equal(0);     
-    });
-
-    it ("will return errors if j is a register not an address", function () {
-      let ic = new IC();
-
-      var input = "j r0";
-
-      var output = ic._validateLine(input, 123);
-
-      expect(output.length).to.equal(1);
-      expect(output[0]["line"]).to.equal(123);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_ADDRESS");
-      expect(output[0]["field"]).to.equal(0);     
-    });
-
     it ("will return errors if valid type is beyond the range", function () {
       let ic = new IC();
 
