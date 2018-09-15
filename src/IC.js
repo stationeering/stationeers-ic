@@ -20,8 +20,9 @@ module.exports = class IC {
     this._aliases = {};
     this._ioRegister = [];
     this._ioLabels = Array(IO_REGISTER_COUNT).fill("");
+    this._ioLabels[IO_REGISTER_COUNT] = "IC Socket";
 
-    for (var i = 0; i < IO_REGISTER_COUNT; i++) {
+    for (var i = 0; i < IO_REGISTER_COUNT + 1; i++) {
       this._ioRegister[i] = {};
     }
 
@@ -196,7 +197,11 @@ module.exports = class IC {
 
     switch (starting) {
     case "d":
-      return number < IO_REGISTER_COUNT;
+      if (token.charAt(1) === "b") {
+        number = IO_REGISTER_COUNT;
+      }
+
+      return number <= IO_REGISTER_COUNT;
     case "r":
       return number < INTERNAL_REGISTER_COUNT;
     default:
@@ -228,6 +233,8 @@ module.exports = class IC {
       names.push("d" + i);
     }
 
+    names.push("db");
+
     return names;
   }
 
@@ -236,7 +243,7 @@ module.exports = class IC {
   }
 
   setIORegister(index, field, value) {
-    if (index < IO_REGISTER_COUNT) {
+    if (index <= IO_REGISTER_COUNT) {
       if (value !== undefined) {
         this._ioRegister[index][field] = value;
       } else {
@@ -267,6 +274,10 @@ module.exports = class IC {
     let type = register.charAt(0);
     let number = parseInt(register.slice(1));
 
+    if (type === "d" && register.charAt(1) === "b") {
+      number = IO_REGISTER_COUNT;
+    }
+
     if (!Number.isNaN(number)) {
       switch (type) {
       case "d":
@@ -285,9 +296,14 @@ module.exports = class IC {
     let type = register.charAt(0);
     let number = parseInt(register.slice(1));
 
+    if (type === "d" && register.charAt(1) === "b") {
+      number = IO_REGISTER_COUNT;
+    }
+
     if (!Number.isNaN(number)) {
       switch (type) {
       case "d":
+
         if (!this.getIORegisters()[number][field]) {
           this.setIORegister(number, field, 0);
         }

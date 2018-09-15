@@ -190,7 +190,7 @@ describe("IC Tests", function () {
       let ic = new IC();
       let ioRegisters = ic.getIORegisters();
 
-      expect(ioRegisters.length).to.equal(6);
+      expect(ioRegisters.length).to.equal(7);
       expect(ioRegisters[0]).to.deep.equal({});
       expect(ioRegisters[5]).to.deep.equal({});
     });
@@ -290,11 +290,32 @@ describe("IC Tests", function () {
     });
   });
 
-  describe("IO port names", function() {
-    it("should return d0 for 0, d1 for 1, etc.", function() {
+  describe("IO ports", function() {
+    it("should have names which return d0 for 0, d1 for 1, etc.", function() {
       let ic = new IC();
       expect(ic.getIONames()[0]).to.equal("d0");
       expect(ic.getIONames()[1]).to.equal("d1");
+    });
+
+    it("should have a valid register called db for the base", function() {
+      let ic = new IC();
+
+      ic.load("s db Setting 10\nl r0 db Setting");
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0);
+
+      ic.step();
+      ic.step();
+
+      expect(ic.getIORegisters()[6]["Setting"]).to.equal(10);
+      expect(ic.getInternalRegisters()[0]).to.equal(10);
+    });
+
+    it("should have db as the last register on IO, and have a name of db", function() {
+      let ic = new IC();
+
+      expect(ic.getIONames()[6]).to.equal("db");
     });
   });
   
