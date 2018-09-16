@@ -59,7 +59,7 @@ module.exports = class IC {
     this._registerOpcode("bgez", ["s", "s"], this._instruction_bgez);
     this._registerOpcode("bgtz", ["s", "s"], this._instruction_bgtz);
     this._registerOpcode("beq", ["s", "s", "s"], this._instruction_beq);
-    this._registerOpcode("bne", ["s", "s", "s"], this._instruction_bne);    
+    this._registerOpcode("bne", ["s", "s", "s"], this._instruction_bne);
 
     this._registerOpcode("jr", ["s"], this._instruction_jr);
     this._registerOpcode("brltz", ["s", "s"], this._instruction_brltz);
@@ -87,7 +87,7 @@ module.exports = class IC {
   _preProcess() {
     var foundAliases = this._instructions.map((content) => this._parseLine(content)).filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]);
     var currentAliases = this._aliases;
-    
+
     for (var alias of foundAliases) {
       if (!Object.keys(currentAliases).includes(alias)) {
         this._aliases[alias] = 0;
@@ -95,10 +95,10 @@ module.exports = class IC {
     }
 
     var removedAliases = Object.keys(currentAliases).filter((currentAlias) => !foundAliases.includes(currentAlias));
-    
+
     for (var toBeRemoved of removedAliases) {
       delete this._aliases[toBeRemoved];
-    }    
+    }
   }
 
   _validate() {
@@ -107,6 +107,14 @@ module.exports = class IC {
   }
 
   _validateLine(content, line) {
+    if (content.length > 52) {
+      return [{ line: line, error: "LINE_TOO_LONG" }];
+    }
+
+    if (line >= 128) {
+      return [{ line: line, error: "PROGRAM_TOO_LONG" }];
+    }
+
     var tokens = this._parseLine(content);
 
     if (tokens.length < 1) {
@@ -169,7 +177,7 @@ module.exports = class IC {
 
     switch (fieldType) {
     case "d":
-      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";    
+      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";
     case "s":
       return (tokenType === "r" || tokenType === "f") ? undefined : "INVALID_FIELD_NOT_READABLE";
     case "i":
@@ -179,17 +187,25 @@ module.exports = class IC {
 
   _checkRegisterRange(token) {
     var starting = token.charAt(0);
-    let number = Number.parseInt(token.slice(1));
+    var number;
 
     switch (starting) {
     case "d":
+      number = Number.parseInt(token.slice(1));
+
       if (token.charAt(1) === "b") {
         number = IO_REGISTER_COUNT;
       }
 
       return number <= IO_REGISTER_COUNT;
     case "r":
-      return number < INTERNAL_REGISTER_COUNT;
+      number = token.match(/r+(\d+)/);
+
+      if (number) {
+        return number[1] < INTERNAL_REGISTER_COUNT;
+      } else {
+        return Object.keys(this._aliases).includes(token);
+      }
     default:
       return true;
     }
@@ -258,17 +274,25 @@ module.exports = class IC {
 
   _setRegister(register, value, field) {
     let type = register.charAt(0);
-    let number = parseInt(register.slice(1));
+    var number;
 
-    if (type === "d" && register.charAt(1) === "b") {
-      number = IO_REGISTER_COUNT;
-    }
+    switch (type) {
+    case "d":
+      number = Number.parseInt(register.slice(1));
 
-    if (!Number.isNaN(number)) {
-      switch (type) {
-      case "d":
-        return this.setIORegister(number, field, value);
-      case "r":
+      if (register.charAt(1) === "b") {
+        number = IO_REGISTER_COUNT;
+      }
+
+      if (Number.isNaN(number)) {
+        return;
+      }
+
+      return this.setIORegister(number, field, value);
+    case "r":
+      number = this._resolveIndirectRegister(register);
+
+      if (number !== null) {
         return this.setInternalRegister(number, value);
       }
     }
@@ -280,22 +304,30 @@ module.exports = class IC {
 
   _getRegister(register, field) {
     let type = register.charAt(0);
-    let number = parseInt(register.slice(1));
+    var number;
 
-    if (type === "d" && register.charAt(1) === "b") {
-      number = IO_REGISTER_COUNT;
-    }
+    switch (type) {
+    case "d":
+      number = Number.parseInt(register.slice(1));
 
-    if (!Number.isNaN(number)) {
-      switch (type) {
-      case "d":
+      if (register.charAt(1) === "b") {
+        number = IO_REGISTER_COUNT;
+      }
 
-        if (!this.getIORegisters()[number][field]) {
-          this.setIORegister(number, field, 0);
-        }
+      if (Number.isNaN(number)) {
+        return;
+      }
 
-        return this.getIORegisters()[number][field];
-      case "r":
+      if (!this.getIORegisters()[number][field]) {
+        this.setIORegister(number, field, 0);
+      }
+
+      return this.getIORegisters()[number][field];
+
+    case "r":
+      number = this._resolveIndirectRegister(register);
+
+      if (number !== null) {
         return this.getInternalRegisters()[number];
       }
     }
@@ -312,15 +344,44 @@ module.exports = class IC {
     }
   }
 
+  _resolveIndirectRegister(register) {
+    var matched = register.match(/(r+)(\d+)/);
+    
+    if (matched === null) {
+      return null;
+    }
+
+    var registerIndirectionCount = matched[1].length - 1;
+    var number = Number.parseInt(matched[2]);
+
+    for (var i = 0; i < registerIndirectionCount; i++) {
+      number = this.getInternalRegisters()[number];
+
+      if (number >= INTERNAL_REGISTER_COUNT) {
+        throw "illegal_register_location";
+      }
+    }
+
+    return number;
+  }
+
   step() {
     if (this._validProgram) {
       var instruction = this._instructions[this._programCounter];
       this._programCounter++;
 
-      var lastOpCode = this._executeInstruction(instruction);
+      var lastOpCode;
+
+      try {
+        lastOpCode = this._executeInstruction(instruction);
+      } catch (err) {
+        lastOpCode = err;
+      }
 
       if (lastOpCode === "yield") {
         return "YIELD";
+      } else if (lastOpCode === "illegal_register_location") {
+        return "INVALID_REGISTER_LOCATION";
       } else if (this._programCounter >= this.getInstructionCount()) {
         return "END_OF_PROGRAM";
       } else if (this._programCounter < 0) {
