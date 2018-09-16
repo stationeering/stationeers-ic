@@ -376,6 +376,24 @@ describe("IC Tests", function () {
       expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_REGISTER");
       expect(output[0]["field"]).to.equal(1);
     });
+
+    it ("should make internal register aliases available for lables", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias red r1",
+        "alias green r2",
+        "alias blue r1",
+      ].join("\n"));
+
+      ic.step();
+      ic.step();
+      ic.step();
+
+      var labels = ic.getInternalLabels();
+      expect(labels[1]).to.equal("red,blue");
+      expect(labels[2]).to.equal("green");
+    });
   });
 
   describe("Checking program limits", function () {

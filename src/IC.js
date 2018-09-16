@@ -258,6 +258,25 @@ module.exports = class IC {
     return this._internalRegister;
   }
 
+  getInternalLabels() {
+    var labels = Array(INTERNAL_REGISTER_COUNT);
+    
+    for (var i = 0; i < INTERNAL_REGISTER_COUNT; i++) {
+      labels[i] = [];
+    }
+
+    var aliases = Object.keys(this._aliases);
+
+    for (var alias of aliases) {
+      labels[this._aliases[alias]].push(alias);
+    }
+
+    for (i = 0; i < INTERNAL_REGISTER_COUNT; i++) {
+      labels[i] = labels[i].join(",");
+    }
+    return labels;
+  }
+
   setInternalRegister(index, value) {
     if (index < INTERNAL_REGISTER_COUNT) {
       this._internalRegister[index] = value;
