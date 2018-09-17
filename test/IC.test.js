@@ -377,7 +377,7 @@ describe("IC Tests", function () {
       expect(output[0]["field"]).to.equal(1);
     });
 
-    it ("should make internal register aliases available for lables", function () {
+    it ("should make internal register aliases available for labels", function () {
       let ic = new IC();
 
       ic.load([
@@ -393,6 +393,18 @@ describe("IC Tests", function () {
       var labels = ic.getInternalLabels();
       expect(labels[1]).to.equal("red,blue");
       expect(labels[2]).to.equal("green");
+    });
+
+    it ("should accept alias names which start with d (like a device)", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias dialSetting r1",
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+
+      expect(output.length).to.equal(0);
     });
   });
 

@@ -140,7 +140,7 @@ module.exports = class IC {
         return { line: line, error: typeCheck, field: i };
       }
 
-      if (!this._checkRegisterRange(tokens[i])) {
+      if (!this._checkRegisterRange(tokens[i]) && type !== "f") {
         return { line: line, error: "INVALID_FIELD_NO_SUCH_REGISTER", field: i };
       }
     }).filter((error) => error);
