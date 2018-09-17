@@ -392,6 +392,7 @@ describe("IC Tests", function () {
         "alias red r1",
         "alias green r2",
         "alias blue r1",
+        "alias purple r1"
       ].join("\n"));
 
       ic.step();
@@ -399,6 +400,7 @@ describe("IC Tests", function () {
       ic.step();
 
       var labels = ic.getInternalLabels();
+      expect(labels[0]).to.equal("");
       expect(labels[1]).to.equal("red,blue");
       expect(labels[2]).to.equal("green");
     });

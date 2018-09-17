@@ -21,6 +21,7 @@ module.exports = class IC {
     this._programCounter = 0;
 
     this._aliases = {};
+    this._aliasesAsigned = [];
     this._ioRegister = [];
     this._ioLabels = Array(IO_REGISTER_COUNT).fill("");
     this._ioLabels[IO_REGISTER_COUNT] = "IC Socket";
@@ -101,6 +102,9 @@ module.exports = class IC {
 
     for (var toBeRemoved of removedAliases) {
       delete this._aliases[toBeRemoved];
+      
+      var foundIndex = this._aliasesAsigned.indexOf(toBeRemoved);
+      delete this._aliasesAsigned[foundIndex];
     }
   }
 
@@ -282,7 +286,9 @@ module.exports = class IC {
     var aliases = Object.keys(this._aliases);
 
     for (var alias of aliases) {
-      labels[this._aliases[alias]].push(alias);
+      if (this._aliasesAsigned.includes(alias)) {
+        labels[this._aliases[alias]].push(alias);
+      }
     }
 
     for (i = 0; i < INTERNAL_REGISTER_COUNT; i++) {
@@ -670,6 +676,7 @@ module.exports = class IC {
   _instruction_alias(fields) {
     var number = Number.parseInt(fields[1].split("r")[1]);
     this._aliases[fields[0]] = number;
+    this._aliasesAsigned.push(fields[0]);
   }
 
   _instruction_label(fields) {
