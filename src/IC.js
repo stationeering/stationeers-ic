@@ -23,6 +23,7 @@ module.exports = class IC {
     this._aliases = {};
     this._aliasesAsigned = [];
     this._ioRegister = [];
+    this._jumpTags = {};
     this._ioLabels = Array(IO_REGISTER_COUNT).fill("");
     this._ioLabels[IO_REGISTER_COUNT] = "IC Socket";
 
@@ -57,13 +58,13 @@ module.exports = class IC {
 
     this._registerOpcode("yield", [], this._instruction_yield);
 
-    this._registerOpcode("j", ["s"], this._instruction_j);
-    this._registerOpcode("bltz", ["s", "s"], this._instruction_bltz);
-    this._registerOpcode("blez", ["s", "s"], this._instruction_blez);
-    this._registerOpcode("bgez", ["s", "s"], this._instruction_bgez);
-    this._registerOpcode("bgtz", ["s", "s"], this._instruction_bgtz);
-    this._registerOpcode("beq", ["s", "s", "s"], this._instruction_beq);
-    this._registerOpcode("bne", ["s", "s", "s"], this._instruction_bne);
+    this._registerOpcode("j", ["S"], this._instruction_j);
+    this._registerOpcode("bltz", ["s", "S"], this._instruction_bltz);
+    this._registerOpcode("blez", ["s", "S"], this._instruction_blez);
+    this._registerOpcode("bgez", ["s", "S"], this._instruction_bgez);
+    this._registerOpcode("bgtz", ["s", "S"], this._instruction_bgtz);
+    this._registerOpcode("beq", ["s", "s", "S"], this._instruction_beq);
+    this._registerOpcode("bne", ["s", "s", "S"], this._instruction_bne);
 
     this._registerOpcode("jr", ["s"], this._instruction_jr);
     this._registerOpcode("brltz", ["s", "s"], this._instruction_brltz);
@@ -88,8 +89,9 @@ module.exports = class IC {
     this._validate();
   }
 
-  _preProcess() {
-    var foundAliases = this._instructions.map((content) => this._parseLine(content)).filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]);
+  _preProcess() {    
+    var parsedLines = this._instructions.map((content) => this._parseLine(content));
+    var foundAliases = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]);
     var currentAliases = this._aliases;
 
     for (var alias of foundAliases) {
@@ -106,6 +108,17 @@ module.exports = class IC {
       var foundIndex = this._aliasesAsigned.indexOf(toBeRemoved);
       delete this._aliasesAsigned[foundIndex];
     }
+
+    this._jumpTags = {};
+
+    parsedLines.forEach((content, line) => {
+      if (content.length > 0) {
+        var matches = content[0].match(/(\S+):/);
+        if (matches && !Object.keys(this._jumpTags).includes(matches[1])) {
+          this._jumpTags[matches[1]] = line;
+        }
+      }
+    });
   }
 
   _validate() {
@@ -131,6 +144,16 @@ module.exports = class IC {
     var tokens = this._parseLine(content);
 
     if (tokens.length < 1) {
+      return errors;
+    }
+
+    var jumpTagMatch = tokens[0].match(/(\S+):/);
+
+    if (jumpTagMatch) {
+      if (this._jumpTags[jumpTagMatch[1]] !== line) {
+        errors.push({ line: line, error: "INVALID_JUMP_TAG_DUPLICATE", "type": "error" });
+      }
+      
       return errors;
     }
 
@@ -170,6 +193,11 @@ module.exports = class IC {
 
   _checkFieldTypes(token, fieldType) {
     var tokenType = token.charAt(0);
+    var allowJump = (fieldType === "S");
+
+    if (allowJump) {
+      fieldType = "s";
+    }
 
     if (fieldType === "f") {
       return undefined;
@@ -179,7 +207,7 @@ module.exports = class IC {
       var asFloat = Number.parseFloat(token);
 
       if (isNaN(asFloat)) {
-        if (Object.keys(this._aliases).includes(token)) {
+        if (Object.keys(this._aliases).includes(token) || (allowJump && Object.keys(this._jumpTags).includes(token))) {
           tokenType = "r";
         } else {
           return "INVALID_FIELD_UNKNOWN_TYPE";
@@ -191,7 +219,7 @@ module.exports = class IC {
 
     switch (fieldType) {
     case "d":
-      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";
+      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";    
     case "s":
       return (tokenType === "r" || tokenType === "f") ? undefined : "INVALID_FIELD_NOT_READABLE";
     case "i":
@@ -359,7 +387,7 @@ module.exports = class IC {
     }
   }
 
-  _getRegister(register, field) {
+  _getRegister(register, field, includeJumpTags) {
     let type = register.charAt(0);
     var number;
 
@@ -400,6 +428,10 @@ module.exports = class IC {
     var value = Number.parseFloat(register);
 
     if (Number.isNaN(value)) {
+      if (includeJumpTags && Object.keys(this._jumpTags).includes(register)) {
+        return this._jumpTags[register];
+      }
+
       if (Object.keys(this._aliases).includes(register)) {
         return this._getRegister("r" + this._aliases[register], field);
       }
@@ -595,48 +627,48 @@ module.exports = class IC {
   }
 
   _instruction_j(fields) {
-    var addr = this._getRegister(fields[0]);
+    var addr = this._getRegister(fields[0], undefined, true);
     this._programCounter = Math.round(addr);
   }
 
   _instruction_bltz(fields) {
     if (this._getRegister(fields[0]) < 0) {
-      var addr = this._getRegister(fields[1]);
+      var addr = this._getRegister(fields[1], undefined, true);
       this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_blez(fields) {
     if (this._getRegister(fields[0]) <= 0) {
-      var addr = this._getRegister(fields[1]);
+      var addr = this._getRegister(fields[1], undefined, true);
       this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_bgez(fields) {
     if (this._getRegister(fields[0]) >= 0) {
-      var addr = this._getRegister(fields[1]);
+      var addr = this._getRegister(fields[1], undefined, true);
       this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_bgtz(fields) {
     if (this._getRegister(fields[0]) > 0) {
-      var addr = this._getRegister(fields[1]);
+      var addr = this._getRegister(fields[1], undefined, true);
       this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_beq(fields) {
     if (this._getRegister(fields[0]) === this._getRegister(fields[1])) {
-      var addr = this._getRegister(fields[2]);
+      var addr = this._getRegister(fields[2], undefined, true);
       this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_bne(fields) {
     if (this._getRegister(fields[0]) !== this._getRegister(fields[1])) {
-      var addr = this._getRegister(fields[2]);
+      var addr = this._getRegister(fields[2], undefined, true);
       this._programCounter = Math.round(addr);
     }
   }

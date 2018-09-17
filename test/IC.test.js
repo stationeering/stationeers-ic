@@ -299,6 +299,63 @@ describe("IC Tests", function () {
     });
   });
 
+  describe("jump labels", function () {
+    it("should jump back to the instruction that was labeled", function () {
+      let ic = new IC();
+
+      ic.load("start:\nj start");
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0);
+
+      expect(ic.step()).to.equal(undefined);
+      expect(ic._programCounter).to.equal(1);
+
+      expect(ic.step()).to.equal(undefined);
+      expect(ic._programCounter).to.equal(0);
+    });
+
+    it("should error when a jump tag is duplicated", function () {
+      let ic = new IC();
+
+      ic.load("start:\nj start\nstart:");
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(1);
+
+      expect(output[0]["line"]).to.equal(2);
+      expect(output[0]["error"]).to.equal("INVALID_JUMP_TAG_DUPLICATE");
+      expect(output[0]["type"]).to.equal("error");
+    });
+
+    it("should error when a jump tag is missing", function () {
+      let ic = new IC();
+
+      ic.load("j start");
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(1);
+
+      expect(output[0]["line"]).to.equal(0);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_UNKNOWN_TYPE");
+      expect(output[0]["type"]).to.equal("error");
+    });
+  
+    it("should error when a jump tag is passed to a relative jump", function () {
+      let ic = new IC();
+
+      ic.load("start:\njr start");
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(1);
+
+      expect(output[0]["line"]).to.equal(1);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_UNKNOWN_TYPE");
+      expect(output[0]["type"]).to.equal("error");
+    });
+  
+  });
+
   describe("alias", function () {
     it("should create an entry in aliases inside the IC and store the register index when run", function () {
       let ic = new IC();
