@@ -354,6 +354,18 @@ describe("IC Tests", function () {
       expect(output[0]["type"]).to.equal("error");
     });
   
+    it("should error when there is content after a jump tag", function () {
+      let ic = new IC();
+
+      ic.load("start: move r0 1");
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(1);
+
+      expect(output[0]["line"]).to.equal(0);
+      expect(output[0]["error"]).to.equal("INVALID_JUMP_TAG_CONTENT_AFTER");
+      expect(output[0]["type"]).to.equal("error");
+    });
   });
 
   describe("alias", function () {

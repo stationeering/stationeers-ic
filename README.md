@@ -76,6 +76,7 @@ Current Error Types:
 * LINE_TOO_LONG - The line is more than 64 characters, reduce the length.
 * PROGRAM_TOO_LONG - The program is too long, only 128 instructions/lines are permitted.
 * INVALID_JUMP_TAG_DUPLICATE - A duplicate jump tag has been found.
+* INVALID_JUMP_TAG_CONTENT_AFTER - Content was found after a jump tag, this is currently ignored.
 
 Any error objects of type "error" will prevent the program from running.
 
