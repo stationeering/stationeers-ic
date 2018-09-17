@@ -545,6 +545,81 @@ describe("IC Tests", function () {
     });
   });
 
+  describe("Indirect device access", function () {
+    it("reading from a device via a register", function () {
+      let ic = new IC();
+
+      ic.load([
+        "move r0 1",
+        "move r1 2",
+        "move r2 3",
+        "move r3 4",
+        "move r4 5",
+        "l r15 drrrrr0 Setting"
+      ].join("\n"));
+
+      ic.setIORegister(5, "Setting", 99);
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0);
+
+      ic.step();
+      ic.step();
+      ic.step();
+      ic.step();
+      ic.step();
+      ic.step();
+
+      var registers = ic.getInternalRegisters();
+
+      expect(registers[15]).to.equal(99);
+    });
+
+    it("writing to a device via register", function () {
+      let ic = new IC();
+
+      ic.load([
+        "move r0 1",
+        "move r1 2",
+        "move r2 3",
+        "move r3 4",
+        "move r4 5",
+        "s drrrrr0 Setting 99"
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0);
+
+      ic.step();
+      ic.step();
+      ic.step();
+      ic.step();
+      ic.step();
+      ic.step();
+
+      var registers = ic.getIORegisters();
+
+      expect(registers[5]["Setting"]).to.equal(99);
+    });
+
+    it("reading from a register which references an illegal indirection should error the IC", function () {
+      let ic = new IC();
+
+      ic.load([
+        "move r0 99",
+        "l r15 dr0 Setting",
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0);
+
+      ic.step();
+      var result = ic.step();
+
+      expect(result).to.equal("INVALID_REGISTER_LOCATION");
+    });
+  });
+
   describe("Running with errors", function () {
     it("should allow you to run an IC even if there are errors, resulting in noops for invalid lines", function () {
       let ic = new IC();
