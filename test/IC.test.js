@@ -121,9 +121,11 @@ describe("IC Tests", function () {
       expect(output[0]["line"]).to.equal(123);
       expect(output[0]["error"]).to.equal("MISSING_FIELD");
       expect(output[0]["field"]).to.equal(0);
+      expect(output[0]["type"]).to.equal("error");
       expect(output[1]["line"]).to.equal(123);
       expect(output[1]["error"]).to.equal("MISSING_FIELD");
       expect(output[1]["field"]).to.equal(1);
+      expect(output[1]["type"]).to.equal("error");
     });
 
     it("will return errors if parameters are provided when not needed", function () {
@@ -137,9 +139,11 @@ describe("IC Tests", function () {
       expect(output[0]["line"]).to.equal(123);
       expect(output[0]["error"]).to.equal("EXTRA_FIELD");
       expect(output[0]["field"]).to.equal(0);
+      expect(output[0]["type"]).to.equal("error");
       expect(output[1]["line"]).to.equal(123);
       expect(output[1]["error"]).to.equal("EXTRA_FIELD");
       expect(output[1]["field"]).to.equal(1);
+      expect(output[1]["type"]).to.equal("error");
     });
 
     it("will return errors if valid type is beyond the range", function () {
@@ -153,9 +157,11 @@ describe("IC Tests", function () {
       expect(output[0]["line"]).to.equal(123);
       expect(output[0]["error"]).to.equal("INVALID_FIELD_NO_SUCH_REGISTER");
       expect(output[0]["field"]).to.equal(0);
+      expect(output[0]["type"]).to.equal("error");
       expect(output[1]["line"]).to.equal(123);
       expect(output[1]["error"]).to.equal("INVALID_FIELD_NO_SUCH_REGISTER");
       expect(output[1]["field"]).to.equal(1);
+      expect(output[1]["type"]).to.equal("error");
     });
   });
 
@@ -330,6 +336,7 @@ describe("IC Tests", function () {
       expect(output[0]["line"]).to.equal(0);
       expect(output[0]["error"]).to.equal("INVALID_FIELD_UNKNOWN_TYPE");
       expect(output[0]["field"]).to.equal(0);
+      expect(output[0]["type"]).to.equal("error");
     });
 
     it("should cause substitutions of aliases with registers when an alias is encountered in a command being writen to", function () {
@@ -375,6 +382,7 @@ describe("IC Tests", function () {
       expect(output[0]["line"]).to.equal(0);
       expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_REGISTER");
       expect(output[0]["field"]).to.equal(1);
+      expect(output[0]["type"]).to.equal("error");
     });
 
     it ("should make internal register aliases available for labels", function () {
@@ -420,6 +428,7 @@ describe("IC Tests", function () {
       expect(output.length).to.equal(1);
       expect(output[0]["line"]).to.equal(128);
       expect(output[0]["error"]).to.equal("PROGRAM_TOO_LONG");
+      expect(output[0]["type"]).to.equal("warning");
     });
 
     it("should verify an individual line can not be longer than permitted", function () {
@@ -433,6 +442,29 @@ describe("IC Tests", function () {
       expect(output.length).to.equal(1);
       expect(output[0]["line"]).to.equal(0);
       expect(output[0]["error"]).to.equal("LINE_TOO_LONG");
+      expect(output[0]["type"]).to.equal("warning");
+
+      expect(ic.isValidProgram()).to.equal(true);
+    });
+
+    it("should verify an individual line can not be longer than permitted and still check for other errors", function () {
+      let ic = new IC();
+
+      let program = Array(53).fill("#").join("");
+      ic.load("l 1 d0 Setting " + program);
+
+      var output = ic.getProgramErrors();
+
+      expect(output.length).to.equal(2);
+      expect(output[0]["line"]).to.equal(0);
+      expect(output[0]["error"]).to.equal("LINE_TOO_LONG");
+      expect(output[0]["type"]).to.equal("warning");
+      expect(output[1]["line"]).to.equal(0);
+      expect(output[1]["error"]).to.equal("INVALID_FIELD_NOT_REGISTER");
+      expect(output[1]["type"]).to.equal("error");
+      expect(output[1]["field"]).to.equal(0);
+
+      expect(ic.isValidProgram()).to.equal(false);
     });
   });
 
@@ -508,6 +540,27 @@ describe("IC Tests", function () {
       var result = ic.step();
 
       expect(result).to.equal("INVALID_REGISTER_LOCATION");
+    });
+  });
+
+  describe("Running with errors", function () {
+    it("should allow you to run an IC even if there are errors, resulting in noops for invalid lines", function () {
+      let ic = new IC();
+
+      ic.load([
+        "move r0 99",
+        "this is junk",
+        "move r2 r0"
+      ].join("\n"));
+
+      ic.setIgnoreErrors(true);
+
+      ic.step();
+      ic.step();
+      ic.step();
+
+      var registers = ic.getInternalRegisters();
+      expect(registers[2]).to.equal(99);
     });
   });
 });

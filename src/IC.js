@@ -12,8 +12,11 @@ module.exports = class IC {
     this._opcodes = {};
     this._instructions = [];
 
-    this._validProgram = true;
+    this._ignoreErrors = false;
+    
+    this._validProgram = true;    
     this._programErrors = [];
+    this._programErrorLines = [];
 
     this._programCounter = 0;
 
@@ -103,55 +106,62 @@ module.exports = class IC {
 
   _validate() {
     this._programErrors = [].concat.apply([], (this._instructions.map((content, line) => this._validateLine(content, line)).filter((validatedLine) => validatedLine)));
-    this._validProgram = this._programErrors.length == 0;
+
+    var errors = this._programErrors.filter((e) => e["type"] === "error");
+    this._validProgram = errors.length == 0;
+
+    this._programErrorLines = errors.map((e) => e["line"]);
   }
 
   _validateLine(content, line) {
+    var errors = [];
+
     if (content.length > 52) {
-      return [{ line: line, error: "LINE_TOO_LONG" }];
+      errors.push({ line: line, error: "LINE_TOO_LONG", "type": "warning" });
     }
 
     if (line >= 128) {
-      return [{ line: line, error: "PROGRAM_TOO_LONG" }];
+      errors.push({ line: line, error: "PROGRAM_TOO_LONG", "type": "warning" });
     }
 
     var tokens = this._parseLine(content);
 
     if (tokens.length < 1) {
-      return [];
+      return errors;
     }
 
     var opcode = tokens.shift();
 
     if (!Object.keys(this._opcodes).includes(opcode)) {
-      return [{ line: line, error: "UNKNOWN_INSTRUCTION" }];
+      errors.push({ line: line, error: "UNKNOWN_INSTRUCTION", "type": "error" });
+      return errors;
     }
 
     var opcodeFields = this._opcodes[opcode].fields;
 
     var fieldErrors = opcodeFields.map((type, i) => {
       if (tokens.length < (i + 1)) {
-        return { line: line, error: "MISSING_FIELD", field: i };
+        return { line: line, error: "MISSING_FIELD", field: i, "type": "error" };
       }
 
       var typeCheck = this._checkFieldTypes(tokens[i], type);
 
       if (typeCheck) {
-        return { line: line, error: typeCheck, field: i };
+        return { line: line, error: typeCheck, field: i, "type": "error" };
       }
 
       if (!this._checkRegisterRange(tokens[i]) && type !== "f") {
-        return { line: line, error: "INVALID_FIELD_NO_SUCH_REGISTER", field: i };
+        return { line: line, error: "INVALID_FIELD_NO_SUCH_REGISTER", field: i, "type": "error" };
       }
     }).filter((error) => error);
 
     if (tokens.length > opcodeFields.length) {
       for (var i = opcodeFields.length; i < tokens.length; i++) {
-        fieldErrors.push({ line: line, error: "EXTRA_FIELD", field: i });
+        fieldErrors.push({ line: line, error: "EXTRA_FIELD", field: i, "type": "error" });
       }
     }
 
-    return fieldErrors;
+    return errors.concat(fieldErrors);
   }
 
   _checkFieldTypes(token, fieldType) {
@@ -214,6 +224,10 @@ module.exports = class IC {
   _parseLine(line) {
     var withoutComment = line.split(COMMENT_SEPERATOR)[0];
     return withoutComment.split(INSTRUCTION_SEPERATOR).filter((token) => token.trim());
+  }
+
+  setIgnoreErrors(value) {
+    this._ignoreErrors = value;
   }
 
   getProgramErrors() {
@@ -385,14 +399,18 @@ module.exports = class IC {
   }
 
   step() {
-    if (this._validProgram) {
+    if (this._validProgram || this._ignoreErrors) {
       var instruction = this._instructions[this._programCounter];
+      var isErrorLine = this._programErrorLines.includes(this._programCounter);
+
       this._programCounter++;
 
       var lastOpCode;
 
       try {
-        lastOpCode = this._executeInstruction(instruction);
+        if (!isErrorLine) {
+          lastOpCode = this._executeInstruction(instruction);
+        }
       } catch (err) {
         lastOpCode = err;
       }
