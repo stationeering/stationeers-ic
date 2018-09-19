@@ -201,7 +201,7 @@ describe("IC Tests", function () {
 
     it("requesting a field on an IO register which doesn't exist will default it to 0", function () {
       let ic = new IC();
-      ic._getRegister("d0", "Test");
+      ic._getRegister("d0", "Test", ["d"]);
 
       var keys = Object.keys(ic.getIORegisters()[0]);
 
@@ -379,7 +379,7 @@ describe("IC Tests", function () {
 
       ic.step();
 
-      expect(ic._aliases["bob"]).to.equal(5);
+      expect(ic._aliases["bob"]).to.deep.equal({ value: 5, type: "r" });
     });
 
     it("should allow programs to reference an alias rather than a register in code", function () {
@@ -479,13 +479,101 @@ describe("IC Tests", function () {
       let ic = new IC();
 
       ic.load([
-        "alias dialSetting r1",
+        "alias dialSetting r1"
       ].join("\n"));
 
       var output = ic.getProgramErrors();
 
       expect(output.length).to.equal(0);
     });
+
+    it ("should alias a device number to a name and be in the labels output", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias heater d3"
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0); 
+      
+      ic.step();
+
+      expect(ic.getIOLabels()[3]).to.equal("heater");      
+    });
+
+    it ("should alias a device number to a name and be usable in load commands", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias GasSensor d3",
+        "l r0 GasSensor Temperature"
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0); 
+      
+      ic.setIORegister(3, "Temperature", 280);
+
+      ic.step();
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(280);
+    });
+
+    it ("should alias a device number to a name and be usable in save commands", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias Heater d3",
+        "s Heater On r0"
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0); 
+      
+      ic.setInternalRegister(0, 1);
+
+      ic.step();
+      ic.step();
+
+      expect(ic.getIORegisters()[3]["On"]).to.equal(1);
+    });
+
+    it ("should throw an error when trying to use the wrong kind of alias for loads", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias Heater r3",
+        "l r0 Heater On"
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0); 
+      
+      ic.step();
+      var result = ic.step();
+
+      expect(result).to.equal("ALIAS_TYPE_MISMATCH");
+    });
+
+    it ("should throw an error when trying to use the wrong kind of alias for saves", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias Heater r3",
+        "s Heater On r0"
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0); 
+      
+      ic.step();
+      var result = ic.step();
+
+      expect(result).to.equal("ALIAS_TYPE_MISMATCH");
+    });
+
   });
 
   describe("Checking program limits", function () {

@@ -72,10 +72,10 @@ module.exports = class IC {
     this._registerOpcode("breq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_breq);
     this._registerOpcode("brne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brne);
 
-    this._registerOpcode("l", [["r"], ["d"], ["s"]], this._instruction_l);
-    this._registerOpcode("s", [["d"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
+    this._registerOpcode("l", [["r"], ["d", "a"], ["s"]], this._instruction_l);
+    this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
 
-    this._registerOpcode("alias", [["s"], ["r"]], this._instruction_alias);
+    this._registerOpcode("alias", [["s"], ["r", "d"]], this._instruction_alias);
   }
 
   load(unparsedInstructions) {
@@ -92,7 +92,7 @@ module.exports = class IC {
 
     for (var alias of foundAliases) {
       if (!Object.keys(currentAliases).includes(alias)) {
-        this._aliases[alias] = 0;
+        this._aliases[alias] = { value: 0 };
       }
     }
 
@@ -294,7 +294,25 @@ module.exports = class IC {
   }
 
   getIOLabels() {
-    return [];
+    var labels = Array(IO_REGISTER_COUNT + 1);
+    
+    for (var i = 0; i <= IO_REGISTER_COUNT; i++) {
+      labels[i] = [];
+    }
+
+    var aliases = Object.keys(this._aliases);
+
+    for (var alias of aliases) {
+      if (this._aliasesAsigned.includes(alias) && this._aliases[alias]["type"] === "d") {
+        labels[this._aliases[alias]["value"]].push(alias);
+      }
+    }
+
+    for (i = 0; i <= IO_REGISTER_COUNT; i++) {
+      labels[i] = labels[i].join(",");
+    }
+    
+    return labels;    
   }
 
   setIORegister(index, field, value) {
@@ -321,14 +339,15 @@ module.exports = class IC {
     var aliases = Object.keys(this._aliases);
 
     for (var alias of aliases) {
-      if (this._aliasesAsigned.includes(alias)) {
-        labels[this._aliases[alias]].push(alias);
+      if (this._aliasesAsigned.includes(alias) && this._aliases[alias]["type"] === "r") {
+        labels[this._aliases[alias]["value"]].push(alias);
       }
     }
 
     for (i = 0; i < INTERNAL_REGISTER_COUNT; i++) {
       labels[i] = labels[i].join(",");
     }
+
     return labels;
   }
 
@@ -346,7 +365,19 @@ module.exports = class IC {
     return this._validProgram;
   }
 
-  _setRegister(register, value, field) {
+  _setRegister(register, value, field, allowedTypes) {
+    if (allowedTypes.includes("a")) {
+      var foundAlias = this._aliases[register];
+
+      if (foundAlias) {
+        if (!allowedTypes.includes(foundAlias.type)) {
+          throw "alias_type_mismatch";
+        } else {
+          register = foundAlias.type + foundAlias.value;
+        }
+      }
+    }
+
     let type = register.charAt(0);
     var number;
 
@@ -359,7 +390,7 @@ module.exports = class IC {
 
         if (match) {
           if (match[1].length > 0) {
-            number = this._getRegister(match[1]+match[2]);
+            number = this._getRegister(match[1]+match[2], undefined, ["d"]);
           } else {
             number = Number.parseInt(match[2]);
           }
@@ -380,11 +411,23 @@ module.exports = class IC {
     }
 
     if (Object.keys(this._aliases).includes(register)) {
-      return this._setRegister("r" + this._aliases[register], value, field);
+      return this._setRegister(this._aliases[register]["type"] + this._aliases[register]["value"], value, field, allowedTypes);
     }
   }
 
-  _getRegister(register, field, includeJumpTags) {
+  _getRegister(register, field, allowedTypes) {
+    if (allowedTypes.includes("a")) {
+      var foundAlias = this._aliases[register];
+
+      if (foundAlias) {
+        if (!allowedTypes.includes(foundAlias.type)) {
+          throw "alias_type_mismatch";
+        } else {
+          register = foundAlias.type + foundAlias.value;
+        }
+      }
+    }
+
     let type = register.charAt(0);
     var number;
 
@@ -397,7 +440,7 @@ module.exports = class IC {
 
         if (match) {
           if (match[1].length > 0) {
-            number = this._getRegister(match[1]+match[2]);
+            number = this._getRegister(match[1]+match[2], undefined, "d");
           } else {
             number = Number.parseInt(match[2]);
           }
@@ -425,12 +468,12 @@ module.exports = class IC {
     var value = Number.parseFloat(register);
 
     if (Number.isNaN(value)) {
-      if (includeJumpTags && Object.keys(this._jumpTags).includes(register)) {
+      if (allowedTypes && Object.keys(this._jumpTags).includes(register)) {
         return this._jumpTags[register];
       }
 
       if (Object.keys(this._aliases).includes(register)) {
-        return this._getRegister("r" + this._aliases[register], field);
+        return this._getRegister(this._aliases[register]["type"] + this._aliases[register]["value"], field, allowedTypes);
       }
       return;
     } else {
@@ -480,6 +523,8 @@ module.exports = class IC {
         return "YIELD";
       } else if (lastOpCode === "illegal_register_location") {
         return "INVALID_REGISTER_LOCATION";
+      } else if (lastOpCode === "alias_type_mismatch") {
+        return "ALIAS_TYPE_MISMATCH";
       } else if (this._programCounter >= this.getInstructionCount()) {
         return "END_OF_PROGRAM";
       } else if (this._programCounter < 0) {
@@ -503,7 +548,7 @@ module.exports = class IC {
     var opcodeData = this._opcodes[opcode];
 
     if (opcodeData) {
-      opcodeData.func(fields);
+      opcodeData.func(fields, opcodeData.fields);
     }
 
     return opcode;
@@ -514,158 +559,158 @@ module.exports = class IC {
     this._opcodes[name] = { fields, func };
   }
 
-  _instruction_move(fields) {
-    let outputValue = this._getRegister(fields[1]);
-    this._setRegister(fields[0], outputValue);
+  _instruction_move(fields, allowedTypes) {
+    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
-  _instruction_add(fields) {
-    let outputValue = this._getRegister(fields[1]) + this._getRegister(fields[2]);
-    this._setRegister(fields[0], outputValue);
+  _instruction_add(fields, allowedTypes) {
+    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) + this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
-  _instruction_sub(fields) {
-    let outputValue = this._getRegister(fields[1]) - this._getRegister(fields[2]);
-    this._setRegister(fields[0], outputValue);
+  _instruction_sub(fields, allowedTypes) {
+    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) - this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
-  _instruction_mul(fields) {
-    let outputValue = this._getRegister(fields[1]) * this._getRegister(fields[2]);
-    this._setRegister(fields[0], outputValue);
+  _instruction_mul(fields, allowedTypes) {
+    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) * this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
-  _instruction_div(fields) {
-    let outputValue = this._getRegister(fields[1]) / this._getRegister(fields[2]);
-    this._setRegister(fields[0], outputValue);
+  _instruction_div(fields, allowedTypes) {
+    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) / this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
-  _instruction_mod(fields) {
-    let outputValue = Math.abs(this._getRegister(fields[1]) % this._getRegister(fields[2]));
-    this._setRegister(fields[0], outputValue);
+  _instruction_mod(fields, allowedTypes) {
+    let outputValue = Math.abs(this._getRegister(fields[1], undefined, allowedTypes[1]) % this._getRegister(fields[2], undefined, allowedTypes[2]));
+    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
-  _instruction_slt(fields) {
-    let outputValue = this._getRegister(fields[1]) < this._getRegister(fields[2]) ? 1 : 0;
-    this._setRegister(fields[0], outputValue);
+  _instruction_slt(fields, allowedTypes) {
+    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) < this._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
+    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
-  _instruction_sqrt(fields) {
-    this._setRegister(fields[0], Math.sqrt(this._getRegister(fields[1])));
+  _instruction_sqrt(fields, allowedTypes) {
+    this._setRegister(fields[0], Math.sqrt(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
   }
 
-  _instruction_round(fields) {
-    this._setRegister(fields[0], Math.round(this._getRegister(fields[1])));
+  _instruction_round(fields, allowedTypes) {
+    this._setRegister(fields[0], Math.round(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
   }
 
-  _instruction_trunc(fields) {
-    this._setRegister(fields[0], Math.trunc(this._getRegister(fields[1])));
+  _instruction_trunc(fields, allowedTypes) {
+    this._setRegister(fields[0], Math.trunc(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
   }
 
-  _instruction_ceil(fields) {
-    this._setRegister(fields[0], Math.ceil(this._getRegister(fields[1])));
+  _instruction_ceil(fields, allowedTypes) {
+    this._setRegister(fields[0], Math.ceil(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
   }
 
-  _instruction_floor(fields) {
-    this._setRegister(fields[0], Math.floor(this._getRegister(fields[1])));
+  _instruction_floor(fields, allowedTypes) {
+    this._setRegister(fields[0], Math.floor(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
   }
 
-  _instruction_max(fields) {
-    let outputValue = Math.max(this._getRegister(fields[1]), this._getRegister(fields[2]));
-    this._setRegister(fields[0], outputValue);
+  _instruction_max(fields, allowedTypes) {
+    let outputValue = Math.max(this._getRegister(fields[1], undefined, allowedTypes[1]), this._getRegister(fields[2], undefined, allowedTypes[2]));
+    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
-  _instruction_min(fields) {
-    let outputValue = Math.min(this._getRegister(fields[1]), this._getRegister(fields[2]));
-    this._setRegister(fields[0], outputValue);
+  _instruction_min(fields, allowedTypes) {
+    let outputValue = Math.min(this._getRegister(fields[1], undefined, allowedTypes[1]), this._getRegister(fields[2], undefined, allowedTypes[2]));
+    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
-  _instruction_abs(fields) {
-    this._setRegister(fields[0], Math.abs(this._getRegister(fields[1])));
+  _instruction_abs(fields, allowedTypes) {
+    this._setRegister(fields[0], Math.abs(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
   }
 
-  _instruction_log(fields) {
-    this._setRegister(fields[0], Math.log(this._getRegister(fields[1])));
+  _instruction_log(fields, allowedTypes) {
+    this._setRegister(fields[0], Math.log(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
   }
 
-  _instruction_exp(fields) {
-    this._setRegister(fields[0], Math.exp(this._getRegister(fields[1])));
+  _instruction_exp(fields, allowedTypes) {
+    this._setRegister(fields[0], Math.exp(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
   }
 
-  _instruction_rand(fields) {
-    this._setRegister(fields[0], Math.random());
+  _instruction_rand(fields, allowedTypes) {
+    this._setRegister(fields[0], Math.random(), undefined, allowedTypes[0]);
   }
 
-  _instruction_and(fields) {
-    var valueOne = this._getRegister(fields[1]) > 0;
-    var valueTwo = this._getRegister(fields[2]) > 0;
+  _instruction_and(fields, allowedTypes) {
+    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) > 0;
+    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) > 0;
     var result = (valueOne && valueTwo ? 1 : 0);
-    this._setRegister(fields[0], result);
+    this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
 
-  _instruction_or(fields) {
-    var valueOne = this._getRegister(fields[1]) > 0;
-    var valueTwo = this._getRegister(fields[2]) > 0;
+  _instruction_or(fields, allowedTypes) {
+    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) > 0;
+    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) > 0;
     var result = (valueOne || valueTwo ? 1 : 0);
-    this._setRegister(fields[0], result);
+    this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
 
-  _instruction_xor(fields) {
-    var valueOne = this._getRegister(fields[1]) > 0;
-    var valueTwo = this._getRegister(fields[2]) > 0;
+  _instruction_xor(fields, allowedTypes) {
+    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) > 0;
+    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) > 0;
     var result = (valueOne ^ valueTwo ? 1 : 0);
-    this._setRegister(fields[0], result);
+    this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
 
-  _instruction_nor(fields) {
-    var valueOne = this._getRegister(fields[1]) > 0;
-    var valueTwo = this._getRegister(fields[2]) > 0;
+  _instruction_nor(fields, allowedTypes) {
+    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) > 0;
+    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) > 0;
     var result = (!valueOne && !valueTwo) ? 1 : 0;
-    this._setRegister(fields[0], result);
+    this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
 
-  _instruction_j(fields) {
-    var addr = this._getRegister(fields[0], undefined, true);
+  _instruction_j(fields, allowedTypes) {
+    var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
     this._programCounter = Math.round(addr);
   }
 
-  _instruction_bltz(fields) {
-    if (this._getRegister(fields[0]) < 0) {
-      var addr = this._getRegister(fields[1], undefined, true);
+  _instruction_bltz(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0) {
+      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_blez(fields) {
-    if (this._getRegister(fields[0]) <= 0) {
-      var addr = this._getRegister(fields[1], undefined, true);
+  _instruction_blez(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0) {
+      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_bgez(fields) {
-    if (this._getRegister(fields[0]) >= 0) {
-      var addr = this._getRegister(fields[1], undefined, true);
+  _instruction_bgez(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0) {
+      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_bgtz(fields) {
-    if (this._getRegister(fields[0]) > 0) {
-      var addr = this._getRegister(fields[1], undefined, true);
+  _instruction_bgtz(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0) {
+      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_beq(fields) {
-    if (this._getRegister(fields[0]) === this._getRegister(fields[1])) {
-      var addr = this._getRegister(fields[2], undefined, true);
+  _instruction_beq(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1])) {
+      var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_bne(fields) {
-    if (this._getRegister(fields[0]) !== this._getRegister(fields[1])) {
-      var addr = this._getRegister(fields[2], undefined, true);
+  _instruction_bne(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1])) {
+      var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
       this._programCounter = Math.round(addr);
     }
   }
@@ -673,64 +718,68 @@ module.exports = class IC {
   _instruction_yield() {
   }
 
-  _instruction_l(fields) {
-    this._setRegister(fields[0], this._getRegister(fields[1], fields[2]));
+  _instruction_l(fields, allowedTypes) {
+    this._setRegister(fields[0], this._getRegister(fields[1], fields[2], allowedTypes[1]), undefined, allowedTypes[0]);
   }
 
-  _instruction_s(fields) {
-    this._setRegister(fields[0], this._getRegister(fields[2]), fields[1]);
+  _instruction_s(fields, allowedTypes) {
+    this._setRegister(fields[0], this._getRegister(fields[2], undefined, allowedTypes[2]), fields[1], allowedTypes[0]);
   }
 
-  _instruction_jr(fields) {
-    var addr = this._programCounter - 1 + this._getRegister(fields[0]);
+  _instruction_jr(fields, allowedTypes) {
+    var addr = this._programCounter - 1 + this._getRegister(fields[0], undefined, allowedTypes[0]);
     this._programCounter = Math.round(addr);
   }
 
-  _instruction_brltz(fields) {
-    if (this._getRegister(fields[0]) < 0) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[1]);
+  _instruction_brltz(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0) {
+      var addr = this._programCounter - 1 + this._getRegister(fields[1], undefined, allowedTypes[1]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_brlez(fields) {
-    if (this._getRegister(fields[0]) <= 0) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[1]);
+  _instruction_brlez(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0) {
+      var addr = this._programCounter - 1 + this._getRegister(fields[1], undefined, allowedTypes[1]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_brgez(fields) {
-    if (this._getRegister(fields[0]) >= 0) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[1]);
+  _instruction_brgez(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0) {
+      var addr = this._programCounter - 1 + this._getRegister(fields[1], undefined, allowedTypes[1]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_brgtz(fields) {
-    if (this._getRegister(fields[0]) > 0) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[1]);
+  _instruction_brgtz(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0) {
+      var addr = this._programCounter - 1 + this._getRegister(fields[1], undefined, allowedTypes[1]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_breq(fields) {
-    if (this._getRegister(fields[0]) === this._getRegister(fields[1])) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[2]);
+  _instruction_breq(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1])) {
+      var addr = this._programCounter - 1 + this._getRegister(fields[2], undefined, allowedTypes[2]);
       this._programCounter = Math.round(addr);
     }
   }
 
-  _instruction_brne(fields) {
-    if (this._getRegister(fields[0]) !== this._getRegister(fields[1])) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[2]);
+  _instruction_brne(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1])) {
+      var addr = this._programCounter - 1 + this._getRegister(fields[2], undefined, allowedTypes[2]);
       this._programCounter = Math.round(addr);
     }
   }
 
   _instruction_alias(fields) {
-    var number = Number.parseInt(fields[1].split("r")[1]);
-    this._aliases[fields[0]] = number;
-    this._aliasesAsigned.push(fields[0]);
+    var matches = fields[1].match(/^([dr])(\d+)$/);
+
+    if (matches) {
+      var number = Number.parseInt(matches[2]);
+      this._aliases[fields[0]] = { value: number, type: matches[1] };
+      this._aliasesAsigned.push(fields[0]);
+    }
   }
 };
