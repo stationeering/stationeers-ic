@@ -448,9 +448,12 @@ describe("Instruction Tests", function () {
       let ic = new IC();
       ic.load("j 9.4");
 
-      ic.step();
+      var output = ic.getProgramErrors();
 
-      expect(ic._programCounter).to.equal(9);
+      expect(output.length).to.equal(1);
+      expect(output[0]["line"]).to.equal(0);
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_INVALID_TYPE");
+      expect(output[0]["field"]).to.equal(0); 
     });
 
     it("should accept a register as the jump address and then change the program counter to that value", function() {
@@ -798,7 +801,7 @@ describe("Instruction Tests", function () {
 
       expect(output.length).to.equal(1);
       expect(output[0]["line"]).to.equal(0);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_DEVICE");
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_INVALID_TYPE");
       expect(output[0]["field"]).to.equal(1); 
     });
   });

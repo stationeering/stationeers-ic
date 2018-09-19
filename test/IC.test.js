@@ -337,8 +337,8 @@ describe("IC Tests", function () {
       expect(output.length).to.equal(1);
 
       expect(output[0]["line"]).to.equal(0);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_UNKNOWN_TYPE");
-      expect(output[0]["type"]).to.equal("error");
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_INVALID_TYPE");
+      expect(output[0]["validTypes"]).to.deep.equal(["r", "i", "a", "j"]);
     });
   
     it("should error when a jump tag is passed to a relative jump", function () {
@@ -350,8 +350,9 @@ describe("IC Tests", function () {
       expect(output.length).to.equal(1);
 
       expect(output[0]["line"]).to.equal(1);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_UNKNOWN_TYPE");
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_INVALID_TYPE");
       expect(output[0]["type"]).to.equal("error");
+      expect(output[0]["validTypes"]).to.deep.equal(["r", "i", "a"]);
     });
   
     it("should error when there is content after a jump tag", function () {
@@ -403,7 +404,7 @@ describe("IC Tests", function () {
 
       expect(output.length).to.equal(1);
       expect(output[0]["line"]).to.equal(0);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_UNKNOWN_TYPE");
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_INVALID_TYPE");
       expect(output[0]["field"]).to.equal(0);
       expect(output[0]["type"]).to.equal("error");
     });
@@ -449,7 +450,7 @@ describe("IC Tests", function () {
 
       expect(output.length).to.equal(1);
       expect(output[0]["line"]).to.equal(0);
-      expect(output[0]["error"]).to.equal("INVALID_FIELD_NOT_REGISTER");
+      expect(output[0]["error"]).to.equal("INVALID_FIELD_INVALID_TYPE");
       expect(output[0]["field"]).to.equal(1);
       expect(output[0]["type"]).to.equal("error");
     });
@@ -531,7 +532,7 @@ describe("IC Tests", function () {
       expect(output[0]["error"]).to.equal("LINE_TOO_LONG");
       expect(output[0]["type"]).to.equal("warning");
       expect(output[1]["line"]).to.equal(0);
-      expect(output[1]["error"]).to.equal("INVALID_FIELD_NOT_REGISTER");
+      expect(output[1]["error"]).to.equal("INVALID_FIELD_INVALID_TYPE");
       expect(output[1]["type"]).to.equal("error");
       expect(output[1]["field"]).to.equal(0);
 

@@ -31,51 +31,51 @@ module.exports = class IC {
 
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
 
-    this._registerOpcode("move", ["d", "s"], this._instruction_move);
-    this._registerOpcode("add", ["d", "s", "s"], this._instruction_add);
-    this._registerOpcode("sub", ["d", "s", "s"], this._instruction_sub);
-    this._registerOpcode("mul", ["d", "s", "s"], this._instruction_mul);
-    this._registerOpcode("div", ["d", "s", "s"], this._instruction_div);
-    this._registerOpcode("mod", ["d", "s", "s"], this._instruction_mod);
-    this._registerOpcode("slt", ["d", "s", "s"], this._instruction_slt);
-    this._registerOpcode("sqrt", ["d", "s"], this._instruction_sqrt);
-    this._registerOpcode("round", ["d", "s"], this._instruction_round);
-    this._registerOpcode("trunc", ["d", "s"], this._instruction_trunc);
-    this._registerOpcode("ceil", ["d", "s"], this._instruction_ceil);
-    this._registerOpcode("floor", ["d", "s"], this._instruction_floor);
-    this._registerOpcode("max", ["d", "s", "s"], this._instruction_max);
-    this._registerOpcode("min", ["d", "s", "s"], this._instruction_min);
-    this._registerOpcode("abs", ["d", "s"], this._instruction_abs);
-    this._registerOpcode("log", ["d", "s"], this._instruction_log);
-    this._registerOpcode("exp", ["d", "s"], this._instruction_exp);
-    this._registerOpcode("rand", ["d"], this._instruction_rand);
-    this._registerOpcode("and", ["d", "s", "s"], this._instruction_and);
-    this._registerOpcode("or", ["d", "s", "s"], this._instruction_or);
-    this._registerOpcode("xor", ["d", "s", "s"], this._instruction_xor);
-    this._registerOpcode("nor", ["d", "s", "s"], this._instruction_nor);
+    this._registerOpcode("move", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_move);
+    this._registerOpcode("add", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_add);
+    this._registerOpcode("sub", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_sub);
+    this._registerOpcode("mul", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_mul);
+    this._registerOpcode("div", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_div);
+    this._registerOpcode("mod", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_mod);
+    this._registerOpcode("slt", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_slt);
+    this._registerOpcode("sqrt", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_sqrt);
+    this._registerOpcode("round", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_round);
+    this._registerOpcode("trunc", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_trunc);
+    this._registerOpcode("ceil", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_ceil);
+    this._registerOpcode("floor", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_floor);
+    this._registerOpcode("max", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_max);
+    this._registerOpcode("min", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_min);
+    this._registerOpcode("abs", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_abs);
+    this._registerOpcode("log", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_log);
+    this._registerOpcode("exp", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_exp);
+    this._registerOpcode("rand", [["r", "a"]], this._instruction_rand);
+    this._registerOpcode("and", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_and);
+    this._registerOpcode("or", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_or);
+    this._registerOpcode("xor", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_xor);
+    this._registerOpcode("nor", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_nor);
 
     this._registerOpcode("yield", [], this._instruction_yield);
 
-    this._registerOpcode("j", ["S"], this._instruction_j);
-    this._registerOpcode("bltz", ["s", "S"], this._instruction_bltz);
-    this._registerOpcode("blez", ["s", "S"], this._instruction_blez);
-    this._registerOpcode("bgez", ["s", "S"], this._instruction_bgez);
-    this._registerOpcode("bgtz", ["s", "S"], this._instruction_bgtz);
-    this._registerOpcode("beq", ["s", "s", "S"], this._instruction_beq);
-    this._registerOpcode("bne", ["s", "s", "S"], this._instruction_bne);
+    this._registerOpcode("j", [["r", "i", "a", "j"]], this._instruction_j);
+    this._registerOpcode("bltz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bltz);
+    this._registerOpcode("blez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_blez);
+    this._registerOpcode("bgez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bgez);
+    this._registerOpcode("bgtz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bgtz);
+    this._registerOpcode("beq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_beq);
+    this._registerOpcode("bne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bne);
 
-    this._registerOpcode("jr", ["s"], this._instruction_jr);
-    this._registerOpcode("brltz", ["s", "s"], this._instruction_brltz);
-    this._registerOpcode("brlez", ["s", "s"], this._instruction_brlez);
-    this._registerOpcode("brgez", ["s", "s"], this._instruction_brgez);
-    this._registerOpcode("brgtz", ["s", "s"], this._instruction_brgtz);
-    this._registerOpcode("breq", ["s", "s", "s"], this._instruction_breq);
-    this._registerOpcode("brne", ["s", "s", "s"], this._instruction_brne);
+    this._registerOpcode("jr", [["r", "i", "a"]], this._instruction_jr);
+    this._registerOpcode("brltz", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brltz);
+    this._registerOpcode("brlez", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brlez);
+    this._registerOpcode("brgez", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brgez);
+    this._registerOpcode("brgtz", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brgtz);
+    this._registerOpcode("breq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_breq);
+    this._registerOpcode("brne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brne);
 
-    this._registerOpcode("l", ["d", "i", "f"], this._instruction_l);
-    this._registerOpcode("s", ["i", "f", "s"], this._instruction_s);
+    this._registerOpcode("l", [["r"], ["d"], ["s"]], this._instruction_l);
+    this._registerOpcode("s", [["d"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
 
-    this._registerOpcode("alias", ["f", "d"], this._instruction_alias);
+    this._registerOpcode("alias", [["s"], ["r"]], this._instruction_alias);
   }
 
   load(unparsedInstructions) {
@@ -174,12 +174,8 @@ module.exports = class IC {
       var typeCheck = this._checkFieldTypes(tokens[i], type);
 
       if (typeCheck) {
-        return { line: line, error: typeCheck, field: i, "type": "error" };
-      }
-
-      if (!this._checkRegisterRange(tokens[i]) && type !== "f") {
-        return { line: line, error: "INVALID_FIELD_NO_SUCH_REGISTER", field: i, "type": "error" };
-      }
+        return { line: line, error: typeCheck, validTypes: type, field: i, "type": "error" };
+      }      
     }).filter((error) => error);
 
     if (tokens.length > opcodeFields.length) {
@@ -191,76 +187,77 @@ module.exports = class IC {
     return errors.concat(fieldErrors);
   }
 
-  _checkFieldTypes(token, fieldType) {
-    var tokenType = token.charAt(0);
-    var allowJump = (fieldType === "S");
-
-    if (allowJump) {
-      fieldType = "s";
+  _checkFieldTypes(token, fieldTypes) {
+    // Jump Label
+    if (fieldTypes.includes("j")) {
+      if (Object.keys(this._jumpTags).includes(token)) {
+        return undefined;
+      }
     }
 
-    if (fieldType === "f") {
+    // Alias
+    if (fieldTypes.includes("a")) {
+      if (Object.keys(this._aliases).includes(token)) {
+        return undefined;
+      }
+    }
+
+    // Register
+    if (fieldTypes.includes("r")) {
+      var registerMatches = token.match(/^r+(\d+)$/);
+
+      if (registerMatches) {
+        var registerNumber = Number.parseInt(registerMatches[1]);
+
+        if (registerNumber >= INTERNAL_REGISTER_COUNT) {
+          return "INVALID_FIELD_NO_SUCH_REGISTER";
+        } 
+        
+        return undefined;
+      }
+    }
+
+    // Device
+    if (fieldTypes.includes("d")) {
+      var deviceMatches = token.match(/^d(r*)(\d)+$|^db$/);
+  
+      if (deviceMatches) {
+        if (deviceMatches[2]) {
+          var maxRegister = deviceMatches[1].length > 0 ? INTERNAL_REGISTER_COUNT : IO_REGISTER_COUNT;
+          var actualRegister = Number.parseInt(deviceMatches[2]);
+
+          if (actualRegister >= maxRegister) {
+            return "INVALID_FIELD_NO_SUCH_REGISTER";
+          } 
+        } 
+        
+        return undefined;        
+      }
+    }
+
+    // Number Handling
+    var asNumber = Number.parseFloat(token);
+    
+    if (!Number.isNaN(asNumber)) {
+      // Float
+      if (fieldTypes.includes("f")) {
+        return undefined;
+      }
+
+      // Integer
+      if (fieldTypes.includes("i")) {
+        if (asNumber === Number.parseInt(token)) {
+          return undefined;
+        }
+      }
+    }
+
+    // String
+    if (fieldTypes.includes("s")) {
       return undefined;
     }
 
-    if (tokenType !== "d" && tokenType !== "r") {
-      var asFloat = Number.parseFloat(token);
-
-      if (isNaN(asFloat)) {
-        if (Object.keys(this._aliases).includes(token) || (allowJump && Object.keys(this._jumpTags).includes(token))) {
-          tokenType = "r";
-        } else {
-          return "INVALID_FIELD_UNKNOWN_TYPE";
-        }
-      } else {
-        tokenType = "f";
-      }
-    }
-
-    switch (fieldType) {
-    case "d":
-      return (tokenType === "r") ? undefined : "INVALID_FIELD_NOT_REGISTER";    
-    case "s":
-      return (tokenType === "r" || tokenType === "f") ? undefined : "INVALID_FIELD_NOT_READABLE";
-    case "i":
-      return (tokenType === "d") ? undefined : "INVALID_FIELD_NOT_DEVICE";
-    }
-  }
-
-  _checkRegisterRange(token) {
-    var starting = token.charAt(0);
-    var number;
-
-    switch (starting) {
-    case "d":
-      var maxCount = IO_REGISTER_COUNT;
-
-      if (token.charAt(1) === "b") {
-        number = IO_REGISTER_COUNT;
-      } else {
-        var matches = token.match(/d(r*)(\d+)/);
-
-        if (matches) {
-          if (matches[1].length > 0) {
-            maxCount = INTERNAL_REGISTER_COUNT - 1;
-          }
-
-          number = Number.parseInt(matches[2]);
-        } 
-      }
-
-      return number <= maxCount;
-    case "r":
-      number = token.match(/r+(\d+)/);
-
-      if (number) {
-        return number[1] < INTERNAL_REGISTER_COUNT;
-      } else {
-        return Object.keys(this._aliases).includes(token);
-      }
-    default:
-      return true;
-    }
+    return "INVALID_FIELD_INVALID_TYPE";
   }
 
   _parseLine(line) {
@@ -288,7 +285,7 @@ module.exports = class IC {
     var names = [];
 
     for (var i = 0; i < IO_REGISTER_COUNT; i++) {
-      names.push("d" + i);
+      names.push(["d"] + i);
     }
 
     names.push("db");
