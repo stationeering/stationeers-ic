@@ -72,7 +72,7 @@ module.exports = class IC {
     this._registerOpcode("breq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_breq);
     this._registerOpcode("brne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brne);
 
-    this._registerOpcode("l", [["r"], ["d", "a"], ["s"]], this._instruction_l);
+    this._registerOpcode("l", [["r","a"], ["d", "a"], ["s"]], this._instruction_l);
     this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
 
     this._registerOpcode("alias", [["s"], ["r", "d"]], this._instruction_alias);
