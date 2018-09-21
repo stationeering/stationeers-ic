@@ -13,8 +13,8 @@ module.exports = class IC {
     this._instructions = [];
 
     this._ignoreErrors = false;
-    
-    this._validProgram = true;    
+
+    this._validProgram = true;
     this._programErrors = [];
     this._programErrorLines = [];
 
@@ -85,7 +85,7 @@ module.exports = class IC {
     this._validate();
   }
 
-  _preProcess() {    
+  _preProcess() {
     var parsedLines = this._instructions.map((content) => this._parseLine(content));
     var foundAliases = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]);
     var currentAliases = this._aliases;
@@ -100,7 +100,7 @@ module.exports = class IC {
 
     for (var toBeRemoved of removedAliases) {
       delete this._aliases[toBeRemoved];
-      
+
       var foundIndex = this._aliasesAsigned.indexOf(toBeRemoved);
       delete this._aliasesAsigned[foundIndex];
     }
@@ -152,7 +152,7 @@ module.exports = class IC {
 
       if (tokens.length > 1) {
         errors.push({ line: line, error: "INVALID_JUMP_TAG_CONTENT_AFTER", "type": "error" });
-      }          
+      }
 
       return errors;
     }
@@ -175,7 +175,7 @@ module.exports = class IC {
 
       if (typeCheck) {
         return { line: line, error: typeCheck, validTypes: type, field: i, "type": "error" };
-      }      
+      }
     }).filter((error) => error);
 
     if (tokens.length > opcodeFields.length) {
@@ -211,8 +211,8 @@ module.exports = class IC {
 
         if (registerNumber >= INTERNAL_REGISTER_COUNT) {
           return "INVALID_FIELD_NO_SUCH_REGISTER";
-        } 
-        
+        }
+
         return undefined;
       }
     }
@@ -220,7 +220,7 @@ module.exports = class IC {
     // Device
     if (fieldTypes.includes("d")) {
       var deviceMatches = token.match(/^d(r*)(\d)+$|^db$/);
-  
+
       if (deviceMatches) {
         if (deviceMatches[2]) {
           var maxRegister = deviceMatches[1].length > 0 ? INTERNAL_REGISTER_COUNT : IO_REGISTER_COUNT;
@@ -228,16 +228,16 @@ module.exports = class IC {
 
           if (actualRegister >= maxRegister) {
             return "INVALID_FIELD_NO_SUCH_REGISTER";
-          } 
-        } 
-        
-        return undefined;        
+          }
+        }
+
+        return undefined;
       }
     }
 
     // Number Handling
     var asNumber = Number.parseFloat(token);
-    
+
     if (!Number.isNaN(asNumber)) {
       // Float
       if (fieldTypes.includes("f")) {
@@ -295,7 +295,7 @@ module.exports = class IC {
 
   getIOLabels() {
     var labels = Array(IO_REGISTER_COUNT + 1);
-    
+
     for (var i = 0; i <= IO_REGISTER_COUNT; i++) {
       labels[i] = [];
     }
@@ -311,8 +311,8 @@ module.exports = class IC {
     for (i = 0; i <= IO_REGISTER_COUNT; i++) {
       labels[i] = labels[i].join(",");
     }
-    
-    return labels;    
+
+    return labels;
   }
 
   setIORegister(index, field, value) {
@@ -331,7 +331,7 @@ module.exports = class IC {
 
   getInternalLabels() {
     var labels = Array(INTERNAL_REGISTER_COUNT);
-    
+
     for (var i = 0; i < INTERNAL_REGISTER_COUNT; i++) {
       labels[i] = [];
     }
@@ -394,8 +394,8 @@ module.exports = class IC {
           } else {
             number = Number.parseInt(match[2]);
           }
-        } 
-        
+        }
+
         if (number >= IO_REGISTER_COUNT) {
           throw "illegal_register_location";
         }
@@ -444,7 +444,7 @@ module.exports = class IC {
           } else {
             number = Number.parseInt(match[2]);
           }
-        } 
+        }
 
         if (number >= IO_REGISTER_COUNT) {
           throw "illegal_register_location";
@@ -483,7 +483,7 @@ module.exports = class IC {
 
   _resolveIndirectRegister(register) {
     var matched = register.match(/(r+)(\d+)/);
-    
+
     if (matched === null) {
       return null;
     }
@@ -587,8 +587,12 @@ module.exports = class IC {
   _instruction_mod(fields, allowedTypes) {
     let valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]);
     let valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]);
+
     let outputValue = valueOne % valueTwo;
-    if (outputValue < 0) outputValue += valueTwo;
+    if (outputValue < 0) {
+      outputValue += valueTwo;
+    }
+    
     this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
