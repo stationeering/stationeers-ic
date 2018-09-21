@@ -585,7 +585,10 @@ module.exports = class IC {
   }
 
   _instruction_mod(fields, allowedTypes) {
-    let outputValue = Math.abs(this._getRegister(fields[1], undefined, allowedTypes[1]) % this._getRegister(fields[2], undefined, allowedTypes[2]));
+    let valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    let valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    let outputValue = valueOne % valueTwo;
+    if (outputValue < 0) outputValue += valueTwo;
     this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
@@ -641,29 +644,29 @@ module.exports = class IC {
   }
 
   _instruction_and(fields, allowedTypes) {
-    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) > 0;
-    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) > 0;
+    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) != 0;
+    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) != 0;
     var result = (valueOne && valueTwo ? 1 : 0);
     this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
 
   _instruction_or(fields, allowedTypes) {
-    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) > 0;
-    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) > 0;
+    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) != 0;
+    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) != 0;
     var result = (valueOne || valueTwo ? 1 : 0);
     this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
 
   _instruction_xor(fields, allowedTypes) {
-    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) > 0;
-    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) > 0;
+    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) != 0;
+    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) != 0;
     var result = (valueOne ^ valueTwo ? 1 : 0);
     this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
 
   _instruction_nor(fields, allowedTypes) {
-    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) > 0;
-    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) > 0;
+    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) != 0;
+    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) != 0;
     var result = (!valueOne && !valueTwo) ? 1 : 0;
     this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
