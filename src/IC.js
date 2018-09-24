@@ -7,7 +7,10 @@ const COMMENT_SEPERATOR = /\s*(\/\/|#)/;
 const IO_REGISTER_COUNT = 6;
 const INTERNAL_REGISTER_COUNT = 18;
 
-const INITIAL_ALIASES = [ "db" ];
+const STACK_SIZE = 512;
+const STACK_POINTER_REGISTER = 16;
+
+const INITIAL_ALIASES = [ "db", "sp" ];
 
 module.exports = class IC {
   constructor() {
@@ -24,14 +27,18 @@ module.exports = class IC {
 
     this._aliases = {};
     this._aliasesAsigned = [];
-    this._ioRegister = [];
+    
     this._jumpTags = {};
 
+    this._ioRegister = [];
+  
     for (var i = 0; i <= IO_REGISTER_COUNT; i++) {
       this._ioRegister[i] = {};
     }
 
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
+
+    this._stack = Array(STACK_SIZE).fill(0);   
 
     this._registerOpcode("move", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_move);
     this._registerOpcode("add", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_add);
@@ -79,7 +86,12 @@ module.exports = class IC {
 
     this._registerOpcode("alias", [["s"], ["r", "d"]], this._instruction_alias);
 
+    this._registerOpcode("push", [["r", "i", "f", "a"]], this._instruction_push);
+    this._registerOpcode("pop", [["r", "a"]], this._instruction_pop);
+    this._registerOpcode("peek", [["r", "a"]], this._instruction_peek);
+
     this._instruction_alias(["db", "d" + IO_REGISTER_COUNT]);
+    this._instruction_alias(["sp", "r" + STACK_POINTER_REGISTER]);    
   }
 
   load(unparsedInstructions) {
@@ -327,6 +339,10 @@ module.exports = class IC {
     }
   }
 
+  getStack() {
+    return this._stack;
+  }
+
   getInternalRegisters() {
     return this._internalRegister;
   }
@@ -519,6 +535,10 @@ module.exports = class IC {
         return "INVALID_REGISTER_LOCATION";
       } else if (lastOpCode === "alias_type_mismatch") {
         return "ALIAS_TYPE_MISMATCH";
+      } else if (lastOpCode === "stack_overflow") {
+        return "STACK_OVERFLOW";
+      } else if (lastOpCode === "stack_underflow") {
+        return "STACK_UNDERFLOW";
       } else if (this._programCounter >= this.getInstructionCount()) {
         return "END_OF_PROGRAM";
       } else if (this._programCounter < 0) {
@@ -782,5 +802,38 @@ module.exports = class IC {
       this._aliases[fields[0]] = { value: number, type: matches[1] };
       this._aliasesAsigned.push(fields[0]);
     }
+  }
+
+  _instruction_push(fields, allowedTypes) {
+    var stackPosition = this._internalRegister[STACK_POINTER_REGISTER];
+
+    if (stackPosition >= STACK_SIZE) {
+      throw "stack_overflow";
+    }
+
+    this._stack[stackPosition] = this._getRegister(fields[0], undefined, allowedTypes[0]);
+    this._internalRegister[STACK_POINTER_REGISTER] = stackPosition + 1;
+  }
+
+  _instruction_pop(fields, allowedTypes) {
+    var stackPosition = this._internalRegister[STACK_POINTER_REGISTER];
+
+    if (stackPosition <= 0) {
+      throw "stack_underflow";
+    }
+    
+    stackPosition -= 1;
+    this._internalRegister[STACK_POINTER_REGISTER] = stackPosition;
+    this._setRegister(fields[0], this._stack[stackPosition], undefined, allowedTypes[0]);
+  }
+
+  _instruction_peek(fields, allowedTypes) {
+    var stackPosition = this._internalRegister[STACK_POINTER_REGISTER];
+
+    if (stackPosition <= 0) {
+      throw "stack_underflow";
+    }
+
+    this._setRegister(fields[0], this._stack[stackPosition - 1], undefined, allowedTypes[0]);
   }
 };
