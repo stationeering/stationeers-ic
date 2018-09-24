@@ -877,9 +877,6 @@ describe("Instruction Tests", function () {
       expect(output[0]["field"]).to.equal(1);
     });
   });
-<<<<<<< bb208d5bf6315438a1016f32162c49fea7f9c999
-});
-=======
 
   describe("push", function () {
     it ("should push the value in the register to the stack", function () {
@@ -973,4 +970,3 @@ describe("Instruction Tests", function () {
     });
   });
 });
->>>>>>> Add support for stack.
