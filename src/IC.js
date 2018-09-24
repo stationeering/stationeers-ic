@@ -7,6 +7,8 @@ const COMMENT_SEPERATOR = /\s*(\/\/|#)/;
 const IO_REGISTER_COUNT = 6;
 const INTERNAL_REGISTER_COUNT = 18;
 
+const INITIAL_ALIASES = [ "db" ];
+
 module.exports = class IC {
   constructor() {
     this._opcodes = {};
@@ -25,7 +27,7 @@ module.exports = class IC {
     this._ioRegister = [];
     this._jumpTags = {};
 
-    for (var i = 0; i < IO_REGISTER_COUNT + 1; i++) {
+    for (var i = 0; i <= IO_REGISTER_COUNT; i++) {
       this._ioRegister[i] = {};
     }
 
@@ -76,6 +78,8 @@ module.exports = class IC {
     this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
 
     this._registerOpcode("alias", [["s"], ["r", "d"]], this._instruction_alias);
+
+    this._instruction_alias(["db", "d" + IO_REGISTER_COUNT]);
   }
 
   load(unparsedInstructions) {
@@ -87,7 +91,7 @@ module.exports = class IC {
 
   _preProcess() {
     var parsedLines = this._instructions.map((content) => this._parseLine(content));
-    var foundAliases = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]);
+    var foundAliases = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]).concat(INITIAL_ALIASES);
     var currentAliases = this._aliases;
 
     for (var alias of foundAliases) {
@@ -219,19 +223,17 @@ module.exports = class IC {
 
     // Device
     if (fieldTypes.includes("d")) {
-      var deviceMatches = token.match(/^d(r*)(\d)+$|^db$/);
+      var deviceMatches = token.match(/^d(r*)(\d)+$/);
 
       if (deviceMatches) {
-        if (deviceMatches[2]) {
-          var maxRegister = deviceMatches[1].length > 0 ? INTERNAL_REGISTER_COUNT : IO_REGISTER_COUNT;
-          var actualRegister = Number.parseInt(deviceMatches[2]);
+        var maxRegister = deviceMatches[1].length > 0 ? INTERNAL_REGISTER_COUNT : IO_REGISTER_COUNT;
+        var actualRegister = Number.parseInt(deviceMatches[2]);
 
-          if (actualRegister >= maxRegister) {
-            return "INVALID_FIELD_NO_SUCH_REGISTER";
-          }
-        }
-
-        return undefined;
+        if (actualRegister >= maxRegister) {
+          return "INVALID_FIELD_NO_SUCH_REGISTER";
+        } 
+        
+        return undefined;        
       }
     }
 
@@ -383,22 +385,18 @@ module.exports = class IC {
 
     switch (type) {
     case "d":
-      if (register.charAt(1) === "b") {
-        number = IO_REGISTER_COUNT;
-      } else {
-        var match = register.match(/d(r*)(\d+)/);
+      var match = register.match(/d(r*)(\d+)/);
 
-        if (match) {
-          if (match[1].length > 0) {
-            number = this._getRegister(match[1]+match[2], undefined, ["d"]);
-          } else {
-            number = Number.parseInt(match[2]);
-          }
+      if (match) {
+        if (match[1].length > 0) {
+          number = this._getRegister(match[1]+match[2], undefined, ["r"]);
+        } else {
+          number = Number.parseInt(match[2]);
         }
-
-        if (number >= IO_REGISTER_COUNT) {
-          throw "illegal_register_location";
-        }
+      } 
+      
+      if (number > IO_REGISTER_COUNT) {
+        throw "illegal_register_location";
       }
 
       return this.setIORegister(number, field, value);
@@ -433,22 +431,18 @@ module.exports = class IC {
 
     switch (type) {
     case "d":
-      if (register.charAt(1) === "b") {
-        number = IO_REGISTER_COUNT;
-      } else {
-        var match = register.match(/d(r*)(\d+)/);
+      var match = register.match(/d(r*)(\d+)/);
 
-        if (match) {
-          if (match[1].length > 0) {
-            number = this._getRegister(match[1]+match[2], undefined, "d");
-          } else {
-            number = Number.parseInt(match[2]);
-          }
+      if (match) {
+        if (match[1].length > 0) {
+          number = this._getRegister(match[1]+match[2], undefined, ["r"]);
+        } else {
+          number = Number.parseInt(match[2]);
         }
+      } 
 
-        if (number >= IO_REGISTER_COUNT) {
-          throw "illegal_register_location";
-        }
+      if (number > IO_REGISTER_COUNT) {
+        throw "illegal_register_location";
       }
 
       if (!this.getIORegisters()[number][field]) {
