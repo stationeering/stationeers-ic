@@ -969,4 +969,144 @@ describe("Instruction Tests", function () {
       expect(ic.step()).to.equal("STACK_UNDERFLOW");
     });
   });
+
+  describe("sgt", function () {
+    it ("should set the register to 1 if a > b", function () {
+      let ic = new IC();
+
+      ic.load("sgt r0 1 0");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1);
+    });
+
+    it ("should set the register to 0 if a <= b", function () {
+      let ic = new IC();
+
+      ic.load("sgt r0 0 0");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+  });
+
+  describe("sle", function () {
+    it ("should set the register to 1 if a <= b", function () {
+      let ic = new IC();
+
+      ic.load("sle r0 1 1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1);
+    });
+
+    it ("should set the register to 0 if a > b", function () {
+      let ic = new IC();
+
+      ic.load("sle r0 2 1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+  });
+
+  describe("sge", function () {
+    it ("should set the register to 1 if a >= b", function () {
+      let ic = new IC();
+
+      ic.load("sge r0 1 1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1);
+    });
+
+    it ("should set the register to 0 if a < b", function () {
+      let ic = new IC();
+
+      ic.load("sge r0 0 1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+  });
+
+  describe("seq", function () {
+    it ("should set the register to 1 if a == b", function () {
+      let ic = new IC();
+
+      ic.load("seq r0 1 1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1);
+    });
+
+    it ("should set the register to 0 if a != b", function () {
+      let ic = new IC();
+
+      ic.load("seq r0 0 1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+  });
+
+  describe("sne", function () {
+    it ("should set the register to 1 if a != b", function () {
+      let ic = new IC();
+
+      ic.load("sne r0 0 1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1);
+    });
+
+    it ("should set the register to 0 if a == b", function () {
+      let ic = new IC();
+
+      ic.load("sne r0 1 1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+  });
+
+  describe("sap", function () {
+    it ("should set the register to 1 if abs(a - b) <= c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("sap r0 1 1.01 0.1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1);
+    });
+
+    it ("should set the register to 0 if abs(a - b) > c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("sap r0 1 2.01 0.1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+  });
+
+  describe("sna", function () {
+    it ("should set the register to 1 if abs(a - b) > c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("sna r0 1 2.01 0.1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1);
+    });
+
+    it ("should set the register to 0 if abs(a - b) <= c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("sna r0 1 1.01 0.1");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+  });
 });
