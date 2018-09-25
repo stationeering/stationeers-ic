@@ -1109,4 +1109,86 @@ describe("Instruction Tests", function () {
       expect(ic.getInternalRegisters()[0]).to.equal(0);
     });
   });
+
+  describe("bap", function () {
+    it ("should branch if abs(a - b) <= c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("bap 1 1.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+    });
+
+    it ("should branch if abs(a - b) > c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("bap 1 2.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  describe("bna", function () {
+    it ("should branch if abs(a - b) > c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("bna 1 2.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+    });
+
+    it ("should branch if abs(a - b) <= c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("bna 1 1.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+  
+  describe("brap", function () {
+    it ("should branch relative if abs(a - b) <= c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("brap 1 1.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(10);
+    });
+
+    it ("should branch relative if abs(a - b) > c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("brap 1 2.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  describe("brna", function () {
+    it ("should branch relative if abs(a - b) > c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("brna 1 2.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(10);
+    });
+
+    it ("should branch relative if abs(a - b) <= c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("brna 1 1.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  //jal bltzal bgezal blezal bgtzal beqal bneal 
 });

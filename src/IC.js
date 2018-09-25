@@ -82,6 +82,8 @@ module.exports = class IC {
     this._registerOpcode("bgtz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bgtz);
     this._registerOpcode("beq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_beq);
     this._registerOpcode("bne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bne);
+    this._registerOpcode("bna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bna);
+    this._registerOpcode("bap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bap);
 
     this._registerOpcode("jr", [["r", "i", "a"]], this._instruction_jr);
     this._registerOpcode("brltz", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brltz);
@@ -90,6 +92,8 @@ module.exports = class IC {
     this._registerOpcode("brgtz", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brgtz);
     this._registerOpcode("breq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_breq);
     this._registerOpcode("brne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brne);
+    this._registerOpcode("brna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brna);
+    this._registerOpcode("brap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brap);
 
     this._registerOpcode("l", [["r","a"], ["d", "a"], ["s"]], this._instruction_l);
     this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
@@ -549,8 +553,6 @@ module.exports = class IC {
         return "STACK_OVERFLOW";
       } else if (lastOpCode === "stack_underflow") {
         return "STACK_UNDERFLOW";
-      } else if (lastOpCode) {
-        return "INTERNAL_ERROR";
       } else if (this._programCounter >= this.getInstructionCount()) {
         return "END_OF_PROGRAM";
       } else if (this._programCounter < 0) {
@@ -892,5 +894,49 @@ module.exports = class IC {
     }
 
     this._setRegister(fields[0], this._stack[stackPosition - 1], undefined, allowedTypes[0]);
+  }
+
+  _instruction_bna(fields, allowedTypes) {
+    var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
+    var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
+
+    if(Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) {
+      this._programCounter = d;
+    }  
+  }
+
+  _instruction_bap(fields, allowedTypes) {
+    var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
+    var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
+
+    if(Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) {
+      this._programCounter = d;
+    }  
+  }
+
+  _instruction_brna(fields, allowedTypes) {
+    var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
+    var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
+
+    if(Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) {
+      this._programCounter += d;
+    }  
+  }
+
+  _instruction_brap(fields, allowedTypes) {
+    var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
+    var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
+
+    if(Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) {
+      this._programCounter += d;
+    }  
   }
 };
