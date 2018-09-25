@@ -1190,5 +1190,38 @@ describe("Instruction Tests", function () {
     });
   });
 
-  //jal bltzal bgezal blezal bgtzal beqal bneal 
+  describe("jal", function () {
+    it ("should change the program counter and set the return address register", function () {
+      let ic = new IC();
+
+      ic.load([
+        "yield",
+        "yield",
+        "jal 9"
+      ].join("\n"));
+
+      ic.step();
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(3);
+    });
+
+    it ("should ensure that the ra alias is setup", function () {
+      let ic = new IC();
+
+      ic.load([
+        "move ra 4",
+        "move r10 ra"
+      ].join("\n"));
+
+      ic.step();
+      ic.step();
+
+      expect(ic.getInternalRegisters()[10]).to.equal(4);
+    });
+  });
+
+  //bltzal bgezal blezal bgtzal beqal bneal 
 });

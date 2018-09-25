@@ -10,7 +10,9 @@ const INTERNAL_REGISTER_COUNT = 18;
 const STACK_SIZE = 512;
 const STACK_POINTER_REGISTER = 16;
 
-const INITIAL_ALIASES = [ "db", "sp" ];
+const RETURN_ADDRESS_REGISTER = 17;
+
+const INITIAL_ALIASES = [ "db", "sp", "ra" ];
 
 module.exports = class IC {
   constructor() {
@@ -85,6 +87,8 @@ module.exports = class IC {
     this._registerOpcode("bna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bna);
     this._registerOpcode("bap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bap);
 
+    this._registerOpcode("jal", [["r", "i", "a", "j"]], this._instruction_jal);
+
     this._registerOpcode("jr", [["r", "i", "a"]], this._instruction_jr);
     this._registerOpcode("brltz", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brltz);
     this._registerOpcode("brlez", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brlez);
@@ -105,7 +109,8 @@ module.exports = class IC {
     this._registerOpcode("peek", [["r", "a"]], this._instruction_peek);
 
     this._instruction_alias(["db", "d" + IO_REGISTER_COUNT]);
-    this._instruction_alias(["sp", "r" + STACK_POINTER_REGISTER]);    
+    this._instruction_alias(["sp", "r" + STACK_POINTER_REGISTER]);
+    this._instruction_alias(["ra", "r" + RETURN_ADDRESS_REGISTER]);    
   }
 
   load(unparsedInstructions) {
@@ -753,6 +758,12 @@ module.exports = class IC {
     this._programCounter = Math.round(addr);
   }
 
+  _instruction_jal(fields, allowedTypes) {
+    var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
+    this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
+    this._programCounter = Math.round(addr);  
+  }
+  
   _instruction_bltz(fields, allowedTypes) {
     if (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0) {
       var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
