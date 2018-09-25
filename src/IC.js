@@ -549,6 +549,8 @@ module.exports = class IC {
         return "STACK_OVERFLOW";
       } else if (lastOpCode === "stack_underflow") {
         return "STACK_UNDERFLOW";
+      } else if (lastOpCode) {
+        return "INTERNAL_ERROR";
       } else if (this._programCounter >= this.getInstructionCount()) {
         return "END_OF_PROGRAM";
       } else if (this._programCounter < 0) {
