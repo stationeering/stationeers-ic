@@ -108,6 +108,8 @@ module.exports = class IC {
     this._registerOpcode("pop", [["r", "a"]], this._instruction_pop);
     this._registerOpcode("peek", [["r", "a"]], this._instruction_peek);
 
+    this._registerOpcode("hcf", [], this._instruction_hcf);
+
     this._instruction_alias(["db", "d" + IO_REGISTER_COUNT]);
     this._instruction_alias(["sp", "r" + STACK_POINTER_REGISTER]);
     this._instruction_alias(["ra", "r" + RETURN_ADDRESS_REGISTER]);    
@@ -550,6 +552,8 @@ module.exports = class IC {
 
       if (lastOpCode === "yield") {
         return "YIELD";
+      } else if (lastOpCode === "hcf") {
+        return "HALT_AND_CATCH_FIRE";
       } else if (lastOpCode === "illegal_register_location") {
         return "INVALID_REGISTER_LOCATION";
       } else if (lastOpCode === "alias_type_mismatch") {
@@ -807,6 +811,9 @@ module.exports = class IC {
   }
 
   _instruction_yield() {
+  }
+
+  _instruction_hcf() {
   }
 
   _instruction_l(fields, allowedTypes) {

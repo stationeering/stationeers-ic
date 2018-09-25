@@ -1223,5 +1223,15 @@ describe("Instruction Tests", function () {
     });
   });
 
-  //bltzal bgezal blezal bgtzal beqal bneal 
+  describe("hcf", function () {
+    it ("should cause a step to return a notice", function () {
+      let ic = new IC();
+
+      ic.load("hcf");
+      
+      expect(ic.step()).to.equal("HALT_AND_CATCH_FIRE");
+    });
+  });
+
+  //select bltzal bgezal blezal bgtzal beqal bneal 
 });
