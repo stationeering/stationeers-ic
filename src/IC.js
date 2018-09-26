@@ -59,6 +59,8 @@ module.exports = class IC {
     this._registerOpcode("sap", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_sap);
     this._registerOpcode("sna", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_sna);
 
+    this._registerOpcode("select", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_select);
+
     this._registerOpcode("sqrt", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_sqrt);
     this._registerOpcode("round", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_round);
     this._registerOpcode("trunc", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_trunc);
@@ -956,5 +958,15 @@ module.exports = class IC {
     if(Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) {
       this._programCounter += d;
     }  
+  }
+
+  _instruction_select(fields, allowedTypes) {
+    var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
+
+    var result = (b === 0 ? d : c);
+
+    this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
 };

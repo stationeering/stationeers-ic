@@ -1233,5 +1233,25 @@ describe("Instruction Tests", function () {
     });
   });
 
-  //select bltzal bgezal blezal bgtzal beqal bneal 
+  describe("select", function () {
+    it ("should store c in a if b != 0", function () {
+      let ic = new IC();
+
+      ic.load("select r0 0.01 50 100");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(50);
+    });
+
+    it ("should store d in a if b == 0", function () {
+      let ic = new IC();
+
+      ic.load("select r0 0.0 50 100");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(100);
+    });
+  });
+
+  //bltzal bgezal blezal bgtzal beqal bneal 
 });
