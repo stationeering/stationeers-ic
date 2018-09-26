@@ -1381,7 +1381,7 @@ describe("Instruction Tests", function () {
       ic.step();
 
       expect(ic._programCounter).to.equal(9);
-      expect(ic.getInternalRegisters()[17]).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);      
     });
   });
 });
