@@ -405,7 +405,6 @@ describe("Instruction Tests", function () {
     });
   });
 
-
   describe("blez", function () {
     it("should change the program counter if s <= 0", function () {
       let ic = new IC();
@@ -1253,5 +1252,136 @@ describe("Instruction Tests", function () {
     });
   });
 
-  //bltzal bgezal blezal bgtzal beqal bneal 
+  describe("bltzal", function () {
+    it("should change the program counter if s < 0", function () {
+      let ic = new IC();
+      ic.load("bltzal -1 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it("should not change the program counter if s >= 0", function () {
+      let ic = new IC();
+      ic.load("bltzal 0 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+
+  describe("bgezal", function () {
+    it("should change the program counter if s >= 0", function () {
+      let ic = new IC();
+      ic.load("bgezal 0 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it("should not change the program counter if s < 0", function () {
+      let ic = new IC();
+      ic.load("bgezal -1 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("blezal", function () {
+    it("should change the program counter if s <= 0", function () {
+      let ic = new IC();
+      ic.load("blezal 0 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it("should not change the program counter if s > 0", function () {
+      let ic = new IC();
+      ic.load("blezal 1 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("bgtzal", function () {
+    it("should change the program counter if s > 0", function () {
+      let ic = new IC();
+      ic.load("bgtzal 1 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it("should not change the program counter if s <= 0", function () {
+      let ic = new IC();
+      ic.load("bgtzal 0 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("beqal", function () {
+    it("should change the program counter if s == t", function () {
+      let ic = new IC();
+      ic.load("beqal 1 1 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it("should not change the program counter if s != t", function () {
+      let ic = new IC();
+      ic.load("beqal 1 0 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("bneal", function () {
+    it("should change the program counter if s != t", function () {
+      let ic = new IC();
+      ic.load("bneal 1 1 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+
+    it("should not change the program counter if s == t", function () {
+      let ic = new IC();
+      ic.load("bneal 1 0 9");
+
+      ic.step();
+
+      expect(ic._programCounter).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+  });
 });

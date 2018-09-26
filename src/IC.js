@@ -90,6 +90,12 @@ module.exports = class IC {
     this._registerOpcode("bap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bap);
 
     this._registerOpcode("jal", [["r", "i", "a", "j"]], this._instruction_jal);
+    this._registerOpcode("bltzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bltzal);
+    this._registerOpcode("blezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_blezal);
+    this._registerOpcode("bgezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bgezal);
+    this._registerOpcode("bgtzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bgtzal);
+    this._registerOpcode("beqal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_beqal);
+    this._registerOpcode("bneal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bneal);
 
     this._registerOpcode("jr", [["r", "i", "a"]], this._instruction_jr);
     this._registerOpcode("brltz", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brltz);
@@ -768,6 +774,54 @@ module.exports = class IC {
     var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
     this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
     this._programCounter = Math.round(addr);  
+  }
+
+  _instruction_bltzal(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0) {
+      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
+      this._programCounter = Math.round(addr);
+    }
+  }
+
+  _instruction_blezal(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0) {
+      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
+      this._programCounter = Math.round(addr);
+    }
+  }
+
+  _instruction_bgezal(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0) {
+      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
+      this._programCounter = Math.round(addr);
+    }
+  }
+
+  _instruction_bgtzal(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0) {
+      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
+      this._programCounter = Math.round(addr);
+    }
+  }
+
+  _instruction_beqal(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1])) {
+      var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
+      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
+      this._programCounter = Math.round(addr);
+    }
+  }
+
+  _instruction_bneal(fields, allowedTypes) {
+    if (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1])) {
+      var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
+      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
+      this._programCounter = Math.round(addr);
+    }
   }
   
   _instruction_bltz(fields, allowedTypes) {
