@@ -584,6 +584,8 @@ module.exports = class IC {
 
   restart() {
     this._programCounter = 0;
+    this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
+    this._stack = Array(STACK_SIZE).fill(0);   
   }
 
   _executeInstruction(instruction) {

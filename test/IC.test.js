@@ -241,6 +241,41 @@ describe("IC Tests", function () {
       expect(ic.programCounter()).to.equal(0);
     });
 
+    it("restart sets internal registers to 0", function () {
+      let ic = new IC();
+      ic.load(VALID_MULTIPLE_INSTRUCTION);
+      ic.step();
+
+      for (var i = 0; i < 6; i++) {
+        ic.setInternalRegister(i, i);
+      }
+      
+      ic.restart();
+
+      var internalRegisters = ic.getInternalRegisters();
+
+      for (i = 0; i < internalRegisters.length; i++) {
+        expect(internalRegisters[i]).to.equal(0);
+      }    
+    });
+
+    it("restart sets stack values to 0", function () {
+      let ic = new IC();
+      ic.load("push 1\nj 0");
+
+      for (var i = 0; i < 128; i++) {
+        ic.step();
+      }
+    
+      ic.restart();
+
+      var stack = ic.getStack();
+
+      for (i = 0; i < stack.length; i++) {
+        expect(stack[i]).to.equal(0);
+      }    
+    });
+
     it("does not increase the programme counter if the program is invalid", function () {
       let ic = new IC();
       ic.load("invalid");
