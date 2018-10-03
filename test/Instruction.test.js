@@ -1384,4 +1384,59 @@ describe("Instruction Tests", function () {
       expect(ic.getInternalRegisters()[17]).to.equal(1);      
     });
   });
+
+  describe("sdse", function () {
+    it("should set 1 in register if device is set/connected", function () {
+      let ic = new IC();
+      ic.setInternalRegister(0, -1);
+
+      ic.load("sdse r0 d0");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1);
+    });
+
+    it("should set 0 in register if device is not set/connected", function () {
+      let ic = new IC();
+      ic.setIOConnected(0, false);
+      ic.setInternalRegister(0, -1);
+
+      ic.load("sdse r0 d0");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+  });
+
+  describe("sdns", function () {
+    it("should set 0 in register if device is set/connected", function () {
+      let ic = new IC();
+      ic.setInternalRegister(0, -1);
+
+      ic.load("sdns r0 d0");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+
+    it("should set 1 in register if device is not set/connected", function () {
+      let ic = new IC();
+      ic.setIOConnected(0, false);
+      ic.setInternalRegister(0, -1);
+
+      ic.load("sdns r0 d0");
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1);
+    });
+  });
+
+  /*
+   bdse [branch on device set], 
+   bdns [branch on device not set], 
+   brdse [relative branch on device set], 
+   brdns [relative branch on device not set], 
+   bdseal [branch on device set and load],
+   bdnsal [branch on device not set and load]
+  */
 });

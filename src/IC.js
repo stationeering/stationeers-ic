@@ -63,6 +63,9 @@ module.exports = class IC {
 
     this._registerOpcode("select", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_select);
 
+    this._registerOpcode("sdse", [["r", "a"], ["d", "a"]], this._instruction_sdse);
+    this._registerOpcode("sdns", [["r", "a"], ["d", "a"]], this._instruction_sdns);
+
     this._registerOpcode("sqrt", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_sqrt);
     this._registerOpcode("round", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_round);
     this._registerOpcode("trunc", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_trunc);
@@ -420,6 +423,42 @@ module.exports = class IC {
 
   isValidProgram() {
     return this._validProgram;
+  }
+
+  _isDeviceConnected(register, allowedTypes) {
+    if (allowedTypes.includes("a")) {
+      var foundAlias = this._aliases[register];
+
+      if (foundAlias) {
+        if (!allowedTypes.includes(foundAlias.type)) {
+          throw "ALIAS_TYPE_MISMATCH";
+        } else {
+          register = foundAlias.type + foundAlias.value;
+        }
+      }
+    }
+
+    if (register.charAt(0) === "d") {
+      var number = 0;
+      
+      var match = register.match(/d(r*)(\d+)/);
+
+      if (match) {
+        if (match[1].length > 0) {
+          number = this._getRegister(match[1] + match[2], undefined, ["r"]);
+        } else {
+          number = Number.parseInt(match[2]);
+        }
+      }
+
+      if (number > IO_REGISTER_COUNT) {
+        throw "INVALID_REGISTER_LOCATION";
+      }
+
+      return this._ioRegisterConnected[number];
+    } else {
+      return false;
+    }
   }
 
   _setRegister(register, value, field, allowedTypes) {
@@ -1021,5 +1060,15 @@ module.exports = class IC {
     var result = (b === 0 ? d : c);
 
     this._setRegister(fields[0], result, undefined, allowedTypes[0]);
+  }
+
+  _instruction_sdse(fields, allowedTypes) {
+    var value = this._isDeviceConnected(fields[1], allowedTypes[1]) ? 1 : 0;
+    this._setRegister(fields[0], value, undefined, allowedTypes[0]);
+  }
+
+  _instruction_sdns(fields, allowedTypes) {
+    var value = this._isDeviceConnected(fields[1], allowedTypes[1]) ? 0 : 1;
+    this._setRegister(fields[0], value, undefined, allowedTypes[0]);
   }
 };
