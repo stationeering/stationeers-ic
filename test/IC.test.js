@@ -833,4 +833,38 @@ describe("IC Tests", function () {
       expect(registers[2]).to.equal(99);
     });
   });
+
+  describe("Devices can be marked as connected or disconnected", function () {
+    it("should allow you to make a device as connected", function () {
+      let ic = new IC();
+
+      expect(ic.getIOConnected()[0]).to.equal(true);
+      ic.setIOConnected(0, false);
+      expect(ic.getIOConnected()[0]).to.equal(false);
+      ic.setIOConnected(0, true);
+      expect(ic.getIOConnected()[0]).to.equal(true);
+    });
+
+    it("should throw an error when trying to save to a disconnected device", function () {
+      let ic = new IC();
+      ic.setIOConnected(0, false);
+
+      ic.load("s d0 Setting 1.0");
+
+      var result = ic.step();
+
+      expect(result).to.equal("INTERACTION_WITH_DISCONNECTED_DEVICE");
+    });
+
+    it("should throw an error when trying to save to a disconnected device", function () {
+      let ic = new IC();
+      ic.setIOConnected(0, false);
+
+      ic.load("l r0 d0 Setting");
+
+      var result = ic.step();
+
+      expect(result).to.equal("INTERACTION_WITH_DISCONNECTED_DEVICE");
+    });
+  });
 });

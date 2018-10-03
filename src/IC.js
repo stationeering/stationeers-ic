@@ -12,7 +12,7 @@ const STACK_POINTER_REGISTER = 16;
 
 const RETURN_ADDRESS_REGISTER = 17;
 
-const INITIAL_ALIASES = [ "db", "sp", "ra" ];
+const INITIAL_ALIASES = ["db", "sp", "ra"];
 
 module.exports = class IC {
   constructor() {
@@ -29,18 +29,20 @@ module.exports = class IC {
 
     this._aliases = {};
     this._aliasesAsigned = [];
-    
+
     this._jumpTags = {};
 
     this._ioRegister = [];
-  
+    this._ioRegisterConnected = [];
+
     for (var i = 0; i <= IO_REGISTER_COUNT; i++) {
       this._ioRegister[i] = {};
+      this._ioRegisterConnected[i] = true;
     }
 
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
 
-    this._stack = Array(STACK_SIZE).fill(0);   
+    this._stack = Array(STACK_SIZE).fill(0);
 
     this._registerOpcode("move", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_move);
     this._registerOpcode("add", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_add);
@@ -48,7 +50,7 @@ module.exports = class IC {
     this._registerOpcode("mul", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_mul);
     this._registerOpcode("div", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_div);
     this._registerOpcode("mod", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_mod);
-    
+
     this._registerOpcode("slt", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_slt);
     this._registerOpcode("sgt", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_sgt);
     this._registerOpcode("sle", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_sle);
@@ -107,7 +109,7 @@ module.exports = class IC {
     this._registerOpcode("brna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brna);
     this._registerOpcode("brap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brap);
 
-    this._registerOpcode("l", [["r","a"], ["d", "a"], ["s"]], this._instruction_l);
+    this._registerOpcode("l", [["r", "a"], ["d", "a"], ["s"]], this._instruction_l);
     this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
 
     this._registerOpcode("alias", [["s"], ["r", "d"]], this._instruction_alias);
@@ -120,7 +122,7 @@ module.exports = class IC {
 
     this._instruction_alias(["db", "d" + IO_REGISTER_COUNT]);
     this._instruction_alias(["sp", "r" + STACK_POINTER_REGISTER]);
-    this._instruction_alias(["ra", "r" + RETURN_ADDRESS_REGISTER]);    
+    this._instruction_alias(["ra", "r" + RETURN_ADDRESS_REGISTER]);
   }
 
   load(unparsedInstructions) {
@@ -272,9 +274,9 @@ module.exports = class IC {
 
         if (actualRegister >= maxRegister) {
           return "INVALID_FIELD_NO_SUCH_REGISTER";
-        } 
-        
-        return undefined;        
+        }
+
+        return undefined;
       }
     }
 
@@ -358,6 +360,14 @@ module.exports = class IC {
     return labels;
   }
 
+  getIOConnected() {
+    return this._ioRegisterConnected;
+  }
+
+  setIOConnected(index, value) {
+    this._ioRegisterConnected[index] = value;
+  }
+
   setIORegister(index, field, value) {
     if (index <= IO_REGISTER_COUNT) {
       if (value !== undefined) {
@@ -418,7 +428,7 @@ module.exports = class IC {
 
       if (foundAlias) {
         if (!allowedTypes.includes(foundAlias.type)) {
-          throw "alias_type_mismatch";
+          throw "ALIAS_TYPE_MISMATCH";
         } else {
           register = foundAlias.type + foundAlias.value;
         }
@@ -434,14 +444,18 @@ module.exports = class IC {
 
       if (match) {
         if (match[1].length > 0) {
-          number = this._getRegister(match[1]+match[2], undefined, ["r"]);
+          number = this._getRegister(match[1] + match[2], undefined, ["r"]);
         } else {
           number = Number.parseInt(match[2]);
         }
-      } 
-      
+      }
+
       if (number > IO_REGISTER_COUNT) {
-        throw "illegal_register_location";
+        throw "INVALID_REGISTER_LOCATION";
+      }
+
+      if (!this._ioRegisterConnected[number]) {
+        throw "INTERACTION_WITH_DISCONNECTED_DEVICE";
       }
 
       return this.setIORegister(number, field, value);
@@ -452,10 +466,6 @@ module.exports = class IC {
         return this.setInternalRegister(number, value);
       }
     }
-
-    if (Object.keys(this._aliases).includes(register)) {
-      return this._setRegister(this._aliases[register]["type"] + this._aliases[register]["value"], value, field, allowedTypes);
-    }
   }
 
   _getRegister(register, field, allowedTypes) {
@@ -464,7 +474,7 @@ module.exports = class IC {
 
       if (foundAlias) {
         if (!allowedTypes.includes(foundAlias.type)) {
-          throw "alias_type_mismatch";
+          throw "ALIAS_TYPE_MISMATCH";
         } else {
           register = foundAlias.type + foundAlias.value;
         }
@@ -480,14 +490,18 @@ module.exports = class IC {
 
       if (match) {
         if (match[1].length > 0) {
-          number = this._getRegister(match[1]+match[2], undefined, ["r"]);
+          number = this._getRegister(match[1] + match[2], undefined, ["r"]);
         } else {
           number = Number.parseInt(match[2]);
         }
-      } 
+      }
 
       if (number > IO_REGISTER_COUNT) {
-        throw "illegal_register_location";
+        throw "INVALID_REGISTER_LOCATION";
+      }
+
+      if (!this._ioRegisterConnected[number]) {
+        throw "INTERACTION_WITH_DISCONNECTED_DEVICE";
       }
 
       if (!this.getIORegisters()[number][field]) {
@@ -511,9 +525,6 @@ module.exports = class IC {
         return this._jumpTags[register];
       }
 
-      if (Object.keys(this._aliases).includes(register)) {
-        return this._getRegister(this._aliases[register]["type"] + this._aliases[register]["value"], field, allowedTypes);
-      }
       return;
     } else {
       return value;
@@ -534,7 +545,7 @@ module.exports = class IC {
       number = this.getInternalRegisters()[number];
 
       if (number >= INTERNAL_REGISTER_COUNT) {
-        throw "illegal_register_location";
+        throw "INVALID_REGISTER_LOCATION";
       }
     }
 
@@ -547,35 +558,19 @@ module.exports = class IC {
       var isErrorLine = this._programErrorLines.includes(this._programCounter);
 
       this._programCounter++;
-
-      var lastOpCode;
-
-      try {
-        if (!isErrorLine) {
-          lastOpCode = this._executeInstruction(instruction);
+      
+      if (!isErrorLine) {
+        try {
+          this._executeInstruction(instruction);
+        } catch (err) {
+          return err;
         }
-      } catch (err) {
-        lastOpCode = err;
       }
 
-      if (lastOpCode === "yield") {
-        return "YIELD";
-      } else if (lastOpCode === "hcf") {
-        return "HALT_AND_CATCH_FIRE";
-      } else if (lastOpCode === "illegal_register_location") {
-        return "INVALID_REGISTER_LOCATION";
-      } else if (lastOpCode === "alias_type_mismatch") {
-        return "ALIAS_TYPE_MISMATCH";
-      } else if (lastOpCode === "stack_overflow") {
-        return "STACK_OVERFLOW";
-      } else if (lastOpCode === "stack_underflow") {
-        return "STACK_UNDERFLOW";
-      } else if (this._programCounter >= this.getInstructionCount()) {
+      if (this._programCounter >= this.getInstructionCount()) {
         return "END_OF_PROGRAM";
       } else if (this._programCounter < 0) {
         return "INVALID_PROGRAM_COUNTER";
-      } else {
-        return undefined;
       }
     } else {
       return "INVALID_PROGRAM";
@@ -639,7 +634,7 @@ module.exports = class IC {
     if (outputValue < 0) {
       outputValue += valueTwo;
     }
-    
+
     this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
   }
 
@@ -775,7 +770,7 @@ module.exports = class IC {
   _instruction_jal(fields, allowedTypes) {
     var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
     this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-    this._programCounter = Math.round(addr);  
+    this._programCounter = Math.round(addr);
   }
 
   _instruction_bltzal(fields, allowedTypes) {
@@ -825,7 +820,7 @@ module.exports = class IC {
       this._programCounter = Math.round(addr);
     }
   }
-  
+
   _instruction_bltz(fields, allowedTypes) {
     if (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0) {
       var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
@@ -869,9 +864,11 @@ module.exports = class IC {
   }
 
   _instruction_yield() {
+    throw "YIELD";
   }
 
   _instruction_hcf() {
+    throw "HALT_AND_CATCH_FIRE";
   }
 
   _instruction_l(fields, allowedTypes) {
@@ -943,7 +940,7 @@ module.exports = class IC {
     var stackPosition = this._internalRegister[STACK_POINTER_REGISTER];
 
     if (stackPosition >= STACK_SIZE) {
-      throw "stack_overflow";
+      throw "STACK_OVERFLOW";
     }
 
     this._stack[stackPosition] = this._getRegister(fields[0], undefined, allowedTypes[0]);
@@ -954,9 +951,9 @@ module.exports = class IC {
     var stackPosition = this._internalRegister[STACK_POINTER_REGISTER];
 
     if (stackPosition <= 0) {
-      throw "stack_underflow";
+      throw "STACK_UNDERFLOW";
     }
-    
+
     stackPosition -= 1;
     this._internalRegister[STACK_POINTER_REGISTER] = stackPosition;
     this._setRegister(fields[0], this._stack[stackPosition], undefined, allowedTypes[0]);
@@ -966,7 +963,7 @@ module.exports = class IC {
     var stackPosition = this._internalRegister[STACK_POINTER_REGISTER];
 
     if (stackPosition <= 0) {
-      throw "stack_underflow";
+      throw "STACK_UNDERFLOW";
     }
 
     this._setRegister(fields[0], this._stack[stackPosition - 1], undefined, allowedTypes[0]);
@@ -978,9 +975,9 @@ module.exports = class IC {
     var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
     var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
 
-    if(Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) {
+    if (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) {
       this._programCounter = d;
-    }  
+    }
   }
 
   _instruction_bap(fields, allowedTypes) {
@@ -989,9 +986,9 @@ module.exports = class IC {
     var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
     var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
 
-    if(Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) {
+    if (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) {
       this._programCounter = d;
-    }  
+    }
   }
 
   _instruction_brna(fields, allowedTypes) {
@@ -1000,9 +997,9 @@ module.exports = class IC {
     var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
     var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
 
-    if(Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) {
+    if (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) {
       this._programCounter += d;
-    }  
+    }
   }
 
   _instruction_brap(fields, allowedTypes) {
@@ -1011,9 +1008,9 @@ module.exports = class IC {
     var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
     var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
 
-    if(Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) {
+    if (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) {
       this._programCounter += d;
-    }  
+    }
   }
 
   _instruction_select(fields, allowedTypes) {
