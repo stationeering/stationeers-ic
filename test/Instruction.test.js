@@ -1473,9 +1473,49 @@ describe("Instruction Tests", function () {
     });
   });
 
+  describe("brdse", function () {
+    it("should set pc to 10 if device is set/connected", function () {
+      let ic = new IC();
+
+      ic.load("brdse d0 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(10);
+    });
+
+    it("should set pc to 1 if device is not set/connected", function () {
+      let ic = new IC();
+      ic.setIOConnected(0, false);
+
+      ic.load("brdse d0 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  describe("brdns", function () {
+    it("should set pc to 1 if device is set/connected", function () {
+      let ic = new IC();
+
+      ic.load("brdns d0 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+
+    it("should set pc to 10 if device is not set/connected", function () {
+      let ic = new IC();
+      ic.setIOConnected(0, false);
+
+      ic.load("brdns d0 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(10);
+    });
+  });
+
   /*
-   brdse [relative branch on device set], 
-   brdns [relative branch on device not set], 
    bdseal [branch on device set and load],
    bdnsal [branch on device not set and load]
   */

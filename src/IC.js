@@ -68,6 +68,8 @@ module.exports = class IC {
 
     this._registerOpcode("bdse", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdse);
     this._registerOpcode("bdns", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdns);
+    this._registerOpcode("brdse", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_brdse);
+    this._registerOpcode("brdns", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_brdns);    
 
     this._registerOpcode("sqrt", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_sqrt);
     this._registerOpcode("round", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_round);
@@ -1089,4 +1091,20 @@ module.exports = class IC {
       this._programCounter = this._getRegister(fields[1], undefined, allowedTypes[1]);
     }
   }
+
+  _instruction_brdse(fields, allowedTypes) {
+    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
+
+    if (value) {
+      this._programCounter += this._getRegister(fields[1], undefined, allowedTypes[1]);
+    }
+  }
+
+  _instruction_brdns(fields, allowedTypes) {
+    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+
+    if (value) {
+      this._programCounter += this._getRegister(fields[1], undefined, allowedTypes[1]);
+    }
+  }  
 };
