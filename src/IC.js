@@ -66,6 +66,9 @@ module.exports = class IC {
     this._registerOpcode("sdse", [["r", "a"], ["d", "a"]], this._instruction_sdse);
     this._registerOpcode("sdns", [["r", "a"], ["d", "a"]], this._instruction_sdns);
 
+    this._registerOpcode("bdse", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdse);
+    this._registerOpcode("bdns", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdns);
+
     this._registerOpcode("sqrt", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_sqrt);
     this._registerOpcode("round", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_round);
     this._registerOpcode("trunc", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_trunc);
@@ -440,7 +443,6 @@ module.exports = class IC {
 
     if (register.charAt(0) === "d") {
       var number = 0;
-      
       var match = register.match(/d(r*)(\d+)/);
 
       if (match) {
@@ -1070,5 +1072,21 @@ module.exports = class IC {
   _instruction_sdns(fields, allowedTypes) {
     var value = this._isDeviceConnected(fields[1], allowedTypes[1]) ? 0 : 1;
     this._setRegister(fields[0], value, undefined, allowedTypes[0]);
+  }
+
+  _instruction_bdse(fields, allowedTypes) {
+    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
+
+    if (value) {
+      this._programCounter = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    }
+  }
+
+  _instruction_bdns(fields, allowedTypes) {
+    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+
+    if (value) {
+      this._programCounter = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    }
   }
 };
