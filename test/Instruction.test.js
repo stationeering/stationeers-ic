@@ -1515,8 +1515,49 @@ describe("Instruction Tests", function () {
     });
   });
 
-  /*
-   bdseal [branch on device set and load],
-   bdnsal [branch on device not set and load]
-  */
+  describe("bdseal", function () {
+    it("should set pc to 9 and RA to 1 if device is set/connected", function () {
+      let ic = new IC();
+
+      ic.load("bdseal d0 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it("should set pc to 1 if device is not set/connected", function () {
+      let ic = new IC();
+      ic.setIOConnected(0, false);
+
+      ic.load("bdseal d0 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("bdnsal", function () {
+    it("should set pc to 1 if device is set/connected", function () {
+      let ic = new IC();
+
+      ic.load("bdnsal d0 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+
+    it("should set pc to 9 and RA to 1 if device is not set/connected", function () {
+      let ic = new IC();
+      ic.setIOConnected(0, false);
+
+      ic.load("bdnsal d0 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+  });
 });
