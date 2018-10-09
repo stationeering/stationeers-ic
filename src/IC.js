@@ -69,7 +69,7 @@ module.exports = class IC {
     this._registerOpcode("bdse", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdse);
     this._registerOpcode("bdns", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdns);
     this._registerOpcode("brdse", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_brdse);
-    this._registerOpcode("brdns", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_brdns);    
+    this._registerOpcode("brdns", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_brdns);
     this._registerOpcode("bdseal", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdseal);
     this._registerOpcode("bdnsal", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdnsal);
 
@@ -122,7 +122,7 @@ module.exports = class IC {
     this._registerOpcode("l", [["r", "a"], ["d", "a"], ["s"]], this._instruction_l);
     this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
 
-    this._registerOpcode("alias", [["s"], ["r", "d"]], this._instruction_alias);
+    this._registerOpcode("alias", [["s"], ["r", "d", "a"]], this._instruction_alias);
 
     this._registerOpcode("push", [["r", "i", "f", "a"]], this._instruction_push);
     this._registerOpcode("pop", [["r", "a"]], this._instruction_pop);
@@ -603,7 +603,7 @@ module.exports = class IC {
       var isErrorLine = this._programErrorLines.includes(this._programCounter);
 
       this._programCounter++;
-      
+
       if (!isErrorLine) {
         try {
           this._executeInstruction(instruction);
@@ -625,7 +625,7 @@ module.exports = class IC {
   restart() {
     this._programCounter = 0;
     this._internalRegister = Array(INTERNAL_REGISTER_COUNT).fill(0);
-    this._stack = Array(STACK_SIZE).fill(0);   
+    this._stack = Array(STACK_SIZE).fill(0);
   }
 
   _executeInstruction(instruction) {
@@ -979,6 +979,13 @@ module.exports = class IC {
       this._aliases[fields[0]] = { value: number, type: matches[1] };
       this._aliasesAsigned.push(fields[0]);
     }
+    else {
+      var foundAlias = this._aliases[fields[1]];
+      if (foundAlias) {
+        this._aliases[fields[0]] = { value: foundAlias.value, type: foundAlias.type };
+        this._aliasesAsigned.push(fields[0]);
+      }
+    }
   }
 
   _instruction_push(fields, allowedTypes) {
@@ -1108,7 +1115,7 @@ module.exports = class IC {
     if (value) {
       this._programCounter += this._getRegister(fields[1], undefined, allowedTypes[1]);
     }
-  }  
+  }
 
   _instruction_bdseal(fields, allowedTypes) {
     var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;

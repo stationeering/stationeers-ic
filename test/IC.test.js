@@ -249,14 +249,14 @@ describe("IC Tests", function () {
       for (var i = 0; i < 6; i++) {
         ic.setInternalRegister(i, i);
       }
-      
+
       ic.restart();
 
       var internalRegisters = ic.getInternalRegisters();
 
       for (i = 0; i < internalRegisters.length; i++) {
         expect(internalRegisters[i]).to.equal(0);
-      }    
+      }
     });
 
     it("restart sets stack values to 0", function () {
@@ -266,14 +266,14 @@ describe("IC Tests", function () {
       for (var i = 0; i < 128; i++) {
         ic.step();
       }
-    
+
       ic.restart();
 
       var stack = ic.getStack();
 
       for (i = 0; i < stack.length; i++) {
         expect(stack[i]).to.equal(0);
-      }    
+      }
     });
 
     it("does not increase the programme counter if the program is invalid", function () {
@@ -375,7 +375,7 @@ describe("IC Tests", function () {
       expect(output[0]["error"]).to.equal("INVALID_FIELD_INVALID_TYPE");
       expect(output[0]["validTypes"]).to.deep.equal(["r", "i", "a", "j"]);
     });
-  
+
     it("should error when a jump tag is passed to a relative jump", function () {
       let ic = new IC();
 
@@ -389,7 +389,7 @@ describe("IC Tests", function () {
       expect(output[0]["type"]).to.equal("error");
       expect(output[0]["validTypes"]).to.deep.equal(["r", "i", "a"]);
     });
-  
+
     it("should error when there is content after a jump tag", function () {
       let ic = new IC();
 
@@ -490,6 +490,24 @@ describe("IC Tests", function () {
       expect(output[0]["type"]).to.equal("error");
     });
 
+    it("should allow an alias to be made from another alias", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias red r1",
+        "alias green red"
+      ].join("\n"));
+
+      ic.step();
+      ic.step();
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0);
+
+      var labels = ic.getInternalLabels();
+      expect(labels[1]).to.equal("red,green");
+    });
+
     it ("should make internal register aliases available for labels", function () {
       let ic = new IC();
 
@@ -530,11 +548,11 @@ describe("IC Tests", function () {
       ].join("\n"));
 
       var output = ic.getProgramErrors();
-      expect(output.length).to.equal(0); 
-      
+      expect(output.length).to.equal(0);
+
       ic.step();
 
-      expect(ic.getIOLabels()[3]).to.equal("heater");      
+      expect(ic.getIOLabels()[3]).to.equal("heater");
     });
 
     it ("should alias a device number to a name and be usable in load commands", function () {
@@ -546,8 +564,8 @@ describe("IC Tests", function () {
       ].join("\n"));
 
       var output = ic.getProgramErrors();
-      expect(output.length).to.equal(0); 
-      
+      expect(output.length).to.equal(0);
+
       ic.setIORegister(3, "Temperature", 280);
 
       ic.step();
@@ -565,8 +583,8 @@ describe("IC Tests", function () {
       ].join("\n"));
 
       var output = ic.getProgramErrors();
-      expect(output.length).to.equal(0); 
-      
+      expect(output.length).to.equal(0);
+
       ic.setInternalRegister(0, 1);
 
       ic.step();
@@ -584,8 +602,8 @@ describe("IC Tests", function () {
       ].join("\n"));
 
       var output = ic.getProgramErrors();
-      expect(output.length).to.equal(0); 
-      
+      expect(output.length).to.equal(0);
+
       ic.step();
       var result = ic.step();
 
@@ -601,8 +619,8 @@ describe("IC Tests", function () {
       ].join("\n"));
 
       var output = ic.getProgramErrors();
-      expect(output.length).to.equal(0); 
-      
+      expect(output.length).to.equal(0);
+
       ic.step();
       var result = ic.step();
 
