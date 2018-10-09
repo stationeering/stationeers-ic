@@ -978,9 +978,9 @@ module.exports = class IC {
       var number = Number.parseInt(matches[2]);
       this._aliases[fields[0]] = { value: number, type: matches[1] };
       this._aliasesAsigned.push(fields[0]);
-    }
-    else {
+    } else {
       var foundAlias = this._aliases[fields[1]];
+      
       if (foundAlias) {
         this._aliases[fields[0]] = { value: foundAlias.value, type: foundAlias.type };
         this._aliasesAsigned.push(fields[0]);
