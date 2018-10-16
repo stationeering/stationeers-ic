@@ -1,6 +1,6 @@
 {
   "name": "stationeers-ic",
-  "version": "1.0.49",
+  "version": "1.0.50",
   "description": "Simulation of Stationeers IC.",
   "main": "lib/IC.js",
   "babel": {
