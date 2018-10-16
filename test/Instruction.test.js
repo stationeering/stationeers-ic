@@ -1560,4 +1560,32 @@ describe("Instruction Tests", function () {
       expect(ic.getInternalRegisters()[17]).to.equal(1);
     });
   });
+
+  describe("ls", function () {
+    it("should put the value of the slot's logic type into the register", function () {
+      let ic = new IC();
+
+      ic.setIOSlots(1, 2, "Setting", 1.5);
+
+      ic.load("lr r2 d1 2 Setting");
+      ic.step();
+
+      expect(ic.getProgramErrors().length).to.equal(0);
+      expect(ic.getInternalRegisters()[2]).to.equal(1.5);
+    });
+  });
+
+  describe("lr", function () {
+    it("should put the value of the reagents's logic mode into the register", function () {
+      let ic = new IC();
+
+      ic.setIOReagents(3, "Iron", "Quantity", 33);
+
+      ic.load("ls r4 d3 Iron Quantity");
+      ic.step();
+
+      expect(ic.getProgramErrors().length).to.equal(0);
+      expect(ic.getInternalRegisters()[4]).to.equal(33);
+    });
+  });
 });
