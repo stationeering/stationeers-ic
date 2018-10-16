@@ -1567,7 +1567,7 @@ describe("Instruction Tests", function () {
 
       ic.setIOSlots(1, 2, "Setting", 1.5);
 
-      ic.load("lr r2 d1 2 Setting");
+      ic.load("ls r2 d1 2 Setting");
       ic.step();
 
       expect(ic.getProgramErrors().length).to.equal(0);
@@ -1581,7 +1581,7 @@ describe("Instruction Tests", function () {
 
       ic.setIOReagents(3, "Iron", "Quantity", 33);
 
-      ic.load("ls r4 d3 Iron Quantity");
+      ic.load("lr r4 d3 Quantity Iron");
       ic.step();
 
       expect(ic.getProgramErrors().length).to.equal(0);

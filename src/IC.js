@@ -508,54 +508,23 @@ module.exports = class IC {
         }
       }
 
-      if (number <= IO_REGISTER_COUNT) {
-        return number;
-      }  
+      if (number > IO_REGISTER_COUNT) {
+        throw "INVALID_REGISTER_LOCATION";      
+      } 
+      
+      return number;
     }
 
-    return undefined;  
+    throw undefined;      
   }
 
   _isDeviceConnected(register, allowedTypes) {
-    var number = _resolveDeviceNumber(register, allowedTypes);
+    var deviceNumber = this._resolveDeviceNumber(register, allowedTypes);
 
-    if (number !== undefined) {
-        return this._ioRegisterConnected[number];
-    } else {
-        throw "INVALID_REGISTER_LOCATION";      
-    }
-    
-    if (allowedTypes.includes("a")) {
-      var foundAlias = this._aliases[register];
-
-      if (foundAlias) {
-        if (!allowedTypes.includes(foundAlias.type)) {
-          throw "ALIAS_TYPE_MISMATCH";
-        } else {
-          register = foundAlias.type + foundAlias.value;
-        }
-      }
-    }
-
-    if (register.charAt(0) === "d") {
-      var number = 0;
-      var match = register.match(/d(r*)(\d+)/);
-
-      if (match) {
-        if (match[1].length > 0) {
-          number = this._getRegister(match[1] + match[2], undefined, ["r"]);
-        } else {
-          number = Number.parseInt(match[2]);
-        }
-      }
-
-      if (number > IO_REGISTER_COUNT) {
-        throw "INVALID_REGISTER_LOCATION";
-      }
-
-      return this._ioRegisterConnected[number];
-    } else {
+    if (deviceNumber === undefined) {
       return false;
+    } else {
+      return this._ioRegisterConnected[deviceNumber];
     }
   }
 
@@ -1017,12 +986,29 @@ module.exports = class IC {
   }
 
   _instruction_ls(fields, allowedTypes) {
-//this._registerOpcode("ls", [["r", "a"], ["d", "a"], ["i"], ["s"]], this._instruction_ls);
+    var deviceNumber = this._resolveDeviceNumber(fields[1], allowedTypes[1]); 
+    var value = 0;
+
+    if (Object.keys(this._ioSlot[deviceNumber]).includes(fields[2])) {
+      if (Object.keys(this._ioSlot[deviceNumber][fields[2]]).includes(fields[3])) {
+        value = this._ioSlot[deviceNumber][fields[2]][fields[3]];
+      }
+    }
+
+    this._setRegister(fields[0], value, undefined, allowedTypes[0]);
   }
 
   _instruction_lr(fields, allowedTypes) {
-   //  this._registerOpcode("lr", [["r", "a"], ["d", "a"], ["s"], ["s"]], this._instruction_lr);
- 
+    var deviceNumber = this._resolveDeviceNumber(fields[1], allowedTypes[1]); 
+    var value = 0;
+
+    if (Object.keys(this._ioReagent[deviceNumber]).includes(fields[3])) {
+      if (Object.keys(this._ioReagent[deviceNumber][fields[3]]).includes(fields[2])) {
+        value = this._ioReagent[deviceNumber][fields[3]][fields[2]];
+      }
+    }
+
+    this._setRegister(fields[0], value, undefined, allowedTypes[0]); 
   }
 
   _instruction_jr(fields, allowedTypes) {
