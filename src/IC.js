@@ -126,6 +126,9 @@ module.exports = class IC {
     this._registerOpcode("l", [["r", "a"], ["d", "a"], ["s"]], this._instruction_l);
     this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
 
+    this._registerOpcode("ls", [["r", "a"], ["d", "a"], ["i"], ["s"]], this._instruction_ls);
+    this._registerOpcode("lr", [["r", "a"], ["d", "a"], ["s"], ["s"]], this._instruction_lr);
+
     this._registerOpcode("alias", [["s"], ["r", "d", "a"]], this._instruction_alias);
 
     this._registerOpcode("push", [["r", "i", "f", "a"]], this._instruction_push);
@@ -480,7 +483,48 @@ module.exports = class IC {
     return this._validProgram;
   }
 
+  _resolveDeviceNumber(register, allowedTypes) {
+    if (allowedTypes.includes("a")) {
+      var foundAlias = this._aliases[register];
+
+      if (foundAlias) {
+        if (!allowedTypes.includes(foundAlias.type)) {
+          throw "ALIAS_TYPE_MISMATCH";
+        } else {
+          register = foundAlias.type + foundAlias.value;
+        }
+      }
+    }
+
+    if (register.charAt(0) === "d") {
+      var number = 0;
+      var match = register.match(/d(r*)(\d+)/);
+
+      if (match) {
+        if (match[1].length > 0) {
+          number = this._getRegister(match[1] + match[2], undefined, ["r"]);
+        } else {
+          number = Number.parseInt(match[2]);
+        }
+      }
+
+      if (number <= IO_REGISTER_COUNT) {
+        return number;
+      }  
+    }
+
+    return undefined;  
+  }
+
   _isDeviceConnected(register, allowedTypes) {
+    var number = _resolveDeviceNumber(register, allowedTypes);
+
+    if (number !== undefined) {
+        return this._ioRegisterConnected[number];
+    } else {
+        throw "INVALID_REGISTER_LOCATION";      
+    }
+    
     if (allowedTypes.includes("a")) {
       var foundAlias = this._aliases[register];
 
@@ -970,6 +1014,15 @@ module.exports = class IC {
 
   _instruction_s(fields, allowedTypes) {
     this._setRegister(fields[0], this._getRegister(fields[2], undefined, allowedTypes[2]), fields[1], allowedTypes[0]);
+  }
+
+  _instruction_ls(fields, allowedTypes) {
+//this._registerOpcode("ls", [["r", "a"], ["d", "a"], ["i"], ["s"]], this._instruction_ls);
+  }
+
+  _instruction_lr(fields, allowedTypes) {
+   //  this._registerOpcode("lr", [["r", "a"], ["d", "a"], ["s"], ["s"]], this._instruction_lr);
+ 
   }
 
   _instruction_jr(fields, allowedTypes) {
