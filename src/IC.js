@@ -33,10 +33,14 @@ module.exports = class IC {
     this._jumpTags = {};
 
     this._ioRegister = [];
+    this._ioSlot = [];
+    this._ioReagent = [];
     this._ioRegisterConnected = [];
 
     for (var i = 0; i <= IO_REGISTER_COUNT; i++) {
       this._ioRegister[i] = {};
+      this._ioSlot[i] = {};
+      this._ioReagent[i] = {};
       this._ioRegisterConnected[i] = true;
     }
 
@@ -332,10 +336,6 @@ module.exports = class IC {
     return this._instructions.length;
   }
 
-  getIORegisters() {
-    return this._ioRegister;
-  }
-
   getIONames() {
     var names = [];
 
@@ -378,6 +378,10 @@ module.exports = class IC {
     this._ioRegisterConnected[index] = value;
   }
 
+  getIORegisters() {
+    return this._ioRegister;
+  }
+
   setIORegister(index, field, value) {
     if (index <= IO_REGISTER_COUNT) {
       if (value !== undefined) {
@@ -386,6 +390,50 @@ module.exports = class IC {
         delete this._ioRegister[index][field];
       }
     }
+  }
+
+  getIOSlots() {
+    return this._ioSlot;
+  }
+
+  setIOSlots(index, slot, logicType, value) {
+    if (index <= IO_REGISTER_COUNT) {
+      if (value !== undefined) {
+        if (!Object.keys(this._ioSlot[index]).includes(slot)) {
+          this._ioSlot[index][slot] = {};
+        }
+
+        this._ioSlot[index][slot][logicType] = value;
+      } else {
+        delete this._ioSlot[index][slot][logicType];
+
+        if (Object.keys(this._ioSlot[index][slot]).length === 0) {
+          delete this._ioSlot[index][slot];
+        }
+      }
+    }
+  }
+
+  getIOReagents() {
+    return this._ioReagent;
+  }
+
+  setIOReagents(index, reagent, logicReagentMode, value) {
+    if (index <= IO_REGISTER_COUNT) {
+      if (value !== undefined) {
+        if (!Object.keys(this._ioReagent[index]).includes(reagent)) {
+          this._ioReagent[index][reagent] = {};
+        }
+
+        this._ioReagent[index][reagent][logicReagentMode] = value;
+      } else {
+        delete this._ioReagent[index][reagent][logicReagentMode];
+
+        if (Object.keys(this._ioReagent[index][reagent]).length === 0) {
+          delete this._ioReagent[index][reagent];
+        }
+      }
+    }    
   }
 
   getStack() {

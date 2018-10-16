@@ -885,4 +885,42 @@ describe("IC Tests", function () {
       expect(result).to.equal("INTERACTION_WITH_DISCONNECTED_DEVICE");
     });
   });
+
+  describe("Devices can store and provide slot logic values", function () {
+    it("should store and return a new slot logic value", function () {
+      let ic = new IC();
+      ic.setIOSlots(0, 1, "Setting", 100);
+
+      var result = ic.getIOSlots();
+      expect(result[0][1]["Setting"]).to.equal(100);
+    });
+
+    it ("should remove any slot logic values set to undefined", function () {
+      let ic = new IC();
+      ic.setIOSlots(0, 1, "Setting", 100);
+      ic.setIOSlots(0, 1, "Setting", undefined);
+
+      var result = ic.getIOSlots();
+      expect(result[0][1]).to.equal(undefined);
+    });
+  });
+
+  describe("Devices can store and provide reagent mode values", function () {
+    it("should store and return a new reagent mode value", function () {
+      let ic = new IC();
+      ic.setIOReagents(0, "Iron", "Quantity", 10);
+
+      var result = ic.getIOReagents();
+      expect(result[0]["Iron"]["Quantity"]).to.equal(10);
+    });
+
+    it ("should remove any reagent mode values set to undefined", function () {
+      let ic = new IC();
+      ic.setIOReagents(0, "Iron", "Quantity", 10);
+      ic.setIOReagents(0, "Iron", "Quantity", undefined);
+
+      var result = ic.getIOReagents();
+      expect(result[0]["Iron"]).to.equal(undefined);
+    });
+  });
 });
