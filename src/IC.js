@@ -399,7 +399,7 @@ module.exports = class IC {
     return this._ioSlot;
   }
 
-  setIOSlots(index, slot, logicType, value) {
+  setIOSlot(index, slot, logicType, value) {
     if (index <= IO_REGISTER_COUNT) {
       if (value !== undefined) {
         if (!Object.keys(this._ioSlot[index]).includes(slot)) {
@@ -421,7 +421,7 @@ module.exports = class IC {
     return this._ioReagent;
   }
 
-  setIOReagents(index, reagent, logicReagentMode, value) {
+  setIOReagent(index, reagent, logicReagentMode, value) {
     if (index <= IO_REGISTER_COUNT) {
       if (value !== undefined) {
         if (!Object.keys(this._ioReagent[index]).includes(reagent)) {

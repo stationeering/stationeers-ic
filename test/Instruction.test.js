@@ -1565,7 +1565,7 @@ describe("Instruction Tests", function () {
     it("should put the value of the slot's logic type into the register", function () {
       let ic = new IC();
 
-      ic.setIOSlots(1, 2, "Setting", 1.5);
+      ic.setIOSlot(1, 2, "Setting", 1.5);
 
       ic.load("ls r2 d1 2 Setting");
       ic.step();
@@ -1579,7 +1579,7 @@ describe("Instruction Tests", function () {
     it("should put the value of the reagents's logic mode into the register", function () {
       let ic = new IC();
 
-      ic.setIOReagents(3, "Iron", "Quantity", 33);
+      ic.setIOReagent(3, "Iron", "Quantity", 33);
 
       ic.load("lr r4 d3 Quantity Iron");
       ic.step();
