@@ -126,7 +126,7 @@ module.exports = class IC {
     this._registerOpcode("l", [["r", "a"], ["d", "a"], ["s"]], this._instruction_l);
     this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
 
-    this._registerOpcode("ls", [["r", "a"], ["d", "a"], ["i"], ["s"]], this._instruction_ls);
+    this._registerOpcode("ls", [["r", "a"], ["d", "a"], ["r", "i", "a"], ["s"]], this._instruction_ls);
     this._registerOpcode("lr", [["r", "a"], ["d", "a"], ["s"], ["s"]], this._instruction_lr);
 
     this._registerOpcode("alias", [["s"], ["r", "d", "a"]], this._instruction_alias);
@@ -987,11 +987,12 @@ module.exports = class IC {
 
   _instruction_ls(fields, allowedTypes) {
     var deviceNumber = this._resolveDeviceNumber(fields[1], allowedTypes[1]); 
+    var slotNumber = Number(this._getRegister(fields[2], undefined, allowedTypes[2])).toString();
     var value = 0;
 
-    if (Object.keys(this._ioSlot[deviceNumber]).includes(fields[2])) {
-      if (Object.keys(this._ioSlot[deviceNumber][fields[2]]).includes(fields[3])) {
-        value = this._ioSlot[deviceNumber][fields[2]][fields[3]];
+    if (Object.keys(this._ioSlot[deviceNumber]).includes(slotNumber)) {
+      if (Object.keys(this._ioSlot[deviceNumber][slotNumber]).includes(fields[3])) {
+        value = this._ioSlot[deviceNumber][slotNumber][fields[3]];
       }
     }
 

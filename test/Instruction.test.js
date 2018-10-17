@@ -1567,7 +1567,8 @@ describe("Instruction Tests", function () {
 
       ic.setIOSlot(1, 2, "Setting", 1.5);
 
-      ic.load("ls r2 d1 2 Setting");
+      ic.load("move r0 2\nls r2 d1 r0 Setting");
+      ic.step();
       ic.step();
 
       expect(ic.getProgramErrors().length).to.equal(0);
