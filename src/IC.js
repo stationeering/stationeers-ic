@@ -987,12 +987,13 @@ module.exports = class IC {
 
   _instruction_ls(fields, allowedTypes) {
     var deviceNumber = this._resolveDeviceNumber(fields[1], allowedTypes[1]); 
-    
-    if (!Object.keys(this._ioSlot[deviceNumber]).includes(fields[2]) || !Object.keys(this._ioSlot[deviceNumber][fields[2]]).includes(fields[3])) {
-      this.setIOSlots(deviceNumber, fields[2], fields[3], 0);
+    var slotNumber = Number(this._getRegister(fields[2], undefined, allowedTypes[2])).toString();
+
+    if (!Object.keys(this._ioSlot[deviceNumber]).includes(slotNumber.toString()) || !Object.keys(this._ioSlot[deviceNumber][slotNumber]).includes(fields[3])) {
+      this.setIOSlot(deviceNumber, slotNumber, fields[3], 0);
     }
 
-    var value = this._ioSlot[deviceNumber][fields[2]][fields[3]];
+    var value = this._ioSlot[deviceNumber][slotNumber][fields[3]];
     this._setRegister(fields[0], value, undefined, allowedTypes[0]);
   }
 
@@ -1000,7 +1001,7 @@ module.exports = class IC {
     var deviceNumber = this._resolveDeviceNumber(fields[1], allowedTypes[1]); 
 
     if (!Object.keys(this._ioReagent[deviceNumber]).includes(fields[3]) || !Object.keys(this._ioReagent[deviceNumber][fields[3]]).includes(fields[2])) {
-      this.setIOReagents(deviceNumber, fields[3], fields[2], 0);
+      this.setIOReagent(deviceNumber, fields[3], fields[2], 0);
     }
 
     var value = this._ioReagent[deviceNumber][fields[3]][fields[2]];
