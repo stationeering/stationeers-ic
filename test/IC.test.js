@@ -895,6 +895,16 @@ describe("IC Tests", function () {
       expect(result[0][1]["Setting"]).to.equal(100);
     });
 
+    it("should store and return a two slot logic values", function () {
+      let ic = new IC();
+      ic.setIOSlots(0, 1, "Setting", 100);
+      ic.setIOSlots(0, 1, "On", 50);
+
+      var result = ic.getIOSlots();
+      expect(result[0][1]["Setting"]).to.equal(100);
+      expect(result[0][1]["On"]).to.equal(50);
+    });
+
     it ("should remove any slot logic values set to undefined", function () {
       let ic = new IC();
       ic.setIOSlot(0, 1, "Setting", 100);

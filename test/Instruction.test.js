@@ -1574,6 +1574,16 @@ describe("Instruction Tests", function () {
       expect(ic.getProgramErrors().length).to.equal(0);
       expect(ic.getInternalRegisters()[2]).to.equal(1.5);
     });
+
+    it("should create an 0 value slot logic type when read and it does not exist", function () {
+      let ic = new IC();
+
+      ic.load("ls r2 d1 2 Setting");
+      ic.step();
+
+      var result = ic.getIOSlots();
+      expect(result[1][2]["Setting"]).to.equal(0);
+    });
   });
 
   describe("lr", function () {
@@ -1587,6 +1597,16 @@ describe("Instruction Tests", function () {
 
       expect(ic.getProgramErrors().length).to.equal(0);
       expect(ic.getInternalRegisters()[4]).to.equal(33);
+    });
+
+    it("should create an 0 value reagent logic mode when read and it does not exist", function () {
+      let ic = new IC();
+
+      ic.load("lr r4 d3 Quantity Iron");
+      ic.step();
+
+      var result = ic.getIOReagents();
+      expect(result[3]["Iron"]["Quantity"]).to.equal(0);
     });
   });
 });
