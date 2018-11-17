@@ -1,3 +1,5 @@
+const BranchInstructions = require("./instructions/Branch");
+
 "use strict";
 
 const NEWLINE = "\n";
@@ -48,6 +50,8 @@ module.exports = class IC {
 
     this._stack = Array(STACK_SIZE).fill(0);
 
+    BranchInstructions(this);
+
     this._registerOpcode("move", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_move);
     this._registerOpcode("add", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_add);
     this._registerOpcode("sub", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_sub);
@@ -70,13 +74,6 @@ module.exports = class IC {
     this._registerOpcode("sdse", [["r", "a"], ["d", "a"]], this._instruction_sdse);
     this._registerOpcode("sdns", [["r", "a"], ["d", "a"]], this._instruction_sdns);
 
-    this._registerOpcode("bdse", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdse);
-    this._registerOpcode("bdns", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdns);
-    this._registerOpcode("brdse", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_brdse);
-    this._registerOpcode("brdns", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_brdns);
-    this._registerOpcode("bdseal", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdseal);
-    this._registerOpcode("bdnsal", [["d", "a"], ["r", "i", "a", "j"]], this._instruction_bdnsal);
-
     this._registerOpcode("sqrt", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_sqrt);
     this._registerOpcode("round", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_round);
     this._registerOpcode("trunc", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_trunc);
@@ -94,34 +91,6 @@ module.exports = class IC {
     this._registerOpcode("nor", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_nor);
 
     this._registerOpcode("yield", [], this._instruction_yield);
-
-    this._registerOpcode("j", [["r", "i", "a", "j"]], this._instruction_j);
-    this._registerOpcode("bltz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bltz);
-    this._registerOpcode("blez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_blez);
-    this._registerOpcode("bgez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bgez);
-    this._registerOpcode("bgtz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bgtz);
-    this._registerOpcode("beq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_beq);
-    this._registerOpcode("bne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bne);
-    this._registerOpcode("bna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bna);
-    this._registerOpcode("bap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bap);
-
-    this._registerOpcode("jal", [["r", "i", "a", "j"]], this._instruction_jal);
-    this._registerOpcode("bltzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bltzal);
-    this._registerOpcode("blezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_blezal);
-    this._registerOpcode("bgezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bgezal);
-    this._registerOpcode("bgtzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bgtzal);
-    this._registerOpcode("beqal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_beqal);
-    this._registerOpcode("bneal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], this._instruction_bneal);
-
-    this._registerOpcode("jr", [["r", "i", "a"]], this._instruction_jr);
-    this._registerOpcode("brltz", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brltz);
-    this._registerOpcode("brlez", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brlez);
-    this._registerOpcode("brgez", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brgez);
-    this._registerOpcode("brgtz", [["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brgtz);
-    this._registerOpcode("breq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_breq);
-    this._registerOpcode("brne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brne);
-    this._registerOpcode("brna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brna);
-    this._registerOpcode("brap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], this._instruction_brap);
 
     this._registerOpcode("l", [["r", "a"], ["d", "a"], ["s"]], this._instruction_l);
     this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
@@ -883,88 +852,6 @@ module.exports = class IC {
     }
   }
 
-  _instruction_j(fields, allowedTypes) {
-    var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    this._jumper(true, addr, false, false);
-  }
-
-  _instruction_jal(fields, allowedTypes) {
-    var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    this._jumper(true, addr, false, true);
-  }
-
-  _instruction_bltzal(fields, allowedTypes) {
-    var condition = this._getRegister(fields[0], undefined, allowedTypes[0]) < 0;
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, false, true);
-  }
-
-  _instruction_blezal(fields, allowedTypes) {
-    var condition = this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0;
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, false, true);
-  }
-
-  _instruction_bgezal(fields, allowedTypes) {
-    var condition = this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0;
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, false, true);
-  }
-
-  _instruction_bgtzal(fields, allowedTypes) {
-    var condition = this._getRegister(fields[0], undefined, allowedTypes[0]) > 0;
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, false, true);
-  }
-
-  _instruction_beqal(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1]));    
-    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._jumper(condition, addr, false, true);
-  }
-
-  _instruction_bneal(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1]));
-    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._jumper(condition, addr, false, true);
-  }
-
-  _instruction_bltz(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0);
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, false, false);
-  }
-
-  _instruction_blez(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0);
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, false, false);
-  }
-
-  _instruction_bgez(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0);
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, false, false);
-  }
-
-  _instruction_bgtz(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0);
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, false, false);
-  }
-
-  _instruction_beq(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1]));
-    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._jumper(condition, addr, false, false);
-  }
-
-  _instruction_bne(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1]));
-    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._jumper(condition, addr, false, false);
-  }
-
   _instruction_yield() {
     throw "YIELD";
   }
@@ -1002,47 +889,6 @@ module.exports = class IC {
 
     var value = this._ioReagent[deviceNumber][fields[3]][fields[2]];
     this._setRegister(fields[0], value, undefined, allowedTypes[0]); 
-  }
-
-  _instruction_jr(fields, allowedTypes) {
-    var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    this._jumper(true, addr, true, false);
-  }
-
-  _instruction_brltz(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0);
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, true, false);
-  }
-
-  _instruction_brlez(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0);
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, true, false);
-  }
-
-  _instruction_brgez(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0);
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, true, false);
-  }
-
-  _instruction_brgtz(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0);
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._jumper(condition, addr, true, false);
-  }
-
-  _instruction_breq(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1]));
-    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._jumper(condition, addr, true, false);
-  }
-
-  _instruction_brne(fields, allowedTypes) {
-    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1]));
-    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._jumper(condition, addr, true, false);
   }
 
   _instruction_alias(fields) {
@@ -1095,50 +941,6 @@ module.exports = class IC {
     this._setRegister(fields[0], this._stack[stackPosition - 1], undefined, allowedTypes[0]);
   }
 
-  _instruction_bna(fields, allowedTypes) {
-    var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
-
-    var condition = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b)));
-    var addr = this._getRegister(fields[3], undefined, allowedTypes[3]);
-
-    this._jumper(condition, addr, false, false);
-  }
-
-  _instruction_bap(fields, allowedTypes) {
-    var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
-
-    var condition = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b)));
-    var addr = this._getRegister(fields[3], undefined, allowedTypes[3]);
-
-    this._jumper(condition, addr, true, false);
-  }
-
-  _instruction_brna(fields, allowedTypes) {
-    var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
-
-    var condition = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b)));
-    var addr = this._getRegister(fields[3], undefined, allowedTypes[3]);
-
-    this._jumper(condition, addr, true, false);
-  }
-
-  _instruction_brap(fields, allowedTypes) {
-    var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
-
-    var condition = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b)));
-    var addr = this._getRegister(fields[3], undefined, allowedTypes[3]);
-
-    this._jumper(condition, addr, true, false);
-  }
-
   _instruction_select(fields, allowedTypes) {
     var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
     var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
@@ -1157,48 +959,5 @@ module.exports = class IC {
   _instruction_sdns(fields, allowedTypes) {
     var value = this._isDeviceConnected(fields[1], allowedTypes[1]) ? 0 : 1;
     this._setRegister(fields[0], value, undefined, allowedTypes[0]);
-  }
-
-  _instruction_bdse(fields, allowedTypes) {
-    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
-
-    if (value) {
-      this._programCounter = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    }
-  }
-
-  _instruction_bdns(fields, allowedTypes) {
-    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-
-    this._jumper(condition, addr, false, false);
-  }
-
-  _instruction_brdse(fields, allowedTypes) {
-    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-
-    this._jumper(condition, addr, true, false);
-  }
-
-  _instruction_brdns(fields, allowedTypes) {
-    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-
-    this._jumper(condition, addr, true, false);
-  }
-
-  _instruction_bdseal(fields, allowedTypes) {
-    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-
-    this._jumper(condition, addr, false, true);
-  }
-
-  _instruction_bdnsal(fields, allowedTypes) {
-    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
-    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-
-    this._jumper(condition, addr, false, true);
   }
 };
