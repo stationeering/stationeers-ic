@@ -696,7 +696,7 @@ module.exports = class IC {
     var opcodeData = this._opcodes[opcode];
 
     if (opcodeData) {
-      opcodeData.func(fields, opcodeData.fields);
+      opcodeData.func(fields, opcodeData.fields, this);
     }
 
     return opcode;
