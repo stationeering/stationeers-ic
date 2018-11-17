@@ -1156,7 +1156,7 @@ describe("Instruction Tests", function () {
       ic.load("brap 1 1.01 0.1 9");
       ic.step();
 
-      expect(ic.programCounter()).to.equal(10);
+      expect(ic.programCounter()).to.equal(9);
     });
 
     it ("should branch relative if abs(a - b) > c * max(abs(a), abs(b))", function () {
@@ -1176,7 +1176,7 @@ describe("Instruction Tests", function () {
       ic.load("brna 1 2.01 0.1 9");
       ic.step();
 
-      expect(ic.programCounter()).to.equal(10);
+      expect(ic.programCounter()).to.equal(9);
     });
 
     it ("should branch relative if abs(a - b) <= c * max(abs(a), abs(b))", function () {
@@ -1480,7 +1480,7 @@ describe("Instruction Tests", function () {
       ic.load("brdse d0 9");
       ic.step();
 
-      expect(ic.programCounter()).to.equal(10);
+      expect(ic.programCounter()).to.equal(9);
     });
 
     it("should set pc to 1 if device is not set/connected", function () {
@@ -1511,7 +1511,7 @@ describe("Instruction Tests", function () {
       ic.load("brdns d0 9");
       ic.step();
 
-      expect(ic.programCounter()).to.equal(10);
+      expect(ic.programCounter()).to.equal(9);
     });
   });
 

@@ -868,105 +868,101 @@ module.exports = class IC {
     this._setRegister(fields[0], result, undefined, allowedTypes[0]);
   }
 
+  _jumper(condition, destination, relative, and_link) {
+    if (condition) {
+      if (and_link) {
+        this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
+      }
+
+      if (relative) {
+        // -1 is required becaused we increment the the PC before we execute the instruction.
+        this._programCounter += Math.round(destination) - 1;
+      } else {
+        this._programCounter = Math.round(destination);
+      }      
+    }
+  }
+
   _instruction_j(fields, allowedTypes) {
     var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    this._programCounter = Math.round(addr);
+    this._jumper(true, addr, false, false);
   }
 
   _instruction_jal(fields, allowedTypes) {
     var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-    this._programCounter = Math.round(addr);
+    this._jumper(true, addr, false, true);
   }
 
   _instruction_bltzal(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0) {
-      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-      this._programCounter = Math.round(addr);
-    }
+    var condition = this._getRegister(fields[0], undefined, allowedTypes[0]) < 0;
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, false, true);
   }
 
   _instruction_blezal(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0) {
-      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-      this._programCounter = Math.round(addr);
-    }
+    var condition = this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0;
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, false, true);
   }
 
   _instruction_bgezal(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0) {
-      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-      this._programCounter = Math.round(addr);
-    }
+    var condition = this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0;
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, false, true);
   }
 
   _instruction_bgtzal(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0) {
-      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-      this._programCounter = Math.round(addr);
-    }
+    var condition = this._getRegister(fields[0], undefined, allowedTypes[0]) > 0;
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, false, true);
   }
 
   _instruction_beqal(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1])) {
-      var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1]));    
+    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._jumper(condition, addr, false, true);
   }
 
   _instruction_bneal(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1])) {
-      var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1]));
+    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._jumper(condition, addr, false, true);
   }
 
   _instruction_bltz(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0) {
-      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0);
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, false, false);
   }
 
   _instruction_blez(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0) {
-      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0);
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, false, false);
   }
 
   _instruction_bgez(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0) {
-      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0);
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, false, false);
   }
 
   _instruction_bgtz(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0) {
-      var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0);
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, false, false);
   }
 
   _instruction_beq(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1])) {
-      var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1]));
+    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._jumper(condition, addr, false, false);
   }
 
   _instruction_bne(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1])) {
-      var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1]));
+    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._jumper(condition, addr, false, false);
   }
 
   _instruction_yield() {
@@ -1009,50 +1005,44 @@ module.exports = class IC {
   }
 
   _instruction_jr(fields, allowedTypes) {
-    var addr = this._programCounter - 1 + this._getRegister(fields[0], undefined, allowedTypes[0]);
-    this._programCounter = Math.round(addr);
+    var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
+    this._jumper(true, addr, true, false);
   }
 
   _instruction_brltz(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) < 0);
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_brlez(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) <= 0);
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_brgez(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) >= 0);
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_brgtz(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[1], undefined, allowedTypes[1]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) > 0);
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_breq(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1])) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[2], undefined, allowedTypes[2]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) === this._getRegister(fields[1], undefined, allowedTypes[1]));
+    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_brne(fields, allowedTypes) {
-    if (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1])) {
-      var addr = this._programCounter - 1 + this._getRegister(fields[2], undefined, allowedTypes[2]);
-      this._programCounter = Math.round(addr);
-    }
+    var condition = (this._getRegister(fields[0], undefined, allowedTypes[0]) !== this._getRegister(fields[1], undefined, allowedTypes[1]));
+    var addr = this._getRegister(fields[2], undefined, allowedTypes[2]);
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_alias(fields) {
@@ -1109,44 +1099,44 @@ module.exports = class IC {
     var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
     var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
     var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
 
-    if (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) {
-      this._programCounter = d;
-    }
+    var condition = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b)));
+    var addr = this._getRegister(fields[3], undefined, allowedTypes[3]);
+
+    this._jumper(condition, addr, false, false);
   }
 
   _instruction_bap(fields, allowedTypes) {
     var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
     var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
     var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
 
-    if (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) {
-      this._programCounter = d;
-    }
+    var condition = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b)));
+    var addr = this._getRegister(fields[3], undefined, allowedTypes[3]);
+
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_brna(fields, allowedTypes) {
     var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
     var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
     var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
 
-    if (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) {
-      this._programCounter += d;
-    }
+    var condition = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b)));
+    var addr = this._getRegister(fields[3], undefined, allowedTypes[3]);
+
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_brap(fields, allowedTypes) {
     var a = this._getRegister(fields[0], undefined, allowedTypes[0]);
     var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
     var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
-    var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
 
-    if (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) {
-      this._programCounter += d;
-    }
+    var condition = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b)));
+    var addr = this._getRegister(fields[3], undefined, allowedTypes[3]);
+
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_select(fields, allowedTypes) {
@@ -1178,44 +1168,37 @@ module.exports = class IC {
   }
 
   _instruction_bdns(fields, allowedTypes) {
-    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
 
-    if (value) {
-      this._programCounter = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    }
+    this._jumper(condition, addr, false, false);
   }
 
   _instruction_brdse(fields, allowedTypes) {
-    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
+    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
 
-    if (value) {
-      this._programCounter += this._getRegister(fields[1], undefined, allowedTypes[1]);
-    }
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_brdns(fields, allowedTypes) {
-    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
 
-    if (value) {
-      this._programCounter += this._getRegister(fields[1], undefined, allowedTypes[1]);
-    }
+    this._jumper(condition, addr, true, false);
   }
 
   _instruction_bdseal(fields, allowedTypes) {
-    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
+    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
 
-    if (value) {
-      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-      this._programCounter = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    }
+    this._jumper(condition, addr, false, true);
   }
 
   _instruction_bdnsal(fields, allowedTypes) {
-    var value = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+    var condition = this._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+    var addr = this._getRegister(fields[1], undefined, allowedTypes[1]);
 
-    if (value) {
-      this._internalRegister[RETURN_ADDRESS_REGISTER] = this._programCounter;
-      this._programCounter = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    }
+    this._jumper(condition, addr, false, true);
   }
 };
