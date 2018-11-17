@@ -1474,7 +1474,7 @@ describe("Instruction Tests", function () {
   });
 
   describe("brdse", function () {
-    it("should set pc to 10 if device is set/connected", function () {
+    it("should set pc to 9 if device is set/connected", function () {
       let ic = new IC();
 
       ic.load("brdse d0 9");
@@ -1504,7 +1504,7 @@ describe("Instruction Tests", function () {
       expect(ic.programCounter()).to.equal(1);
     });
 
-    it("should set pc to 10 if device is not set/connected", function () {
+    it("should set pc to 9 if device is not set/connected", function () {
       let ic = new IC();
       ic.setIOConnected(0, false);
 
