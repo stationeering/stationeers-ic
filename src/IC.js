@@ -1,5 +1,10 @@
 const BranchInstructions = require("./instructions/Branch");
 const SelectInstructions = require("./instructions/Select");
+const MathInstructions = require("./instructions/Math");
+const LogicInstructions = require("./instructions/Logic");
+const DeviceInstructions = require("./instructions/Device");
+const StackInstructions = require("./instructions/Stack");
+const MiscInstructions = require("./instructions/Misc");
 
 "use strict";
 
@@ -19,6 +24,9 @@ const INITIAL_ALIASES = ["db", "sp", "ra"];
 
 module.exports = class IC {
   constructor() {
+    this.STACK_SIZE = STACK_SIZE;
+    this.STACK_POINTER_REGISTER = STACK_POINTER_REGISTER;
+
     this._opcodes = {};
     this._instructions = [];
 
@@ -53,49 +61,34 @@ module.exports = class IC {
 
     BranchInstructions(this);
     SelectInstructions(this);
-
-    this._registerOpcode("move", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_move);
-    this._registerOpcode("add", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_add);
-    this._registerOpcode("sub", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_sub);
-    this._registerOpcode("mul", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_mul);
-    this._registerOpcode("div", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_div);
-    this._registerOpcode("mod", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_mod);
-
-    this._registerOpcode("sqrt", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_sqrt);
-    this._registerOpcode("round", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_round);
-    this._registerOpcode("trunc", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_trunc);
-    this._registerOpcode("ceil", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_ceil);
-    this._registerOpcode("floor", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_floor);
-    this._registerOpcode("max", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_max);
-    this._registerOpcode("min", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_min);
-    this._registerOpcode("abs", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_abs);
-    this._registerOpcode("log", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_log);
-    this._registerOpcode("exp", [["r", "a"], ["r", "i", "f", "a"]], this._instruction_exp);
-    this._registerOpcode("rand", [["r", "a"]], this._instruction_rand);
-    this._registerOpcode("and", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_and);
-    this._registerOpcode("or", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_or);
-    this._registerOpcode("xor", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_xor);
-    this._registerOpcode("nor", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], this._instruction_nor);
-
-    this._registerOpcode("yield", [], this._instruction_yield);
-
-    this._registerOpcode("l", [["r", "a"], ["d", "a"], ["s"]], this._instruction_l);
-    this._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], this._instruction_s);
-
-    this._registerOpcode("ls", [["r", "a"], ["d", "a"], ["r", "i", "a"], ["s"]], this._instruction_ls);
-    this._registerOpcode("lr", [["r", "a"], ["d", "a"], ["s"], ["s"]], this._instruction_lr);
+    MathInstructions(this);
+    LogicInstructions(this);
+    DeviceInstructions(this);
+    StackInstructions(this);
+    MiscInstructions(this);
 
     this._registerOpcode("alias", [["s"], ["r", "d", "a"]], this._instruction_alias);
-
-    this._registerOpcode("push", [["r", "i", "f", "a"]], this._instruction_push);
-    this._registerOpcode("pop", [["r", "a"]], this._instruction_pop);
-    this._registerOpcode("peek", [["r", "a"]], this._instruction_peek);
-
-    this._registerOpcode("hcf", [], this._instruction_hcf);
 
     this._instruction_alias(["db", "d" + IO_REGISTER_COUNT]);
     this._instruction_alias(["sp", "r" + STACK_POINTER_REGISTER]);
     this._instruction_alias(["ra", "r" + RETURN_ADDRESS_REGISTER]);
+  }
+
+  _instruction_alias(fields) {
+    var matches = fields[1].match(/^([dr])(\d+)$/);
+  
+    if (matches) {
+      var number = Number.parseInt(matches[2]);
+      this._aliases[fields[0]] = { value: number, type: matches[1] };
+      this._aliasesAsigned.push(fields[0]);
+    } else {
+      var foundAlias = this._aliases[fields[1]];
+      
+      if (foundAlias) {
+        this._aliases[fields[0]] = { value: foundAlias.value, type: foundAlias.type };
+        this._aliasesAsigned.push(fields[0]);
+      }
+    }
   }
 
   load(unparsedInstructions) {
@@ -663,117 +656,6 @@ module.exports = class IC {
     this._opcodes[name] = { fields, func };
   }
 
-  _instruction_move(fields, allowedTypes) {
-    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
-  }
-
-  _instruction_add(fields, allowedTypes) {
-    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) + this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
-  }
-
-  _instruction_sub(fields, allowedTypes) {
-    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) - this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
-  }
-
-  _instruction_mul(fields, allowedTypes) {
-    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) * this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
-  }
-
-  _instruction_div(fields, allowedTypes) {
-    let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) / this._getRegister(fields[2], undefined, allowedTypes[2]);
-    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
-  }
-
-  _instruction_mod(fields, allowedTypes) {
-    let valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]);
-    let valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]);
-
-    let outputValue = valueOne % valueTwo;
-    if (outputValue < 0) {
-      outputValue += valueTwo;
-    }
-
-    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
-  }
-
-  _instruction_sqrt(fields, allowedTypes) {
-    this._setRegister(fields[0], Math.sqrt(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
-  }
-
-  _instruction_round(fields, allowedTypes) {
-    this._setRegister(fields[0], Math.round(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
-  }
-
-  _instruction_trunc(fields, allowedTypes) {
-    this._setRegister(fields[0], Math.trunc(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
-  }
-
-  _instruction_ceil(fields, allowedTypes) {
-    this._setRegister(fields[0], Math.ceil(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
-  }
-
-  _instruction_floor(fields, allowedTypes) {
-    this._setRegister(fields[0], Math.floor(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
-  }
-
-  _instruction_max(fields, allowedTypes) {
-    let outputValue = Math.max(this._getRegister(fields[1], undefined, allowedTypes[1]), this._getRegister(fields[2], undefined, allowedTypes[2]));
-    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
-  }
-
-  _instruction_min(fields, allowedTypes) {
-    let outputValue = Math.min(this._getRegister(fields[1], undefined, allowedTypes[1]), this._getRegister(fields[2], undefined, allowedTypes[2]));
-    this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
-  }
-
-  _instruction_abs(fields, allowedTypes) {
-    this._setRegister(fields[0], Math.abs(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
-  }
-
-  _instruction_log(fields, allowedTypes) {
-    this._setRegister(fields[0], Math.log(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
-  }
-
-  _instruction_exp(fields, allowedTypes) {
-    this._setRegister(fields[0], Math.exp(this._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
-  }
-
-  _instruction_rand(fields, allowedTypes) {
-    this._setRegister(fields[0], Math.random(), undefined, allowedTypes[0]);
-  }
-
-  _instruction_and(fields, allowedTypes) {
-    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) != 0;
-    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) != 0;
-    var result = (valueOne && valueTwo ? 1 : 0);
-    this._setRegister(fields[0], result, undefined, allowedTypes[0]);
-  }
-
-  _instruction_or(fields, allowedTypes) {
-    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) != 0;
-    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) != 0;
-    var result = (valueOne || valueTwo ? 1 : 0);
-    this._setRegister(fields[0], result, undefined, allowedTypes[0]);
-  }
-
-  _instruction_xor(fields, allowedTypes) {
-    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) != 0;
-    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) != 0;
-    var result = (valueOne ^ valueTwo ? 1 : 0);
-    this._setRegister(fields[0], result, undefined, allowedTypes[0]);
-  }
-
-  _instruction_nor(fields, allowedTypes) {
-    var valueOne = this._getRegister(fields[1], undefined, allowedTypes[1]) != 0;
-    var valueTwo = this._getRegister(fields[2], undefined, allowedTypes[2]) != 0;
-    var result = (!valueOne && !valueTwo) ? 1 : 0;
-    this._setRegister(fields[0], result, undefined, allowedTypes[0]);
-  }
-
   _jumper(condition, destination, relative, and_link) {
     if (condition) {
       if (and_link) {
@@ -787,94 +669,5 @@ module.exports = class IC {
         this._programCounter = Math.round(destination);
       }      
     }
-  }
-
-  _instruction_yield() {
-    throw "YIELD";
-  }
-
-  _instruction_hcf() {
-    throw "HALT_AND_CATCH_FIRE";
-  }
-
-  _instruction_l(fields, allowedTypes) {
-    this._setRegister(fields[0], this._getRegister(fields[1], fields[2], allowedTypes[1]), undefined, allowedTypes[0]);
-  }
-
-  _instruction_s(fields, allowedTypes) {
-    this._setRegister(fields[0], this._getRegister(fields[2], undefined, allowedTypes[2]), fields[1], allowedTypes[0]);
-  }
-
-  _instruction_ls(fields, allowedTypes) {
-    var deviceNumber = this._resolveDeviceNumber(fields[1], allowedTypes[1]); 
-    var slotNumber = Number(this._getRegister(fields[2], undefined, allowedTypes[2])).toString();
-
-    if (!Object.keys(this._ioSlot[deviceNumber]).includes(slotNumber.toString()) || !Object.keys(this._ioSlot[deviceNumber][slotNumber]).includes(fields[3])) {
-      this.setIOSlot(deviceNumber, slotNumber, fields[3], 0);
-    }
-
-    var value = this._ioSlot[deviceNumber][slotNumber][fields[3]];
-    this._setRegister(fields[0], value, undefined, allowedTypes[0]);
-  }
-
-  _instruction_lr(fields, allowedTypes) {
-    var deviceNumber = this._resolveDeviceNumber(fields[1], allowedTypes[1]); 
-
-    if (!Object.keys(this._ioReagent[deviceNumber]).includes(fields[3]) || !Object.keys(this._ioReagent[deviceNumber][fields[3]]).includes(fields[2])) {
-      this.setIOReagent(deviceNumber, fields[3], fields[2], 0);
-    }
-
-    var value = this._ioReagent[deviceNumber][fields[3]][fields[2]];
-    this._setRegister(fields[0], value, undefined, allowedTypes[0]); 
-  }
-
-  _instruction_alias(fields) {
-    var matches = fields[1].match(/^([dr])(\d+)$/);
-
-    if (matches) {
-      var number = Number.parseInt(matches[2]);
-      this._aliases[fields[0]] = { value: number, type: matches[1] };
-      this._aliasesAsigned.push(fields[0]);
-    } else {
-      var foundAlias = this._aliases[fields[1]];
-      
-      if (foundAlias) {
-        this._aliases[fields[0]] = { value: foundAlias.value, type: foundAlias.type };
-        this._aliasesAsigned.push(fields[0]);
-      }
-    }
-  }
-
-  _instruction_push(fields, allowedTypes) {
-    var stackPosition = this._internalRegister[STACK_POINTER_REGISTER];
-
-    if (stackPosition >= STACK_SIZE) {
-      throw "STACK_OVERFLOW";
-    }
-
-    this._stack[stackPosition] = this._getRegister(fields[0], undefined, allowedTypes[0]);
-    this._internalRegister[STACK_POINTER_REGISTER] = stackPosition + 1;
-  }
-
-  _instruction_pop(fields, allowedTypes) {
-    var stackPosition = this._internalRegister[STACK_POINTER_REGISTER];
-
-    if (stackPosition <= 0) {
-      throw "STACK_UNDERFLOW";
-    }
-
-    stackPosition -= 1;
-    this._internalRegister[STACK_POINTER_REGISTER] = stackPosition;
-    this._setRegister(fields[0], this._stack[stackPosition], undefined, allowedTypes[0]);
-  }
-
-  _instruction_peek(fields, allowedTypes) {
-    var stackPosition = this._internalRegister[STACK_POINTER_REGISTER];
-
-    if (stackPosition <= 0) {
-      throw "STACK_UNDERFLOW";
-    }
-
-    this._setRegister(fields[0], this._stack[stackPosition - 1], undefined, allowedTypes[0]);
   }
 };

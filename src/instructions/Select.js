@@ -15,72 +15,72 @@ module.exports = function (ic) {
   ic._registerOpcode("sdns", [["r", "a"], ["d", "a"]], _instruction_sdns);
 };
 
-function _instruction_slt(fields, allowedTypes) {
-  let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) < this._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
-  this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
+function _instruction_slt(fields, allowedTypes, ic) {
+  let outputValue = ic._getRegister(fields[1], undefined, allowedTypes[1]) < ic._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
+  ic._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
 }
 
-function _instruction_sle(fields, allowedTypes) {
-  let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) <= this._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
-  this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
+function _instruction_sle(fields, allowedTypes, ic) {
+  let outputValue = ic._getRegister(fields[1], undefined, allowedTypes[1]) <= ic._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
+  ic._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
 }
 
-function _instruction_sgt(fields, allowedTypes) {
-  let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) > this._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
-  this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
+function _instruction_sgt(fields, allowedTypes, ic) {
+  let outputValue = ic._getRegister(fields[1], undefined, allowedTypes[1]) > ic._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
+  ic._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
 }
 
-function _instruction_sge(fields, allowedTypes) {
-  let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) >= this._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
-  this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
+function _instruction_sge(fields, allowedTypes, ic) {
+  let outputValue = ic._getRegister(fields[1], undefined, allowedTypes[1]) >= ic._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
+  ic._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
 }
 
-function _instruction_seq(fields, allowedTypes) {
-  let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) === this._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
-  this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
+function _instruction_seq(fields, allowedTypes, ic) {
+  let outputValue = ic._getRegister(fields[1], undefined, allowedTypes[1]) === ic._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
+  ic._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
 }
 
-function _instruction_sne(fields, allowedTypes) {
-  let outputValue = this._getRegister(fields[1], undefined, allowedTypes[1]) !== this._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
-  this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
+function _instruction_sne(fields, allowedTypes, ic) {
+  let outputValue = ic._getRegister(fields[1], undefined, allowedTypes[1]) !== ic._getRegister(fields[2], undefined, allowedTypes[2]) ? 1 : 0;
+  ic._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
 }
 
-function _instruction_sna(fields, allowedTypes) {
-  var a = this._getRegister(fields[1], undefined, allowedTypes[1]);
-  var b = this._getRegister(fields[2], undefined, allowedTypes[2]);
-  var c = this._getRegister(fields[3], undefined, allowedTypes[3]);
+function _instruction_sna(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var b = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  var c = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   let outputValue = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) ? 1 : 0;
 
-  this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
+  ic._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
 }
 
-function _instruction_sap(fields, allowedTypes) {
-  var a = this._getRegister(fields[1], undefined, allowedTypes[1]);
-  var b = this._getRegister(fields[2], undefined, allowedTypes[2]);
-  var c = this._getRegister(fields[3], undefined, allowedTypes[3]);
+function _instruction_sap(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var b = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  var c = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   let outputValue = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) ? 1 : 0;
 
-  this._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
+  ic._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
 }
 
-function _instruction_select(fields, allowedTypes) {
-  var b = this._getRegister(fields[1], undefined, allowedTypes[1]);
-  var c = this._getRegister(fields[2], undefined, allowedTypes[2]);
-  var d = this._getRegister(fields[3], undefined, allowedTypes[3]);
+function _instruction_select(fields, allowedTypes, ic) {
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  var d = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   var result = (b === 0 ? d : c);
 
-  this._setRegister(fields[0], result, undefined, allowedTypes[0]);
+  ic._setRegister(fields[0], result, undefined, allowedTypes[0]);
 }
 
-function _instruction_sdse(fields, allowedTypes) {
-  var value = this._isDeviceConnected(fields[1], allowedTypes[1]) ? 1 : 0;
-  this._setRegister(fields[0], value, undefined, allowedTypes[0]);
+function _instruction_sdse(fields, allowedTypes, ic) {
+  var value = ic._isDeviceConnected(fields[1], allowedTypes[1]) ? 1 : 0;
+  ic._setRegister(fields[0], value, undefined, allowedTypes[0]);
 }
 
-function _instruction_sdns(fields, allowedTypes) {
-  var value = this._isDeviceConnected(fields[1], allowedTypes[1]) ? 0 : 1;
-  this._setRegister(fields[0], value, undefined, allowedTypes[0]);
+function _instruction_sdns(fields, allowedTypes, ic) {
+  var value = ic._isDeviceConnected(fields[1], allowedTypes[1]) ? 0 : 1;
+  ic._setRegister(fields[0], value, undefined, allowedTypes[0]);
 }

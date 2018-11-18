@@ -36,17 +36,17 @@ module.exports = function (ic) {
 };
 
 function _instruction_jr(fields, allowedTypes, ic) {
-  var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
+  var addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
   ic._jumper(true, addr, true, false);
 }
 
 function _instruction_j(fields, allowedTypes, ic) {
-  var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
+  var addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
   ic._jumper(true, addr, false, false);
 }
 
 function _instruction_jal(fields, allowedTypes, ic) {
-  var addr = this._getRegister(fields[0], undefined, allowedTypes[0]);
+  var addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
   ic._jumper(true, addr, false, true);
 }
 
