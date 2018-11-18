@@ -716,8 +716,6 @@ describe("Branch Tests", function () {
     });
   });
 
-
-  
   describe("bap", function () {
     it ("should branch if abs(a - b) <= c * max(abs(a), abs(b))", function () {
       let ic = new IC();
@@ -831,7 +829,6 @@ describe("Branch Tests", function () {
     });
   });
   
-  
   describe("bltzal", function () {
     it("should change the program counter if s < 0", function () {
       let ic = new IC();
@@ -853,7 +850,6 @@ describe("Branch Tests", function () {
       expect(ic.getInternalRegisters()[17]).to.equal(0);
     });
   });
-
 
   describe("bgezal", function () {
     it("should change the program counter if s >= 0", function () {
@@ -962,6 +958,262 @@ describe("Branch Tests", function () {
 
       expect(ic._programCounter).to.equal(9);
       expect(ic.getInternalRegisters()[17]).to.equal(1);      
+    });
+  });
+
+  describe("blt", function () {
+    it ("should branch if if a < b", function () {
+      let ic = new IC();
+
+      ic.load("blt 1 2 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+    });
+
+    it ("should not branch if if a >= b", function () {
+      let ic = new IC();
+
+      ic.load("blt 1 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  describe("bgt", function () {
+    it ("should branch if if a > b", function () {
+      let ic = new IC();
+
+      ic.load("bgt 2 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+    });
+
+    it ("should not branch if if a <= b", function () {
+      let ic = new IC();
+
+      ic.load("bgt 1 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  describe("ble", function () {
+    it ("should branch if if a <= b", function () {
+      let ic = new IC();
+
+      ic.load("ble 1 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+    });
+
+    it ("should not branch if if a > b", function () {
+      let ic = new IC();
+
+      ic.load("ble 2 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  describe("bge", function () {
+    it ("should branch if if a >= b", function () {
+      let ic = new IC();
+
+      ic.load("bge 2 2 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+    });
+
+    it ("should not branch if if a < b", function () {
+      let ic = new IC();
+
+      ic.load("bge 1 2 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  describe("brlt", function () {
+    it ("should branch relative if if a < b", function () {
+      let ic = new IC();
+
+      ic.load("yield\nbrlt 1 2 9");
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(10);
+    });
+
+    it ("should not branch if if a >= b", function () {
+      let ic = new IC();
+
+      ic.load("yield\nbrlt 1 1 9");
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(2);
+    });
+  });
+
+  describe("brgt", function () {
+    it ("should branch relative if if a > b", function () {
+      let ic = new IC();
+
+      ic.load("yield\nbrgt 2 1 9");
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(10);
+    });
+
+    it ("should not branch if if a <= b", function () {
+      let ic = new IC();
+
+      ic.load("yield\nbrgt 1 1 9");
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(2);
+    });
+  });
+
+  describe("brle", function () {
+    it ("should branch relative if if a <= b", function () {
+      let ic = new IC();
+
+      ic.load("yield\nbrle 1 1 9");
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(10);
+    });
+
+    it ("should not branch if if a > b", function () {
+      let ic = new IC();
+
+      ic.load("yield\nbrle 2 1 9");
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(2);
+    });
+  });
+
+  describe("brge", function () {
+    it ("should branch relative if if a >= b", function () {
+      let ic = new IC();
+
+      ic.load("yield\nbrge 2 2 9");
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(10);
+    });
+
+    it ("should not branch if if a < b", function () {
+      let ic = new IC();
+
+      ic.load("yield\nbrge 1 2 9");
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(2);
+    });
+  });
+  
+  describe("bltal", function () {
+    it ("should branch if if a < b", function () {
+      let ic = new IC();
+
+      ic.load("bltal 1 2 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it ("should not branch if if a >= b", function () {
+      let ic = new IC();
+
+      ic.load("bltal 1 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("bgtal", function () {
+    it ("should branch if if a > b", function () {
+      let ic = new IC();
+
+      ic.load("bgtal 2 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it ("should not branch if if a <= b", function () {
+      let ic = new IC();
+
+      ic.load("bgtal 1 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("bleal", function () {
+    it ("should branch if if a <= b", function () {
+      let ic = new IC();
+
+      ic.load("bleal 1 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it ("should not branch if if a > b", function () {
+      let ic = new IC();
+
+      ic.load("bleal 2 1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("bgeal", function () {
+    it ("should branch if if a >= b", function () {
+      let ic = new IC();
+
+      ic.load("bgeal 2 2 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it ("should not branch if if a < b", function () {
+      let ic = new IC();
+
+      ic.load("bgeal 1 2 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
     });
   });
 });

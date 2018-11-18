@@ -13,6 +13,22 @@ module.exports = function (ic) {
   ic._registerOpcode("bgtz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgtz);
   ic._registerOpcode("beq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beq);
   ic._registerOpcode("bne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bne);
+
+  ic._registerOpcode("blt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_blt);
+  ic._registerOpcode("bgt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgt);
+  ic._registerOpcode("ble", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_ble);
+  ic._registerOpcode("bge", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bge);
+
+  ic._registerOpcode("brlt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brlt);
+  ic._registerOpcode("brgt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brgt);
+  ic._registerOpcode("brle", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brle);
+  ic._registerOpcode("brge", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brge);
+
+  ic._registerOpcode("bltal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bltal);
+  ic._registerOpcode("bgtal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgtal);
+  ic._registerOpcode("bleal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bleal);
+  ic._registerOpcode("bgeal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgeal);
+
   ic._registerOpcode("bna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bna);
   ic._registerOpcode("bap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bap);
 
@@ -241,6 +257,126 @@ function _instruction_bdseal(fields, allowedTypes, ic) {
 function _instruction_bdnsal(fields, allowedTypes, ic) {
   var condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
   var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+
+  ic._jumper(condition, addr, false, true);
+}
+
+function _instruction_blt(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a < b;
+
+  ic._jumper(condition, addr, false, false);
+}
+
+function _instruction_bgt(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a > b;
+
+  ic._jumper(condition, addr, false, false);
+}
+
+function _instruction_ble(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a <= b;
+
+  ic._jumper(condition, addr, false, false);
+}
+
+function _instruction_bge(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a >= b;
+
+  ic._jumper(condition, addr, false, false);
+}
+
+function _instruction_brlt(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a < b;
+
+  ic._jumper(condition, addr, true, false);
+}
+
+function _instruction_brgt(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a > b;
+
+  ic._jumper(condition, addr, true, false);
+}
+
+function _instruction_brle(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a <= b;
+
+  ic._jumper(condition, addr, true, false);
+}
+
+function _instruction_brge(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a >= b;
+
+  ic._jumper(condition, addr, true, false);
+}
+
+function _instruction_bltal(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a < b;
+
+  ic._jumper(condition, addr, false, true);
+}
+
+function _instruction_bgtal(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a > b;
+
+  ic._jumper(condition, addr, false, true);
+}
+
+function _instruction_bleal(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a <= b;
+
+  ic._jumper(condition, addr, false, true);
+}
+
+function _instruction_bgeal(fields, allowedTypes, ic) {
+  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  var condition = a >= b;
 
   ic._jumper(condition, addr, false, true);
 }
