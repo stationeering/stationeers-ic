@@ -1428,4 +1428,92 @@ describe("Branch Tests", function () {
       expect(ic.programCounter()).to.equal(2);
     });
   });
+
+  describe("beqzal", function () {
+    it("should change the program counter if s == 0", function () {
+      let ic = new IC();
+      ic.load("beqzal 0 9");
+    
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+    
+    it("should not change the program counter if s != 0", function () {
+      let ic = new IC();
+      ic.load("beqzal 1 9");
+    
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+  
+  describe("bnezal", function () {
+    it("should change the program counter if s != 0", function () {
+      let ic = new IC();
+      ic.load("bnezal 1 9");
+    
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+    
+    it("should not change the program counter if s == 0", function () {
+      let ic = new IC();
+      ic.load("bnezal 0 9");
+    
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+  
+  describe("bapzal", function () {
+    it ("should branch if abs(a - 0) <= c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+  
+      ic.load("bapzal 1.121039E-45 0.1 9");
+      ic.step();
+  
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+  
+    it ("should not branch if abs(a - 0) > c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+  
+      ic.load("bapzal 0.1 0.1 9");
+      ic.step();
+  
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+  
+  describe("bnazal", function () {
+    it ("should branch if abs(a - 0) > c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+  
+      ic.load("bnazal 0.1 0.1 9");
+      ic.step();
+  
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+  
+    it ("should not branch if abs(a - 0) <= c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+  
+      ic.load("bnazal 1.121039E-45 0.1 9");
+      ic.step();
+  
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
 });

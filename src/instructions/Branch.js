@@ -13,6 +13,7 @@ module.exports = function (ic) {
   ic._registerOpcode("bgtz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgtz);
   ic._registerOpcode("beqz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beqz);
   ic._registerOpcode("bnez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnez);
+
   ic._registerOpcode("breqz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_breqz);
   ic._registerOpcode("brnez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brnez);
 
@@ -63,6 +64,11 @@ module.exports = function (ic) {
   ic._registerOpcode("brne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brne);
   ic._registerOpcode("brna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brna);
   ic._registerOpcode("brap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brap);
+
+  ic._registerOpcode("beqzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beqzal);
+  ic._registerOpcode("bnezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnezal);
+  ic._registerOpcode("bnazal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnazal);
+  ic._registerOpcode("bapzal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bapzal);
 };
 
 const CSHARP_EPSILON_TIMES_EIGHT = 1.121039E-44;
@@ -485,4 +491,38 @@ function _instruction_brapz(fields, allowedTypes, ic) {
   let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
   ic._jumper(condition, addr, true, false);
+}
+
+function _instruction_beqzal(fields, allowedTypes, ic) {
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) === 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  ic._jumper(condition, addr, false, true);
+}
+
+function _instruction_bnezal(fields, allowedTypes, ic) {
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) !== 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  ic._jumper(condition, addr, false, true);
+}
+
+function _instruction_bnazal(fields, allowedTypes, ic) {
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = 0;
+  let c = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+
+  let condition = (Math.abs(a - b) > Math.max(c * Math.max(Math.abs(a), Math.abs(b)), CSHARP_EPSILON_TIMES_EIGHT));
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  ic._jumper(condition, addr, false, true);
+}
+
+function _instruction_bapzal(fields, allowedTypes, ic) {
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = 0;
+  let c = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+
+  let condition = (Math.abs(a - b) <= Math.max(c * Math.max(Math.abs(a), Math.abs(b)), CSHARP_EPSILON_TIMES_EIGHT));
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+
+  ic._jumper(condition, addr, false, true);
 }
