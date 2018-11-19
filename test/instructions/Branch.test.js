@@ -1216,4 +1216,88 @@ describe("Branch Tests", function () {
       expect(ic.getInternalRegisters()[17]).to.equal(0);
     });
   });
+
+  describe("bapal", function () {
+    it ("should branch if abs(a - b) <= c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("bapal 1 1.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it ("should branch if abs(a - b) > c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("bapal 1 2.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("bnaal", function () {
+    it ("should branch if abs(a - b) > c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("bnaal 1 2.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+      expect(ic.getInternalRegisters()[17]).to.equal(1);
+    });
+
+    it ("should branch if abs(a - b) <= c * max(abs(a), abs(b))", function () {
+      let ic = new IC();
+
+      ic.load("bnaal 1 1.01 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+      expect(ic.getInternalRegisters()[17]).to.equal(0);
+    });
+  });
+
+  describe("beqz", function () {
+    it("should change the program counter if s == 0", function () {
+      let ic = new IC();
+      ic.load("beqz 0 9");
+    
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(9);
+    });
+    
+    it("should not change the program counter if s != 0", function () {
+      let ic = new IC();
+      ic.load("beqz 1 9");
+    
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(1);
+    });
+  });
+
+  describe("bnez", function () {
+    it("should change the program counter if s != 0", function () {
+      let ic = new IC();
+      ic.load("bnez 1 9");
+    
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(9);
+    });
+    
+    it("should not change the program counter if s == 0", function () {
+      let ic = new IC();
+      ic.load("bnez 0 9");
+    
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(1);
+    });
+  });
 });
