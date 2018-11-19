@@ -51,6 +51,8 @@ module.exports = function (ic) {
   ic._registerOpcode("brap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brap);
 };
 
+const CSHARP_EPSILON_TIMES_EIGHT = 1.121039E-44;
+
 function _instruction_jr(fields, allowedTypes, ic) {
   let addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
   ic._jumper(true, addr, true, false);
@@ -179,7 +181,7 @@ function _instruction_bna(fields, allowedTypes, ic) {
   let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   let c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  let condition = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b)));
+  let condition = (Math.abs(a - b) > Math.max(c * Math.max(Math.abs(a), Math.abs(b)), CSHARP_EPSILON_TIMES_EIGHT));
   let addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   ic._jumper(condition, addr, false, false);
@@ -190,7 +192,7 @@ function _instruction_bap(fields, allowedTypes, ic) {
   let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   let c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  let condition = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b)));
+  let condition = (Math.abs(a - b) <=  Math.max(c * Math.max(Math.abs(a), Math.abs(b)), CSHARP_EPSILON_TIMES_EIGHT));
   let addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   ic._jumper(condition, addr, true, false);
