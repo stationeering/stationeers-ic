@@ -15,24 +15,24 @@ function _instruction_s(fields, allowedTypes, ic) {
 }
 
 function _instruction_ls(fields, allowedTypes, ic) {
-  var deviceNumber = ic._resolveDeviceNumber(fields[1], allowedTypes[1]); 
-  var slotNumber = Number(ic._getRegister(fields[2], undefined, allowedTypes[2])).toString();
+  let deviceNumber = ic._resolveDeviceNumber(fields[1], allowedTypes[1]); 
+  let slotNumber = Number(ic._getRegister(fields[2], undefined, allowedTypes[2])).toString();
 
   if (!Object.keys(ic._ioSlot[deviceNumber]).includes(slotNumber.toString()) || !Object.keys(ic._ioSlot[deviceNumber][slotNumber]).includes(fields[3])) {
     ic.setIOSlot(deviceNumber, slotNumber, fields[3], 0);
   }
 
-  var value = ic._ioSlot[deviceNumber][slotNumber][fields[3]];
+  let value = ic._ioSlot[deviceNumber][slotNumber][fields[3]];
   ic._setRegister(fields[0], value, undefined, allowedTypes[0]);
 }
 
 function _instruction_lr(fields, allowedTypes, ic) {
-  var deviceNumber = ic._resolveDeviceNumber(fields[1], allowedTypes[1]); 
+  let deviceNumber = ic._resolveDeviceNumber(fields[1], allowedTypes[1]); 
 
   if (!Object.keys(ic._ioReagent[deviceNumber]).includes(fields[3]) || !Object.keys(ic._ioReagent[deviceNumber][fields[3]]).includes(fields[2])) {
     ic.setIOReagent(deviceNumber, fields[3], fields[2], 0);
   }
 
-  var value = ic._ioReagent[deviceNumber][fields[3]][fields[2]];
+  let value = ic._ioReagent[deviceNumber][fields[3]][fields[2]];
   ic._setRegister(fields[0], value, undefined, allowedTypes[0]); 
 }

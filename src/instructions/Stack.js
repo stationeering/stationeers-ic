@@ -5,7 +5,7 @@ module.exports = function (ic) {
 };
 
 function _instruction_push(fields, allowedTypes, ic) {
-  var stackPosition = ic._internalRegister[ic.STACK_POINTER_REGISTER];
+  let stackPosition = ic._internalRegister[ic.STACK_POINTER_REGISTER];
 
   if (stackPosition >= ic.STACK_SIZE) {
     throw "STACK_OVERFLOW";
@@ -16,7 +16,7 @@ function _instruction_push(fields, allowedTypes, ic) {
 }
 
 function _instruction_pop(fields, allowedTypes, ic) {
-  var stackPosition = ic._internalRegister[ic.STACK_POINTER_REGISTER];
+  let stackPosition = ic._internalRegister[ic.STACK_POINTER_REGISTER];
 
   if (stackPosition <= 0) {
     throw "STACK_UNDERFLOW";
@@ -28,7 +28,7 @@ function _instruction_pop(fields, allowedTypes, ic) {
 }
 
 function _instruction_peek(fields, allowedTypes, ic) {
-  var stackPosition = ic._internalRegister[ic.STACK_POINTER_REGISTER];
+  let stackPosition = ic._internalRegister[ic.STACK_POINTER_REGISTER];
 
   if (stackPosition <= 0) {
     throw "STACK_UNDERFLOW";

@@ -48,7 +48,7 @@ module.exports = class IC {
     this._ioReagent = [];
     this._ioRegisterConnected = [];
 
-    for (var i = 0; i <= IO_REGISTER_COUNT; i++) {
+    for (let i = 0; i <= IO_REGISTER_COUNT; i++) {
       this._ioRegister[i] = {};
       this._ioSlot[i] = {};
       this._ioReagent[i] = {};
@@ -75,14 +75,14 @@ module.exports = class IC {
   }
 
   _instruction_alias(fields) {
-    var matches = fields[1].match(/^([dr])(\d+)$/);
+    let matches = fields[1].match(/^([dr])(\d+)$/);
   
     if (matches) {
-      var number = Number.parseInt(matches[2]);
+      let number = Number.parseInt(matches[2]);
       this._aliases[fields[0]] = { value: number, type: matches[1] };
       this._aliasesAsigned.push(fields[0]);
     } else {
-      var foundAlias = this._aliases[fields[1]];
+      let foundAlias = this._aliases[fields[1]];
       
       if (foundAlias) {
         this._aliases[fields[0]] = { value: foundAlias.value, type: foundAlias.type };
@@ -99,22 +99,22 @@ module.exports = class IC {
   }
 
   _preProcess() {
-    var parsedLines = this._instructions.map((content) => this._parseLine(content));
-    var foundAliases = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]).concat(INITIAL_ALIASES);
-    var currentAliases = this._aliases;
+    let parsedLines = this._instructions.map((content) => this._parseLine(content));
+    let foundAliases = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "alias").map((tokens) => tokens[1]).concat(INITIAL_ALIASES);
+    let currentAliases = this._aliases;
 
-    for (var alias of foundAliases) {
+    for (let alias of foundAliases) {
       if (!Object.keys(currentAliases).includes(alias)) {
         this._aliases[alias] = { value: 0 };
       }
     }
 
-    var removedAliases = Object.keys(currentAliases).filter((currentAlias) => !foundAliases.includes(currentAlias));
+    let removedAliases = Object.keys(currentAliases).filter((currentAlias) => !foundAliases.includes(currentAlias));
 
-    for (var toBeRemoved of removedAliases) {
+    for (let toBeRemoved of removedAliases) {
       delete this._aliases[toBeRemoved];
 
-      var foundIndex = this._aliasesAsigned.indexOf(toBeRemoved);
+      let foundIndex = this._aliasesAsigned.indexOf(toBeRemoved);
       delete this._aliasesAsigned[foundIndex];
     }
 
@@ -122,7 +122,7 @@ module.exports = class IC {
 
     parsedLines.forEach((content, line) => {
       if (content.length > 0) {
-        var matches = content[0].match(/(\S+):/);
+        let matches = content[0].match(/(\S+):/);
         if (matches && !Object.keys(this._jumpTags).includes(matches[1])) {
           this._jumpTags[matches[1]] = line;
         }
@@ -133,14 +133,14 @@ module.exports = class IC {
   _validate() {
     this._programErrors = [].concat.apply([], (this._instructions.map((content, line) => this._validateLine(content, line)).filter((validatedLine) => validatedLine)));
 
-    var errors = this._programErrors.filter((e) => e["type"] === "error");
+    let errors = this._programErrors.filter((e) => e["type"] === "error");
     this._validProgram = errors.length == 0;
 
     this._programErrorLines = errors.map((e) => e["line"]);
   }
 
   _validateLine(content, line) {
-    var errors = [];
+    let errors = [];
 
     if (content.length > 52) {
       errors.push({ line: line, error: "LINE_TOO_LONG", "type": "warning" });
@@ -150,13 +150,13 @@ module.exports = class IC {
       errors.push({ line: line, error: "PROGRAM_TOO_LONG", "type": "warning" });
     }
 
-    var tokens = this._parseLine(content);
+    let tokens = this._parseLine(content);
 
     if (tokens.length < 1) {
       return errors;
     }
 
-    var jumpTagMatch = content.match(/^(\S+):/);
+    let jumpTagMatch = content.match(/^(\S+):/);
 
     if (jumpTagMatch) {
       if (this._jumpTags[jumpTagMatch[1]] !== line) {
@@ -170,21 +170,21 @@ module.exports = class IC {
       return errors;
     }
 
-    var opcode = tokens.shift();
+    let opcode = tokens.shift();
 
     if (!Object.keys(this._opcodes).includes(opcode)) {
       errors.push({ line: line, error: "UNKNOWN_INSTRUCTION", "type": "error" });
       return errors;
     }
 
-    var opcodeFields = this._opcodes[opcode].fields;
+    let opcodeFields = this._opcodes[opcode].fields;
 
-    var fieldErrors = opcodeFields.map((type, i) => {
+    let fieldErrors = opcodeFields.map((type, i) => {
       if (tokens.length < (i + 1)) {
         return { line: line, error: "MISSING_FIELD", field: i, "type": "error" };
       }
 
-      var typeCheck = this._checkFieldTypes(tokens[i], type);
+      let typeCheck = this._checkFieldTypes(tokens[i], type);
 
       if (typeCheck) {
         return { line: line, error: typeCheck, validTypes: type, field: i, "type": "error" };
@@ -192,7 +192,7 @@ module.exports = class IC {
     }).filter((error) => error);
 
     if (tokens.length > opcodeFields.length) {
-      for (var i = opcodeFields.length; i < tokens.length; i++) {
+      for (let i = opcodeFields.length; i < tokens.length; i++) {
         fieldErrors.push({ line: line, error: "EXTRA_FIELD", field: i, "type": "error" });
       }
     }
@@ -217,10 +217,10 @@ module.exports = class IC {
 
     // Register
     if (fieldTypes.includes("r")) {
-      var registerMatches = token.match(/^r+(\d+)$/);
+      let registerMatches = token.match(/^r+(\d+)$/);
 
       if (registerMatches) {
-        var registerNumber = Number.parseInt(registerMatches[1]);
+        let registerNumber = Number.parseInt(registerMatches[1]);
 
         if (registerNumber >= INTERNAL_REGISTER_COUNT) {
           return "INVALID_FIELD_NO_SUCH_REGISTER";
@@ -232,11 +232,11 @@ module.exports = class IC {
 
     // Device
     if (fieldTypes.includes("d")) {
-      var deviceMatches = token.match(/^d(r*)(\d)+$/);
+      let deviceMatches = token.match(/^d(r*)(\d)+$/);
 
       if (deviceMatches) {
-        var maxRegister = deviceMatches[1].length > 0 ? INTERNAL_REGISTER_COUNT : IO_REGISTER_COUNT;
-        var actualRegister = Number.parseInt(deviceMatches[2]);
+        let maxRegister = deviceMatches[1].length > 0 ? INTERNAL_REGISTER_COUNT : IO_REGISTER_COUNT;
+        let actualRegister = Number.parseInt(deviceMatches[2]);
 
         if (actualRegister >= maxRegister) {
           return "INVALID_FIELD_NO_SUCH_REGISTER";
@@ -247,7 +247,7 @@ module.exports = class IC {
     }
 
     // Number Handling
-    var asNumber = Number.parseFloat(token);
+    let asNumber = Number.parseFloat(token);
 
     if (!Number.isNaN(asNumber)) {
       // Float
@@ -272,7 +272,7 @@ module.exports = class IC {
   }
 
   _parseLine(line) {
-    var withoutComment = line.split(COMMENT_SEPERATOR)[0];
+    let withoutComment = line.split(COMMENT_SEPERATOR)[0];
     return withoutComment.split(INSTRUCTION_SEPERATOR).filter((token) => token.trim());
   }
 
@@ -289,9 +289,9 @@ module.exports = class IC {
   }
 
   getIONames() {
-    var names = [];
+    let names = [];
 
-    for (var i = 0; i < IO_REGISTER_COUNT; i++) {
+    for (let i = 0; i < IO_REGISTER_COUNT; i++) {
       names.push(["d"] + i);
     }
 
@@ -301,21 +301,21 @@ module.exports = class IC {
   }
 
   getIOLabels() {
-    var labels = Array(IO_REGISTER_COUNT + 1);
+    let labels = Array(IO_REGISTER_COUNT + 1);
 
-    for (var i = 0; i <= IO_REGISTER_COUNT; i++) {
+    for (let i = 0; i <= IO_REGISTER_COUNT; i++) {
       labels[i] = [];
     }
 
-    var aliases = Object.keys(this._aliases);
+    let aliases = Object.keys(this._aliases);
 
-    for (var alias of aliases) {
+    for (let alias of aliases) {
       if (this._aliasesAsigned.includes(alias) && this._aliases[alias]["type"] === "d") {
         labels[this._aliases[alias]["value"]].push(alias);
       }
     }
 
-    for (i = 0; i <= IO_REGISTER_COUNT; i++) {
+    for (let i = 0; i <= IO_REGISTER_COUNT; i++) {
       labels[i] = labels[i].join(",");
     }
 
@@ -397,21 +397,21 @@ module.exports = class IC {
   }
 
   getInternalLabels() {
-    var labels = Array(INTERNAL_REGISTER_COUNT);
+    let labels = Array(INTERNAL_REGISTER_COUNT);
 
-    for (var i = 0; i < INTERNAL_REGISTER_COUNT; i++) {
+    for (let i = 0; i < INTERNAL_REGISTER_COUNT; i++) {
       labels[i] = [];
     }
 
-    var aliases = Object.keys(this._aliases);
+    let aliases = Object.keys(this._aliases);
 
-    for (var alias of aliases) {
+    for (let alias of aliases) {
       if (this._aliasesAsigned.includes(alias) && this._aliases[alias]["type"] === "r") {
         labels[this._aliases[alias]["value"]].push(alias);
       }
     }
 
-    for (i = 0; i < INTERNAL_REGISTER_COUNT; i++) {
+    for (let i = 0; i < INTERNAL_REGISTER_COUNT; i++) {
       labels[i] = labels[i].join(",");
     }
 
@@ -434,7 +434,7 @@ module.exports = class IC {
 
   _resolveDeviceNumber(register, allowedTypes) {
     if (allowedTypes.includes("a")) {
-      var foundAlias = this._aliases[register];
+      let foundAlias = this._aliases[register];
 
       if (foundAlias) {
         if (!allowedTypes.includes(foundAlias.type)) {
@@ -446,8 +446,8 @@ module.exports = class IC {
     }
 
     if (register.charAt(0) === "d") {
-      var number = 0;
-      var match = register.match(/d(r*)(\d+)/);
+      let number = 0;
+      let match = register.match(/d(r*)(\d+)/);
 
       if (match) {
         if (match[1].length > 0) {
@@ -468,7 +468,7 @@ module.exports = class IC {
   }
 
   _isDeviceConnected(register, allowedTypes) {
-    var deviceNumber = this._resolveDeviceNumber(register, allowedTypes);
+    let deviceNumber = this._resolveDeviceNumber(register, allowedTypes);
 
     if (deviceNumber === undefined) {
       return false;
@@ -479,7 +479,7 @@ module.exports = class IC {
 
   _setRegister(register, value, field, allowedTypes) {
     if (allowedTypes.includes("a")) {
-      var foundAlias = this._aliases[register];
+      let foundAlias = this._aliases[register];
 
       if (foundAlias) {
         if (!allowedTypes.includes(foundAlias.type)) {
@@ -491,11 +491,12 @@ module.exports = class IC {
     }
 
     let type = register.charAt(0);
-    var number;
+    let number;
+    let match;
 
     switch (type) {
     case "d":
-      var match = register.match(/d(r*)(\d+)/);
+      match = register.match(/d(r*)(\d+)/);
 
       if (match) {
         if (match[1].length > 0) {
@@ -525,7 +526,7 @@ module.exports = class IC {
 
   _getRegister(register, field, allowedTypes) {
     if (allowedTypes.includes("a")) {
-      var foundAlias = this._aliases[register];
+      let foundAlias = this._aliases[register];
 
       if (foundAlias) {
         if (!allowedTypes.includes(foundAlias.type)) {
@@ -537,11 +538,12 @@ module.exports = class IC {
     }
 
     let type = register.charAt(0);
-    var number;
+    let number;
+    let match;
 
     switch (type) {
     case "d":
-      var match = register.match(/d(r*)(\d+)/);
+      match = register.match(/d(r*)(\d+)/);
 
       if (match) {
         if (match[1].length > 0) {
@@ -573,7 +575,7 @@ module.exports = class IC {
       }
     }
 
-    var value = Number.parseFloat(register);
+    let value = Number.parseFloat(register);
 
     if (Number.isNaN(value)) {
       if (allowedTypes && Object.keys(this._jumpTags).includes(register)) {
@@ -587,16 +589,16 @@ module.exports = class IC {
   }
 
   _resolveIndirectRegister(register) {
-    var matched = register.match(/(r+)(\d+)/);
+    let matched = register.match(/(r+)(\d+)/);
 
     if (matched === null) {
       return null;
     }
 
-    var registerIndirectionCount = matched[1].length - 1;
-    var number = Number.parseInt(matched[2]);
+    let registerIndirectionCount = matched[1].length - 1;
+    let number = Number.parseInt(matched[2]);
 
-    for (var i = 0; i < registerIndirectionCount; i++) {
+    for (let i = 0; i < registerIndirectionCount; i++) {
       number = this.getInternalRegisters()[number];
 
       if (number >= INTERNAL_REGISTER_COUNT) {
@@ -609,8 +611,8 @@ module.exports = class IC {
 
   step() {
     if (this._validProgram || this._ignoreErrors) {
-      var instruction = this._instructions[this._programCounter];
-      var isErrorLine = this._programErrorLines.includes(this._programCounter);
+      let instruction = this._instructions[this._programCounter];
+      let isErrorLine = this._programErrorLines.includes(this._programCounter);
 
       this._programCounter++;
 
@@ -639,10 +641,10 @@ module.exports = class IC {
   }
 
   _executeInstruction(instruction) {
-    var fields = this._parseLine(instruction);
-    var opcode = fields.shift();
+    let fields = this._parseLine(instruction);
+    let opcode = fields.shift();
 
-    var opcodeData = this._opcodes[opcode];
+    let opcodeData = this._opcodes[opcode];
 
     if (opcodeData) {
       opcodeData.func(fields, opcodeData.fields, this);

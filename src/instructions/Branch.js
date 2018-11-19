@@ -52,174 +52,174 @@ module.exports = function (ic) {
 };
 
 function _instruction_jr(fields, allowedTypes, ic) {
-  var addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
   ic._jumper(true, addr, true, false);
 }
 
 function _instruction_j(fields, allowedTypes, ic) {
-  var addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
   ic._jumper(true, addr, false, false);
 }
 
 function _instruction_jal(fields, allowedTypes, ic) {
-  var addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let addr = ic._getRegister(fields[0], undefined, allowedTypes[0]);
   ic._jumper(true, addr, false, true);
 }
 
 function _instruction_bltzal(fields, allowedTypes, ic) {
-  var condition = ic._getRegister(fields[0], undefined, allowedTypes[0]) < 0;
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = ic._getRegister(fields[0], undefined, allowedTypes[0]) < 0;
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_blezal(fields, allowedTypes, ic) {
-  var condition = ic._getRegister(fields[0], undefined, allowedTypes[0]) <= 0;
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = ic._getRegister(fields[0], undefined, allowedTypes[0]) <= 0;
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_bgezal(fields, allowedTypes, ic) {
-  var condition = ic._getRegister(fields[0], undefined, allowedTypes[0]) >= 0;
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = ic._getRegister(fields[0], undefined, allowedTypes[0]) >= 0;
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_bgtzal(fields, allowedTypes, ic) {
-  var condition = ic._getRegister(fields[0], undefined, allowedTypes[0]) > 0;
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = ic._getRegister(fields[0], undefined, allowedTypes[0]) > 0;
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_beqal(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) === ic._getRegister(fields[1], undefined, allowedTypes[1]));
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) === ic._getRegister(fields[1], undefined, allowedTypes[1]));
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_bneal(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) !== ic._getRegister(fields[1], undefined, allowedTypes[1]));
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) !== ic._getRegister(fields[1], undefined, allowedTypes[1]));
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_bltz(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) < 0);
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) < 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_blez(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) <= 0);
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) <= 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_bgez(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) >= 0);
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) >= 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_bgtz(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) > 0);
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) > 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_beq(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) === ic._getRegister(fields[1], undefined, allowedTypes[1]));
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) === ic._getRegister(fields[1], undefined, allowedTypes[1]));
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_bne(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) !== ic._getRegister(fields[1], undefined, allowedTypes[1]));
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) !== ic._getRegister(fields[1], undefined, allowedTypes[1]));
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_brltz(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) < 0);
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) < 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brlez(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) <= 0);
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) <= 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brgez(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) >= 0);
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) >= 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brgtz(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) > 0);
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) > 0);
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_breq(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) === ic._getRegister(fields[1], undefined, allowedTypes[1]));
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) === ic._getRegister(fields[1], undefined, allowedTypes[1]));
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brne(fields, allowedTypes, ic) {
-  var condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) !== ic._getRegister(fields[1], undefined, allowedTypes[1]));
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let condition = (ic._getRegister(fields[0], undefined, allowedTypes[0]) !== ic._getRegister(fields[1], undefined, allowedTypes[1]));
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_bna(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b)));
-  var addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
+  let condition = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b)));
+  let addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_bap(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b)));
-  var addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
+  let condition = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b)));
+  let addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brna(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b)));
-  var addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
+  let condition = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b)));
+  let addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brap(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b)));
-  var addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
+  let condition = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b)));
+  let addr = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_bdse(fields, allowedTypes, ic) {
-  var value = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
+  let value = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
 
   if (value) {
     ic._programCounter = ic._getRegister(fields[1], undefined, allowedTypes[1]);
@@ -227,156 +227,156 @@ function _instruction_bdse(fields, allowedTypes, ic) {
 }
 
 function _instruction_bdns(fields, allowedTypes, ic) {
-  var condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
 
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_brdse(fields, allowedTypes, ic) {
-  var condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
 
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brdns(fields, allowedTypes, ic) {
-  var condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
 
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_bdseal(fields, allowedTypes, ic) {
-  var condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 1 : 0;
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
 
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_bdnsal(fields, allowedTypes, ic) {
-  var condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
-  var addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let condition = ic._isDeviceConnected(fields[0], allowedTypes[0]) ? 0 : 1;
+  let addr = ic._getRegister(fields[1], undefined, allowedTypes[1]);
 
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_blt(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a < b;
+  let condition = a < b;
 
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_bgt(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a > b;
+  let condition = a > b;
 
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_ble(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a <= b;
+  let condition = a <= b;
 
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_bge(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a >= b;
+  let condition = a >= b;
 
   ic._jumper(condition, addr, false, false);
 }
 
 function _instruction_brlt(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a < b;
+  let condition = a < b;
 
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brgt(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a > b;
+  let condition = a > b;
 
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brle(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a <= b;
+  let condition = a <= b;
 
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_brge(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a >= b;
+  let condition = a >= b;
 
   ic._jumper(condition, addr, true, false);
 }
 
 function _instruction_bltal(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a < b;
+  let condition = a < b;
 
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_bgtal(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a > b;
+  let condition = a > b;
 
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_bleal(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a <= b;
+  let condition = a <= b;
 
   ic._jumper(condition, addr, false, true);
 }
 
 function _instruction_bgeal(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let a = ic._getRegister(fields[0], undefined, allowedTypes[0]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let addr = ic._getRegister(fields[2], undefined, allowedTypes[2]);
 
-  var condition = a >= b;
+  let condition = a >= b;
 
   ic._jumper(condition, addr, false, true);
 }

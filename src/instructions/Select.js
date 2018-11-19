@@ -46,9 +46,9 @@ function _instruction_sne(fields, allowedTypes, ic) {
 }
 
 function _instruction_sna(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var b = ic._getRegister(fields[2], undefined, allowedTypes[2]);
-  var c = ic._getRegister(fields[3], undefined, allowedTypes[3]);
+  let a = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let b = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let c = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   let outputValue = (Math.abs(a - b) > c * Math.max(Math.abs(a), Math.abs(b))) ? 1 : 0;
 
@@ -56,9 +56,9 @@ function _instruction_sna(fields, allowedTypes, ic) {
 }
 
 function _instruction_sap(fields, allowedTypes, ic) {
-  var a = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var b = ic._getRegister(fields[2], undefined, allowedTypes[2]);
-  var c = ic._getRegister(fields[3], undefined, allowedTypes[3]);
+  let a = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let b = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let c = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
   let outputValue = (Math.abs(a - b) <= c * Math.max(Math.abs(a), Math.abs(b))) ? 1 : 0;
 
@@ -66,21 +66,21 @@ function _instruction_sap(fields, allowedTypes, ic) {
 }
 
 function _instruction_select(fields, allowedTypes, ic) {
-  var b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
-  var c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
-  var d = ic._getRegister(fields[3], undefined, allowedTypes[3]);
+  let b = ic._getRegister(fields[1], undefined, allowedTypes[1]);
+  let c = ic._getRegister(fields[2], undefined, allowedTypes[2]);
+  let d = ic._getRegister(fields[3], undefined, allowedTypes[3]);
 
-  var result = (b === 0 ? d : c);
+  let result = (b === 0 ? d : c);
 
   ic._setRegister(fields[0], result, undefined, allowedTypes[0]);
 }
 
 function _instruction_sdse(fields, allowedTypes, ic) {
-  var value = ic._isDeviceConnected(fields[1], allowedTypes[1]) ? 1 : 0;
+  let value = ic._isDeviceConnected(fields[1], allowedTypes[1]) ? 1 : 0;
   ic._setRegister(fields[0], value, undefined, allowedTypes[0]);
 }
 
 function _instruction_sdns(fields, allowedTypes, ic) {
-  var value = ic._isDeviceConnected(fields[1], allowedTypes[1]) ? 0 : 1;
+  let value = ic._isDeviceConnected(fields[1], allowedTypes[1]) ? 0 : 1;
   ic._setRegister(fields[0], value, undefined, allowedTypes[0]);
 }
