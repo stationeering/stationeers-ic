@@ -1300,4 +1300,132 @@ describe("Branch Tests", function () {
       expect(ic._programCounter).to.equal(1);
     });
   });
+
+  describe("bapz", function () {
+    it ("should branch if abs(a - 0) <= c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+
+      ic.load("bapz 1.121039E-45 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+    });
+
+    it ("should not branch if abs(a - 0) > c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+
+      ic.load("bapz 0.1 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  describe("bnaz", function () {
+    it ("should branch if abs(a - 0) > c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+
+      ic.load("bnaz 0.1 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(9);
+    });
+
+    it ("should not branch if abs(a - 0) <= c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+
+      ic.load("bnaz 1.121039E-45 0.1 9");
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(1);
+    });
+  });
+
+  describe("breqz", function () {
+    it("should change the program counter if s == 0", function () {
+      let ic = new IC();
+      ic.load("yield\nbreqz 0 9");
+    
+      ic.step();
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(10);
+    });
+    
+    it("should not change the program counter if s != 0", function () {
+      let ic = new IC();
+      ic.load("yield\nbreqz 1 9");
+    
+      ic.step();
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(2);
+    });
+  });
+  
+  describe("brnez", function () {
+    it("should change the program counter if s != 0", function () {
+      let ic = new IC();
+      ic.load("yield\nbrnez 1 9");
+    
+      ic.step();
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(10);
+    });
+    
+    it("should not change the program counter if s == 0", function () {
+      let ic = new IC();
+      ic.load("yield\nbrnez 0 9");
+    
+      ic.step();
+      ic.step();
+    
+      expect(ic._programCounter).to.equal(2);
+    });
+  });
+
+  describe("brapz", function () {
+    it ("should branch if abs(a - 0) <= c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+  
+      ic.load("yield\nbrapz 1.121039E-45 0.1 9");
+      ic.step();
+      ic.step();
+  
+      expect(ic.programCounter()).to.equal(10);
+    });
+  
+    it ("should not branch if abs(a - 0) > c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+  
+      ic.load("yield\nbrapz 0.1 0.1 9");
+      ic.step();
+      ic.step();
+  
+      expect(ic.programCounter()).to.equal(2);
+    });
+  });
+  
+  describe("brnaz", function () {
+    it ("should branch if abs(a - 0) > c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+  
+      ic.load("yield\nbrnaz 0.1 0.1 9");
+      ic.step();
+      ic.step();
+  
+      expect(ic.programCounter()).to.equal(10);
+    });
+  
+    it ("should not branch if abs(a - 0) <= c * max(abs(a), abs(0))", function () {
+      let ic = new IC();
+  
+      ic.load("yield\nbrnaz 1.121039E-45 0.1 9");
+      ic.step();
+      ic.step();
+  
+      expect(ic.programCounter()).to.equal(2);
+    });
+  });
 });
