@@ -551,21 +551,23 @@ module.exports = class IC {
         } else {
           number = Number.parseInt(match[2]);
         }
-      }
 
-      if (number > IO_REGISTER_COUNT) {
-        throw "INVALID_REGISTER_LOCATION";
-      }
+        if (number > IO_REGISTER_COUNT) {
+          throw "INVALID_REGISTER_LOCATION";
+        }
 
-      if (!this._ioRegisterConnected[number]) {
-        throw "INTERACTION_WITH_DISCONNECTED_DEVICE";
-      }
+        if (!this._ioRegisterConnected[number]) {
+          throw "INTERACTION_WITH_DISCONNECTED_DEVICE";
+        }
 
-      if (!this.getIORegisters()[number][field]) {
-        this.setIORegister(number, field, 0);
-      }
+        if (!this.getIORegisters()[number][field]) {
+          this.setIORegister(number, field, 0);
+        }
 
-      return this.getIORegisters()[number][field];
+        return this.getIORegisters()[number][field];
+      }
+    
+      break;
 
     case "r":
       number = this._resolveIndirectRegister(register);

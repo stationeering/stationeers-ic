@@ -627,6 +627,27 @@ describe("IC Tests", function () {
       expect(result).to.equal("ALIAS_TYPE_MISMATCH");
     });
 
+    it ("should successfully jump if the alias begins with a d", function() {
+      let ic = new IC();
+
+      ic.load([
+        "start:",
+        "bgtz 1.0 dump",
+        "yield",
+        "j start",
+        "dump:",
+        "yield",
+        "j start"
+      ].join("\n"));
+
+      var output = ic.getProgramErrors();
+      expect(output.length).to.equal(0);
+
+      ic.step();
+      ic.step();
+
+      expect(ic.programCounter()).to.equal(4);
+    });
   });
 
   describe("Checking program limits", function () {
