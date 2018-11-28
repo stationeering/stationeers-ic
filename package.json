@@ -1,6 +1,6 @@
 {
   "name": "stationeers-ic",
-  "version": "1.0.56",
+  "version": "1.0.57",
   "description": "Simulation of Stationeers IC.",
   "main": "lib/IC.js",
   "babel": {
@@ -24,15 +24,12 @@
     "url": "https://github.com/stationeering/stationeers-ic/issues"
   },
   "homepage": "https://github.com/stationeering/stationeers-ic#readme",
-  "dependencies": {
-    "chai": "^4.1.2",
-    "eslint": "^5.5.0",
-    "mocha": "^5.2.0",
-    "npm": "^6.4.1"
-  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
-    "babel-preset-es2015": "^6.24.1"
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^4.1.2",
+    "eslint": "^5.5.0",
+    "mocha": "^5.2.0"
   }
 }
