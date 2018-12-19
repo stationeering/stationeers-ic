@@ -41,6 +41,8 @@ module.exports = class IC {
     this._aliases = {};
     this._aliasesAsigned = [];
 
+    this._defines = {};
+
     this._jumpTags = {};
 
     this._ioRegister = [];
@@ -68,6 +70,7 @@ module.exports = class IC {
     MiscInstructions(this);
 
     this._registerOpcode("alias", [["s"], ["r", "d", "a"]], this._instruction_alias);
+    this._registerOpcode("define", [["s"], ["i", "f"]], this._instruction_define);
 
     this._instruction_alias(["db", "d" + IO_REGISTER_COUNT]);
     this._instruction_alias(["sp", "r" + STACK_POINTER_REGISTER]);
@@ -91,6 +94,11 @@ module.exports = class IC {
     }
   }
 
+  _instruction_define(fields) {
+    let value = Number.parseFloat(fields[1]);
+    this._defines[fields[0]] = value;
+  }
+
   load(unparsedInstructions) {
     this._instructions = unparsedInstructions.split(NEWLINE);
 
@@ -106,6 +114,14 @@ module.exports = class IC {
     for (let alias of foundAliases) {
       if (!Object.keys(currentAliases).includes(alias)) {
         this._aliases[alias] = { value: 0 };
+      }
+    }
+
+    let foundDefines = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "define").map((tokens) => tokens[1]);
+
+    for (let define of foundDefines) {
+      if (!Object.keys(this._defines).includes(define)) {
+        this._defines[define] = 0;
       }
     }
 

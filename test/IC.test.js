@@ -954,4 +954,18 @@ describe("IC Tests", function () {
       expect(result[0]["Iron"]).to.equal(undefined);
     });
   });
+
+  describe("Programs can define constants which can be used throughout a program", function () {
+    it("should create an entry in defines inside the IC and store provided value when run", function () {
+      let ic = new IC();
+
+      ic.load("define CONST 5");
+
+      expect(Object.keys(ic._defines)).to.contains("CONST");
+
+      ic.step();
+
+      expect(ic._defines["CONST"]).to.equal(5);
+    });
+  });
 });
