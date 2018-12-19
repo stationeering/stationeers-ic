@@ -117,14 +117,6 @@ module.exports = class IC {
       }
     }
 
-    let foundDefines = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "define").map((tokens) => tokens[1]);
-
-    for (let define of foundDefines) {
-      if (!Object.keys(this._defines).includes(define)) {
-        this._defines[define] = 0;
-      }
-    }
-
     let removedAliases = Object.keys(currentAliases).filter((currentAlias) => !foundAliases.includes(currentAlias));
 
     for (let toBeRemoved of removedAliases) {
@@ -132,6 +124,14 @@ module.exports = class IC {
 
       let foundIndex = this._aliasesAsigned.indexOf(toBeRemoved);
       delete this._aliasesAsigned[foundIndex];
+    }
+
+    let foundDefines = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "define").map((tokens) => tokens[1]);
+
+    for (let define of foundDefines) {
+      if (!Object.keys(this._defines).includes(define)) {
+        this._defines[define] = 0;
+      }
     }
 
     this._jumpTags = {};
