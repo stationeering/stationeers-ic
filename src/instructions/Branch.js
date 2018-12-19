@@ -1,74 +1,74 @@
 module.exports = function (ic) {
-  ic._registerOpcode("bdse", [["d", "a"], ["r", "i", "a", "j"]], _instruction_bdse);
-  ic._registerOpcode("bdns", [["d", "a"], ["r", "i", "a", "j"]], _instruction_bdns);
-  ic._registerOpcode("brdse", [["d", "a"], ["r", "i", "a", "j"]], _instruction_brdse);
-  ic._registerOpcode("brdns", [["d", "a"], ["r", "i", "a", "j"]], _instruction_brdns);
-  ic._registerOpcode("bdseal", [["d", "a"], ["r", "i", "a", "j"]], _instruction_bdseal);
-  ic._registerOpcode("bdnsal", [["d", "a"], ["r", "i", "a", "j"]], _instruction_bdnsal);
+  ic._registerOpcode("bdse", [["d", "a"], ["r", "i", "a", "j"]], _instruction_bdse, "device");
+  ic._registerOpcode("bdns", [["d", "a"], ["r", "i", "a", "j"]], _instruction_bdns, "device");
+  ic._registerOpcode("brdse", [["d", "a"], ["r", "i", "a", "j"]], _instruction_brdse, "device");
+  ic._registerOpcode("brdns", [["d", "a"], ["r", "i", "a", "j"]], _instruction_brdns, "device");
+  ic._registerOpcode("bdseal", [["d", "a"], ["r", "i", "a", "j"]], _instruction_bdseal, "device");
+  ic._registerOpcode("bdnsal", [["d", "a"], ["r", "i", "a", "j"]], _instruction_bdnsal, "device");
 
-  ic._registerOpcode("j", [["r", "i", "a", "j"]], _instruction_j);
-  ic._registerOpcode("bltz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bltz);
-  ic._registerOpcode("blez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_blez);
-  ic._registerOpcode("bgez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgez);
-  ic._registerOpcode("bgtz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgtz);
-  ic._registerOpcode("beqz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beqz);
-  ic._registerOpcode("bnez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnez);
+  ic._registerOpcode("j", [["r", "i", "a", "j"]], _instruction_j, "flow");
+  ic._registerOpcode("bltz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bltz, "flow");
+  ic._registerOpcode("blez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_blez, "flow");
+  ic._registerOpcode("bgez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgez, "flow");
+  ic._registerOpcode("bgtz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgtz, "flow");
+  ic._registerOpcode("beqz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beqz, "flow");
+  ic._registerOpcode("bnez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnez, "flow");
 
-  ic._registerOpcode("breqz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_breqz);
-  ic._registerOpcode("brnez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brnez);
+  ic._registerOpcode("breqz", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_breqz, "flow");
+  ic._registerOpcode("brnez", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brnez, "flow");
 
-  ic._registerOpcode("beq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beq);
-  ic._registerOpcode("bne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bne);
+  ic._registerOpcode("beq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beq, "flow");
+  ic._registerOpcode("bne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bne, "flow");
 
-  ic._registerOpcode("blt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_blt);
-  ic._registerOpcode("bgt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgt);
-  ic._registerOpcode("ble", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_ble);
-  ic._registerOpcode("bge", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bge);
+  ic._registerOpcode("blt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_blt, "flow");
+  ic._registerOpcode("bgt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgt, "flow");
+  ic._registerOpcode("ble", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_ble, "flow");
+  ic._registerOpcode("bge", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bge, "flow");
 
-  ic._registerOpcode("brlt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brlt);
-  ic._registerOpcode("brgt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brgt);
-  ic._registerOpcode("brle", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brle);
-  ic._registerOpcode("brge", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brge);
+  ic._registerOpcode("brlt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brlt, "flow");
+  ic._registerOpcode("brgt", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brgt, "flow");
+  ic._registerOpcode("brle", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brle, "flow");
+  ic._registerOpcode("brge", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brge, "flow");
 
-  ic._registerOpcode("bltal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bltal);
-  ic._registerOpcode("bgtal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgtal);
-  ic._registerOpcode("bleal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bleal);
-  ic._registerOpcode("bgeal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgeal);
+  ic._registerOpcode("bltal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bltal, "flow");
+  ic._registerOpcode("bgtal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgtal, "flow");
+  ic._registerOpcode("bleal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bleal, "flow");
+  ic._registerOpcode("bgeal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgeal, "flow");
 
-  ic._registerOpcode("bna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bna);
-  ic._registerOpcode("bap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bap);
+  ic._registerOpcode("bna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bna, "flow");
+  ic._registerOpcode("bap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bap, "flow");
 
-  ic._registerOpcode("bnaz", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnaz);
-  ic._registerOpcode("bapz", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bapz);
+  ic._registerOpcode("bnaz", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnaz, "flow");
+  ic._registerOpcode("bapz", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bapz, "flow");
 
-  ic._registerOpcode("brnaz", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brnaz);
-  ic._registerOpcode("brapz", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brapz);
+  ic._registerOpcode("brnaz", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brnaz, "flow");
+  ic._registerOpcode("brapz", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_brapz, "flow");
 
-  ic._registerOpcode("bnaal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnaal);
-  ic._registerOpcode("bapal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bapal);
+  ic._registerOpcode("bnaal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnaal, "flow");
+  ic._registerOpcode("bapal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bapal, "flow");
 
-  ic._registerOpcode("jal", [["r", "i", "a", "j"]], _instruction_jal);
-  ic._registerOpcode("bltzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bltzal);
-  ic._registerOpcode("blezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_blezal);
-  ic._registerOpcode("bgezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgezal);
-  ic._registerOpcode("bgtzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgtzal);
-  ic._registerOpcode("beqal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beqal);
-  ic._registerOpcode("bneal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bneal);
+  ic._registerOpcode("jal", [["r", "i", "a", "j"]], _instruction_jal, "flow");
+  ic._registerOpcode("bltzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bltzal, "flow");
+  ic._registerOpcode("blezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_blezal, "flow");
+  ic._registerOpcode("bgezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgezal, "flow");
+  ic._registerOpcode("bgtzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bgtzal, "flow");
+  ic._registerOpcode("beqal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beqal, "flow");
+  ic._registerOpcode("bneal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bneal, "flow");
 
-  ic._registerOpcode("jr", [["r", "i", "a"]], _instruction_jr);
-  ic._registerOpcode("brltz", [["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brltz);
-  ic._registerOpcode("brlez", [["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brlez);
-  ic._registerOpcode("brgez", [["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brgez);
-  ic._registerOpcode("brgtz", [["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brgtz);
-  ic._registerOpcode("breq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_breq);
-  ic._registerOpcode("brne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brne);
-  ic._registerOpcode("brna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brna);
-  ic._registerOpcode("brap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brap);
+  ic._registerOpcode("jr", [["r", "i", "a"]], _instruction_jr, "flow");
+  ic._registerOpcode("brltz", [["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brltz, "flow");
+  ic._registerOpcode("brlez", [["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brlez, "flow");
+  ic._registerOpcode("brgez", [["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brgez, "flow");
+  ic._registerOpcode("brgtz", [["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brgtz, "flow");
+  ic._registerOpcode("breq", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_breq, "flow");
+  ic._registerOpcode("brne", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brne, "flow");
+  ic._registerOpcode("brna", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brna, "flow");
+  ic._registerOpcode("brap", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a"]], _instruction_brap, "flow");
 
-  ic._registerOpcode("beqzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beqzal);
-  ic._registerOpcode("bnezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnezal);
-  ic._registerOpcode("bnazal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnazal);
-  ic._registerOpcode("bapzal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bapzal);
+  ic._registerOpcode("beqzal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_beqzal, "flow");
+  ic._registerOpcode("bnezal", [["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnezal, "flow");
+  ic._registerOpcode("bnazal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bnazal, "flow");
+  ic._registerOpcode("bapzal", [["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "a", "j"]], _instruction_bapzal, "flow");
 };
 
 const CSHARP_EPSILON_TIMES_EIGHT = 1.121039E-44;

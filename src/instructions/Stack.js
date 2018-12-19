@@ -1,7 +1,7 @@
 module.exports = function (ic) {
-  ic._registerOpcode("push", [["r", "i", "f", "a"]], _instruction_push);
-  ic._registerOpcode("pop", [["r", "a"]], _instruction_pop);
-  ic._registerOpcode("peek", [["r", "a"]], _instruction_peek);
+  ic._registerOpcode("push", [["r", "i", "f", "a"]], _instruction_push, "stack");
+  ic._registerOpcode("pop", [["r", "a"]], _instruction_pop, "stack");
+  ic._registerOpcode("peek", [["r", "a"]], _instruction_peek, "stack");
 };
 
 function _instruction_push(fields, allowedTypes, ic) {

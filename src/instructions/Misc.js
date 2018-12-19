@@ -1,9 +1,9 @@
 module.exports = function (ic) {
-  ic._registerOpcode("move", [["r", "a"], ["r", "i", "f", "a"]], _instruction_move);
+  ic._registerOpcode("move", [["r", "a"], ["r", "i", "f", "a"]], _instruction_move, "misc");
 
-  ic._registerOpcode("yield", [], _instruction_yield);
+  ic._registerOpcode("yield", [], _instruction_yield, "misc");
 
-  ic._registerOpcode("hcf", [], _instruction_hcf);
+  ic._registerOpcode("hcf", [], _instruction_hcf, "misc");
 };
 
 /* eslint no-unused-vars: 0 */ 

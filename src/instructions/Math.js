@@ -1,20 +1,20 @@
 module.exports = function (ic) {
-  ic._registerOpcode("add", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_add);
-  ic._registerOpcode("sub", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sub);
-  ic._registerOpcode("mul", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_mul);
-  ic._registerOpcode("div", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_div);
-  ic._registerOpcode("mod", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_mod);
-  ic._registerOpcode("sqrt", [["r", "a"], ["r", "i", "f", "a"]], _instruction_sqrt);
-  ic._registerOpcode("round", [["r", "a"], ["r", "i", "f", "a"]], _instruction_round);
-  ic._registerOpcode("trunc", [["r", "a"], ["r", "i", "f", "a"]], _instruction_trunc);
-  ic._registerOpcode("ceil", [["r", "a"], ["r", "i", "f", "a"]], _instruction_ceil);
-  ic._registerOpcode("floor", [["r", "a"], ["r", "i", "f", "a"]], _instruction_floor);
-  ic._registerOpcode("max", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_max);
-  ic._registerOpcode("min", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_min);
-  ic._registerOpcode("abs", [["r", "a"], ["r", "i", "f", "a"]], _instruction_abs);
-  ic._registerOpcode("log", [["r", "a"], ["r", "i", "f", "a"]], _instruction_log);
-  ic._registerOpcode("exp", [["r", "a"], ["r", "i", "f", "a"]], _instruction_exp);
-  ic._registerOpcode("rand", [["r", "a"]], _instruction_rand);
+  ic._registerOpcode("add", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_add, "math");
+  ic._registerOpcode("sub", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sub, "math");
+  ic._registerOpcode("mul", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_mul, "math");
+  ic._registerOpcode("div", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_div, "math");
+  ic._registerOpcode("mod", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_mod, "math");
+  ic._registerOpcode("sqrt", [["r", "a"], ["r", "i", "f", "a"]], _instruction_sqrt, "math");
+  ic._registerOpcode("round", [["r", "a"], ["r", "i", "f", "a"]], _instruction_round, "math");
+  ic._registerOpcode("trunc", [["r", "a"], ["r", "i", "f", "a"]], _instruction_trunc, "math");
+  ic._registerOpcode("ceil", [["r", "a"], ["r", "i", "f", "a"]], _instruction_ceil, "math");
+  ic._registerOpcode("floor", [["r", "a"], ["r", "i", "f", "a"]], _instruction_floor, "math");
+  ic._registerOpcode("max", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_max, "math");
+  ic._registerOpcode("min", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_min, "math");
+  ic._registerOpcode("abs", [["r", "a"], ["r", "i", "f", "a"]], _instruction_abs, "math");
+  ic._registerOpcode("log", [["r", "a"], ["r", "i", "f", "a"]], _instruction_log, "math");
+  ic._registerOpcode("exp", [["r", "a"], ["r", "i", "f", "a"]], _instruction_exp, "math");
+  ic._registerOpcode("rand", [["r", "a"]], _instruction_rand, "math");
 };
 
 function _instruction_add(fields, allowedTypes, ic) {

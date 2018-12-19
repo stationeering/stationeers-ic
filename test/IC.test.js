@@ -982,4 +982,14 @@ describe("IC Tests", function () {
       expect(ic.getInternalRegisters()[0]).to.equal(5);
     });
   });
+
+  describe("Exporting instructions", function() {
+    describe("ICs should be able to export which instructions they support and a category for that instruction.", function () {
+      let ic = new IC();
+
+      let instructions = ic.getInstructions();
+
+      expect(instructions.jr).to.equal("flow");
+    });
+  });
 });

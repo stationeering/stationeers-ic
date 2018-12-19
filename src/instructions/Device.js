@@ -1,9 +1,9 @@
 module.exports = function (ic) {
-  ic._registerOpcode("l", [["r", "a"], ["d", "a"], ["s"]], _instruction_l);
-  ic._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], _instruction_s);
+  ic._registerOpcode("l", [["r", "a"], ["d", "a"], ["s"]], _instruction_l, "device");
+  ic._registerOpcode("s", [["d", "a"], ["s"], ["r", "i", "f", "a"]], _instruction_s, "device");
 
-  ic._registerOpcode("ls", [["r", "a"], ["d", "a"], ["r", "i", "a"], ["s"]], _instruction_ls);
-  ic._registerOpcode("lr", [["r", "a"], ["d", "a"], ["s"], ["s"]], _instruction_lr);
+  ic._registerOpcode("ls", [["r", "a"], ["d", "a"], ["r", "i", "a"], ["s"]], _instruction_ls, "device");
+  ic._registerOpcode("lr", [["r", "a"], ["d", "a"], ["s"], ["s"]], _instruction_lr, "device");
 };
 
 function _instruction_l(fields, allowedTypes, ic) {

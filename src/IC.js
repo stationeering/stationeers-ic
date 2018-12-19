@@ -69,8 +69,8 @@ module.exports = class IC {
     StackInstructions(this);
     MiscInstructions(this);
 
-    this._registerOpcode("alias", [["s"], ["r", "d", "a"]], this._instruction_alias);
-    this._registerOpcode("define", [["s"], ["i", "f"]], this._instruction_define);
+    this._registerOpcode("alias", [["s"], ["r", "d", "a"]], this._instruction_alias, "misc");
+    this._registerOpcode("define", [["s"], ["i", "f"]], this._instruction_define, "misc");
 
     this._instruction_alias(["db", "d" + IO_REGISTER_COUNT]);
     this._instruction_alias(["sp", "r" + STACK_POINTER_REGISTER]);
@@ -455,6 +455,13 @@ module.exports = class IC {
     return this._validProgram;
   }
 
+  getInstructions() {
+    return Object.keys(this._opcodes).reduce((acc, opcode) => { 
+      acc[opcode] = this._opcodes[opcode].category;
+      return acc; 
+    }, {});
+  }
+
   _resolveDeviceNumber(register, allowedTypes) {
     if (allowedTypes.includes("a")) {
       let foundAlias = this._aliases[register];
@@ -682,9 +689,9 @@ module.exports = class IC {
     return opcode;
   }
 
-  _registerOpcode(name, fields, func) {
+  _registerOpcode(name, fields, func, category) {
     func = func.bind(this);
-    this._opcodes[name] = { fields, func };
+    this._opcodes[name] = { fields, func, category };
   }
 
   _jumper(condition, destination, relative, and_link) {

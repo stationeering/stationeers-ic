@@ -1,30 +1,30 @@
 module.exports = function (ic) {
-  ic._registerOpcode("slt", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_slt);
-  ic._registerOpcode("sgt", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sgt);
-  ic._registerOpcode("sle", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sle);
-  ic._registerOpcode("sge", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sge);
-  ic._registerOpcode("seq", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_seq);
-  ic._registerOpcode("sne", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sne);
+  ic._registerOpcode("slt", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_slt, "select");
+  ic._registerOpcode("sgt", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sgt, "select");
+  ic._registerOpcode("sle", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sle, "select");
+  ic._registerOpcode("sge", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sge, "select");
+  ic._registerOpcode("seq", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_seq, "select");
+  ic._registerOpcode("sne", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sne, "select");
 
-  ic._registerOpcode("sap", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sap);
-  ic._registerOpcode("sna", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sna);
+  ic._registerOpcode("sap", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sap, "select");
+  ic._registerOpcode("sna", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sna, "select");
 
-  ic._registerOpcode("select", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_select);
+  ic._registerOpcode("select", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_select, "select");
 
-  ic._registerOpcode("sdse", [["r", "a"], ["d", "a"]], _instruction_sdse);
-  ic._registerOpcode("sdns", [["r", "a"], ["d", "a"]], _instruction_sdns);
+  ic._registerOpcode("sdse", [["r", "a"], ["d", "a"]], _instruction_sdse, "select");
+  ic._registerOpcode("sdns", [["r", "a"], ["d", "a"]], _instruction_sdns, "select");
 
-  ic._registerOpcode("sltz", [["r", "a"], ["r", "i", "f", "a"]], _instruction_sltz);
-  ic._registerOpcode("sgtz", [["r", "a"], ["r", "i", "f", "a"]], _instruction_sgtz);
+  ic._registerOpcode("sltz", [["r", "a"], ["r", "i", "f", "a"]], _instruction_sltz, "select");
+  ic._registerOpcode("sgtz", [["r", "a"], ["r", "i", "f", "a"]], _instruction_sgtz, "select");
 
-  ic._registerOpcode("slez", [["r", "a"], ["r", "i", "f", "a"]], _instruction_slez);
-  ic._registerOpcode("sgez", [["r", "a"], ["r", "i", "f", "a"]], _instruction_sgez);
+  ic._registerOpcode("slez", [["r", "a"], ["r", "i", "f", "a"]], _instruction_slez, "select");
+  ic._registerOpcode("sgez", [["r", "a"], ["r", "i", "f", "a"]], _instruction_sgez, "select");
 
-  ic._registerOpcode("seqz", [["r", "a"], ["r", "i", "f", "a"]], _instruction_seqz);
-  ic._registerOpcode("snez", [["r", "a"], ["r", "i", "f", "a"]], _instruction_snez);
+  ic._registerOpcode("seqz", [["r", "a"], ["r", "i", "f", "a"]], _instruction_seqz, "select");
+  ic._registerOpcode("snez", [["r", "a"], ["r", "i", "f", "a"]], _instruction_snez, "select");
 
-  ic._registerOpcode("sapz", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sapz);
-  ic._registerOpcode("snaz", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_snaz);
+  ic._registerOpcode("sapz", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_sapz, "select");
+  ic._registerOpcode("snaz", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_snaz, "select");
 };
 
 const CSHARP_EPSILON_TIMES_EIGHT = 1.121039E-44;
