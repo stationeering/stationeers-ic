@@ -457,7 +457,7 @@ module.exports = class IC {
 
   getInstructions() {
     return Object.keys(this._opcodes).reduce((acc, opcode) => { 
-      acc[opcode] = this._opcodes[opcode].category;
+      acc[opcode] = { category: this._opcodes[opcode].category, fields: this._opcodes[opcode].fields };
       return acc; 
     }, {});
   }

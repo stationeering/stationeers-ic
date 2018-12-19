@@ -989,7 +989,8 @@ describe("IC Tests", function () {
 
       let instructions = ic.getInstructions();
 
-      expect(instructions.jr).to.equal("flow");
+      expect(instructions.jr.category).to.equal("flow");
+      expect(instructions.jr.fields).to.deep.equal([["r", "i", "a"]]);
     });
   });
 });
