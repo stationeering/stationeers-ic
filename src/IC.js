@@ -201,13 +201,6 @@ module.exports = class IC {
   }
 
   _checkFieldTypes(token, fieldTypes) {
-    // Jump Label
-    if (fieldTypes.includes("j")) {
-      if (Object.keys(this._jumpTags).includes(token)) {
-        return undefined;
-      }
-    }
-
     // Alias
     if (fieldTypes.includes("a")) {
       if (Object.keys(this._aliases).includes(token)) {
@@ -215,6 +208,13 @@ module.exports = class IC {
       }
     }
 
+    // Jump Label
+    if (fieldTypes.includes("j")) {
+      if (Object.keys(this._jumpTags).includes(token)) {
+        return undefined;
+      }
+    }
+    
     // Register
     if (fieldTypes.includes("r")) {
       let registerMatches = token.match(/^r+(\d+)$/);
