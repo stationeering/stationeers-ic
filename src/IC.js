@@ -94,8 +94,8 @@ module.exports = class IC {
     }
   }
 
-  _instruction_define(fields) {
-    let value = Number.parseFloat(fields[1]);
+  _instruction_define(fields, allowedTypes) {
+    let value = this._getRegister(fields[1], undefined, allowedTypes[1]);
     this._defines[fields[0]] = value;
   }
 
