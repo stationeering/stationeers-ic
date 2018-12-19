@@ -125,7 +125,7 @@ module.exports = class IC {
       let foundIndex = this._aliasesAsigned.indexOf(toBeRemoved);
       delete this._aliasesAsigned[foundIndex];
     }
-
+    
     let foundDefines = parsedLines.filter((tokens) => tokens.length >= 2 && tokens[0] === "define").map((tokens) => tokens[1]);
 
     for (let define of foundDefines) {
@@ -274,6 +274,13 @@ module.exports = class IC {
       // Integer
       if (fieldTypes.includes("i")) {
         if (asNumber === Number.parseInt(token)) {
+          return undefined;
+        }
+      }
+    } else {
+      // Float from a define.
+      if (fieldTypes.includes("f")) {
+        if (Object.keys(this._defines).includes(token)) {
           return undefined;
         }
       }
@@ -596,8 +603,12 @@ module.exports = class IC {
     let value = Number.parseFloat(register);
 
     if (Number.isNaN(value)) {
-      if (allowedTypes && Object.keys(this._jumpTags).includes(register)) {
+      if (Object.keys(this._jumpTags).includes(register)) {
         return this._jumpTags[register];
+      }
+
+      if (Object.keys(this._defines).includes(register)) {
+        return this._defines[register];
       }
 
       return;

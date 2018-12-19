@@ -967,5 +967,19 @@ describe("IC Tests", function () {
 
       expect(ic._defines["CONST"]).to.equal(5);
     });
+
+    it("should substitute the defined value when the define is used in a statement", function () {
+      let ic = new IC();
+
+      ic.load([
+        "define CONST 5",
+        "move r0 CONST"
+      ].join("\n"));
+
+      ic.step();      
+      expect(ic.step()).to.equal("END_OF_PROGRAM");
+
+      expect(ic.getInternalRegisters()[0]).to.equal(5);
+    });
   });
 });
