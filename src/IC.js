@@ -358,6 +358,14 @@ module.exports = class IC {
   }
 
   setIORegister(index, field, value) {
+    if (value !== undefined) {
+      value = Number.parseFloat(value);
+
+      if (Number.isNaN(value)) {
+        value = 0;
+      }
+    }
+
     if (index <= IO_REGISTER_COUNT) {
       if (value !== undefined) {
         this._ioRegister[index][field] = value;
@@ -442,6 +450,12 @@ module.exports = class IC {
   }
 
   setInternalRegister(index, value) {
+    value = Number.parseFloat(value);
+
+    if (Number.isNaN(value)) {
+      value = 0;
+    }
+
     if (index < INTERNAL_REGISTER_COUNT) {
       this._internalRegister[index] = value;
     }

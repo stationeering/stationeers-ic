@@ -192,11 +192,26 @@ describe("IC Tests", function () {
       expect(ic.getIORegisters()[2]).to.deep.equal({});
     });
 
+    it("has IO registers which when written with a value other than a number will not change", function() {
+      let ic = new IC();
+
+      ic.setIORegister(1, "field", "bob");
+      expect(ic.getIORegisters()[1]["field"]).to.equal(0);
+    });
+
     it("has internal registers which can be written and read", function () {
       let ic = new IC();
 
       ic.setInternalRegister(3, 100);
       expect(ic.getInternalRegisters()[3]).to.equal(100);
+    });
+
+    it("has internal registers which when written with a value other than a number will not change", function() {
+      let ic = new IC();
+
+      ic.setInternalRegister(3, 1);
+      ic.setInternalRegister(3, "bob");
+      expect(ic.getInternalRegisters()[3]).to.equal(0);
     });
 
     it("requesting a field on an IO register which doesn't exist will default it to 0", function () {
