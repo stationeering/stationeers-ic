@@ -325,6 +325,10 @@ module.exports = class IC {
     return names;
   }
 
+  getSleepPeriod() {
+    return this._sleepPeriod;
+  }
+
   getIOLabels() {
     let labels = Array(IO_REGISTER_COUNT + 1);
 

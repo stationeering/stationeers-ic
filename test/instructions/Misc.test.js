@@ -46,6 +46,7 @@ describe("Misc Tests", function () {
       let code = ic.step();
       expect(ic._programCounter).to.equal(0);
       expect(code).to.equal("SLEEP");
+      expect(ic.getSleepPeriod()).to.equal(1.7);
 
       ic.step();
       expect(ic._programCounter).to.equal(0);
