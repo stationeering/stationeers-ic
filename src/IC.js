@@ -38,6 +38,8 @@ module.exports = class IC {
 
     this._programCounter = 0;
 
+    this._sleepPeriod = 0;
+
     this._aliases = {};
     this._aliasesAsigned = [];
 

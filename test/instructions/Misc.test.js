@@ -36,4 +36,25 @@ describe("Misc Tests", function () {
       expect(ic.step()).to.equal("HALT_AND_CATCH_FIRE");
     });
   });
+
+  describe("sleep", function () {
+    it ("should not allow the programme counter to increase until the sleep period has passed", function () {
+      let ic = new IC();
+
+      ic.load("sleep 1.7");
+
+      let code = ic.step();
+      expect(ic._programCounter).to.equal(0);
+      expect(code).to.equal("SLEEP");
+
+      ic.step();
+      expect(ic._programCounter).to.equal(0);
+      ic.step();
+      expect(ic._programCounter).to.equal(0);
+      ic.step();
+      expect(ic._programCounter).to.equal(0);
+      ic.step();
+      expect(ic._programCounter).to.equal(1);
+    });
+  });
 });
