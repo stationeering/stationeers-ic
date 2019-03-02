@@ -329,6 +329,22 @@ module.exports = class IC {
     return this._sleepPeriod;
   }
 
+  getAliases() {
+    return Object.keys(this._aliases).filter((n) => !["db", "sp", "ra"].includes(n));
+  }
+
+  getDefines() {
+    return Object.keys(this._defines);
+  }
+
+  getJumpTags() {
+    return this._jumpTags;
+  }
+
+  getTokenisedInstructions() {
+    return this._instructions.map((i) => this._parseLine(i));
+  }
+
   getIOLabels() {
     let labels = Array(IO_REGISTER_COUNT + 1);
 

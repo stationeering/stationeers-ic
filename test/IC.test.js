@@ -1008,4 +1008,57 @@ describe("IC Tests", function () {
       expect(instructions.jr.fields).to.deep.equal([["r", "i", "a"]]);
     });
   });
+
+  describe("Exporting internal program structures and state", function () {
+    describe("ICs should be able to export a list of aliases", function () {
+      let ic = new IC();
+
+      ic.load([
+        "alias bob r0",
+        "alias alice r0"
+      ].join("\n"));
+
+      expect(ic.getAliases()).to.deep.equal(["bob", "alice"]);
+    });
+
+    describe("ICs should be able to export a list of defined", function () {
+      let ic = new IC();
+
+      ic.load([
+        "define bob 1",
+        "define alice 2"
+      ].join("\n"));
+
+      expect(ic.getDefines()).to.deep.equal(["bob", "alice"]);
+    });
+
+    describe("ICs should be able to export a list of jump tags", function () {
+      let ic = new IC();
+
+      ic.load([
+        "bob:",
+        "alice:"
+      ].join("\n"));
+
+      expect(ic.getJumpTags()).to.deep.equal({ "bob": 0, "alice": 1 });
+    });
+
+    describe("ICs should be able to export a tokenised version of the program", function () {
+      let ic = new IC();
+
+      ic.load([
+        "MOVE r0 1 # Comment",
+        "",
+        "alias:"
+      ].join("\n"));
+
+      let expected = [
+        ["MOVE", "r0", "1"],
+        [],
+        ["alias:"]
+      ];
+
+      expect(ic.getTokenisedInstructions()).to.deep.equal(expected);
+    });
+  });
 });
