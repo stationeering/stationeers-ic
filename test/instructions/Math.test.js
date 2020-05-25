@@ -186,4 +186,70 @@ describe("Math Tests", function () {
       expect(ic.getInternalRegisters()[0]).to.not.equal(0);
     });
   });
+
+  describe("sin", function () {
+    it("should store the sin of s in d", function () {
+      let ic = new IC();
+      ic.load("sin r0 1");
+
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0.8414709848078965);
+    });
+  });
+
+  describe("asin", function () {
+    it("should store the asin of s in d", function () {
+      let ic = new IC();
+      ic.load("asin r0 1");
+
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1.5707963267948966);
+    });
+  });
+
+  describe("tan", function () {
+    it("should store the tan of s in d", function () {
+      let ic = new IC();
+      ic.load("tan r0 1");
+
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(1.5574077246549023);
+    });
+  });
+
+  describe("atan", function () {
+    it("should store the atan of s in d", function () {
+      let ic = new IC();
+      ic.load("atan r0 1");
+
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0.7853981633974483);
+    });
+  });
+
+  describe("cos", function () {
+    it("should store the cos of s in d", function () {
+      let ic = new IC();
+      ic.load("cos r0 1");
+
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0.5403023058681398);
+    });
+  });
+
+  describe("acos", function () {
+    it("should store the acos of s in d", function () {
+      let ic = new IC();
+      ic.load("acos r0 1");
+
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0);
+    });
+  });
 });
