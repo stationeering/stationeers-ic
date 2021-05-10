@@ -280,8 +280,8 @@ module.exports = class IC {
         }
       }
     } else {
-      // Float from a define.
-      if (fieldTypes.includes("f")) {
+      // Float or integer from a define.
+      if (fieldTypes.includes("f") || fieldTypes.includes("i")) {
         if (Object.keys(this._defines).includes(token)) {
           return undefined;
         }
