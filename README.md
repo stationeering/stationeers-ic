@@ -42,7 +42,7 @@ ourIC.load(myString);
 // Load a program, however more visible in code.
 ourIC.load([
   "move r0 99",
-  "move r1 90
+  "move r1 90"
 ].join("\n"));
 ```
 
