@@ -231,6 +231,17 @@ describe("Math Tests", function () {
     });
   });
 
+  describe("atan2", function () {
+    it("should store the atan2 of s and t in d", function () {
+      let ic = new IC();
+      ic.load("atan2 r0 1 1");
+
+      ic.step();
+
+      expect(ic.getInternalRegisters()[0]).to.equal(0.7853981633974483);
+    });
+  });
+
   describe("cos", function () {
     it("should store the cos of s in d", function () {
       let ic = new IC();
