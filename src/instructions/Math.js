@@ -19,6 +19,7 @@ module.exports = function (ic) {
   ic._registerOpcode("asin", [["r", "a"], ["r", "i", "f", "a"]], _instruction_asin, "math");
   ic._registerOpcode("tan", [["r", "a"], ["r", "i", "f", "a"]], _instruction_tan, "math");
   ic._registerOpcode("atan", [["r", "a"], ["r", "i", "f", "a"]], _instruction_atan, "math");
+  ic._registerOpcode("atan2", [["r", "a"], ["r", "i", "f", "a"], ["r", "i", "f", "a"]], _instruction_atan2, "math");
   ic._registerOpcode("cos", [["r", "a"], ["r", "i", "f", "a"]], _instruction_cos, "math");
   ic._registerOpcode("acos", [["r", "a"], ["r", "i", "f", "a"]], _instruction_acos, "math");
 };
@@ -115,6 +116,11 @@ function _instruction_tan(fields, allowedTypes, ic) {
 
 function _instruction_atan(fields, allowedTypes, ic) {
   ic._setRegister(fields[0], Math.atan(ic._getRegister(fields[1], undefined, allowedTypes[1])), undefined, allowedTypes[0]);
+}
+
+function _instruction_atan2(fields, allowedTypes, ic) {
+  let outputValue = Math.atan2(ic._getRegister(fields[1], undefined, allowedTypes[1]), ic._getRegister(fields[2], undefined, allowedTypes[2]));
+  ic._setRegister(fields[0], outputValue, undefined, allowedTypes[0]);
 }
 
 function _instruction_cos(fields, allowedTypes, ic) {
