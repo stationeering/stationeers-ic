@@ -280,6 +280,11 @@ module.exports = class IC {
         }
       }
     } else {
+      // Pre-processor HASH function
+      if (token.match(/^HASH\("[^"]+"\)$/)) {
+        return undefined;
+      }
+
       // Float or integer from a define.
       if (fieldTypes.includes("f") || fieldTypes.includes("i")) {
         if (Object.keys(this._defines).includes(token)) {
@@ -650,6 +655,11 @@ module.exports = class IC {
         return this._jumpTags[register];
       }
 
+      match = register.match(/^HASH\("([^"]+)"\)$/);
+      if (match) {
+        return this._crc32(match[1]) | 0;
+      }
+
       if (Object.keys(this._defines).includes(register)) {
         return this._defines[register];
       }
@@ -743,5 +753,17 @@ module.exports = class IC {
         this._programCounter = Math.round(destination);
       }      
     }
+  }
+
+  _crc32(r) {
+    for (var a, o = [], c = 0; c < 256; c++) {
+      a = c;
+      for (var f = 0; f < 8; f++)
+        a = 1 & a ? 3988292384 ^ a >>> 1 : a >>> 1;
+      o[c] = a;
+    }
+    for (var n = -1, t = 0; t < r.length; t++)
+      n = n >>> 8 ^ o[255 & (n ^ r.charCodeAt(t))];
+    return (-1 ^ n) >>> 0;
   }
 };
