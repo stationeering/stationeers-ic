@@ -1061,4 +1061,32 @@ describe("IC Tests", function () {
       expect(ic.getTokenisedInstructions()).to.deep.equal(expected);
     });
   });
+  
+  describe("Programs can use the HASH preprocessor which can be used throughout a program", function () {
+    it("should hash the value inside the IC and store provided value when run", function () {
+      let ic = new IC();
+
+      ic.load("define IRON HASH(\"ItemIronIngot\")");
+
+      expect(Object.keys(ic._defines)).to.contains("IRON");
+
+      ic.step();
+
+      expect(ic._defines["IRON"]).to.equal(-1301215609);
+    });
+
+    it("should substitute the hashed value when the define is used in a statement", function () {
+      let ic = new IC();
+
+      ic.load([
+        "define IRON HASH(\"ItemIronIngot\")",
+        "move r0 IRON"
+      ].join("\n"));
+
+      ic.step();      
+      expect(ic.step()).to.equal("END_OF_PROGRAM");
+
+      expect(ic.getInternalRegisters()[0]).to.equal(-1301215609);
+    });
+  });
 });
