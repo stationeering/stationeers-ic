@@ -117,15 +117,15 @@ ourIC.step();
 
 // Move the IC forward 128 instructions or until error/yield.
 var total = 0;
-var lastResult = this.step();
+var lastResult = ourIC.step();
 
 while(!lastResult && total < 128) {
-	total++;       
-	lastResult = this.step(); 
+	total++;
+	lastResult = ourIC.step();
 }
 ```
 
-`this.step()` will return an error if the program can not continue.
+`ourIC.step()` will return an error if the program can not continue.
 
 * YIELD - Yield instruction was run, halt until new power tick.
 * INVALID_REGISTER_LOCATION - Attempt to access a register which does not exist.
