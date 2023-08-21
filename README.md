@@ -93,6 +93,14 @@ var registerLabels = ourIC.getInternalLabels();
 ourIC.setInternalRegister(5, 9.999);
 ```
 
+### Interacting with the stack
+
+```
+// Retrieve a copy of the whole stack, array of floating point numbers.
+var stack = ourIC.getStack();
+// Setting the stack values is not supported.
+```
+
 ### Interacting with IO Registers
 
 ```
